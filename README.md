@@ -127,15 +127,41 @@ The app is fully installable as a Progressive Web App:
 - Standalone display mode
 - Custom app icons and splash screens
 
-## 🚀 Deployment
+## 🚀 Deployment & CI/CD
 
-Deploy easily to Vercel:
+### The Best Free Approach: Vercel + GitHub
 
+The most robust and free CI/CD setup for this project is using the native **Vercel Git Integration**. 
+
+#### 1. Push to GitHub
+If you haven't already, push your code to a GitHub repository:
 ```bash
-vercel deploy
+git remote add origin <your-repo-url>
+git branch -M main
+git push -u origin main
 ```
 
-Or any other hosting platform that supports Next.js.
+#### 2. Connect to Vercel
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard).
+2. Click **"Add New"** > **"Project"**.
+3. Import your GitHub repository.
+4. Vercel will automatically detect **Next.js** and configure the build settings.
+5. Click **"Deploy"**.
+
+### CI/CD Features (Automated)
+Once connected, the following CI/CD pipeline is active for **FREE**:
+- **Production Deployments**: Every push to `main` triggers an automatic production build.
+- **Preview Deployments**: Every push to a non-main branch (or Pull Request) generates a unique "Preview URL" to test changes.
+- **Instant Rollbacks**: Easily revert to any previous deployment from the dashboard.
+- **Edge Network**: Your app is automatically deployed to global edge locations for maximum speed.
+
+### Manual Deployment (CLI)
+You can also deploy directly from your terminal using the Vercel CLI:
+```bash
+npm i -g vercel
+vercel
+```
+
 
 ## 📄 License
 
