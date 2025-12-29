@@ -122,6 +122,8 @@ export const usePeerStore = create<PeerState>()(
                         existingPeer.destroy();
                     }
 
+                    // CRITICAL: Only set isHost to true if we're creating with a code
+                    // Guests should NEVER use the room code as their Peer ID
                     const isHost = !!code;
 
                     const peerOptions = {
@@ -137,8 +139,9 @@ export const usePeerStore = create<PeerState>()(
                         debug: 2, // Add some debug logging to console
                     };
 
-                    // If Host, use code. If Guest, use random (undefined)
-                    const peer = code ? new Peer(code, peerOptions) : new Peer(peerOptions);
+                    // FIXED: Only use code as Peer ID if we're the host
+                    // Guests always get a random ID
+                    const peer = isHost ? new Peer(code, peerOptions) : new Peer(peerOptions);
 
                     peer.on('open', (id) => {
                         console.log('Peer Open:', id);
@@ -248,7 +251,15 @@ export const usePeerStore = create<PeerState>()(
 
                     // Connection Timeout Promise
                     const timeoutPromise = new Promise((_, reject) => {
-                        setTimeout(() => reject(new Error('Connection timed out')), 20000);
+                        setTimeout(
+                            () =>
+                                reject(
+                                    new Error(
+                                        'Connection timed out. Peer may be offline or behind a firewall.'
+                                    )
+                                ),
+                            20000
+                        );
                     });
 
                     // Connection Open Promise
@@ -271,8 +282,15 @@ export const usePeerStore = create<PeerState>()(
                             });
                         })
                         .catch((err) => {
-                            set({ error: err.message, isConnected: false });
-                            toast.error('Connection Failed', { description: err.message });
+                            const errorMessage =
+                                err instanceof Error ? err.message : 'Failed to connect';
+                            set({
+                                error: errorMessage,
+                                isConnected: false,
+                                connection: null,
+                                connectionQuality: 'disconnected',
+                            });
+                            toast.error('Connection Failed', { description: errorMessage });
                             conn.close();
                         });
 
@@ -435,8 +453,10 @@ export const usePeerStore = create<PeerState>()(
             name: 'flick-peer-storage',
             storage: idbStorage,
             partialize: (state) => ({
-                roomCode: state.roomCode,
-                peerId: state.peerId,
+                // Only persist roomCode if user is host
+                // Guests should reconnect manually to avoid ID collision
+                roomCode: state.isHost ? state.roomCode : null,
+                peerId: state.isHost ? state.peerId : null,
                 isHost: state.isHost,
                 receivedFiles: state.receivedFiles,
                 outgoingFiles: state.outgoingFiles,

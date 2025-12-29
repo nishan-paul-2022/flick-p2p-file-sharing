@@ -16,6 +16,12 @@ import Loading from './loading';
 export default function HomePage() {
     const searchParams = useSearchParams();
     const [isAppLoading, setIsAppLoading] = useState(true);
+    const [showLoadingParam, setShowLoadingParam] = useState(false);
+
+    // Handle search params only on client side to avoid hydration mismatch
+    useEffect(() => {
+        setShowLoadingParam(searchParams.get('loading') === 'true');
+    }, [searchParams]);
 
     useEffect(() => {
         // Minimum splash screen duration for a premium feel
@@ -25,7 +31,7 @@ export default function HomePage() {
         return () => clearTimeout(timer);
     }, []);
 
-    const showLoading = searchParams.get('loading') === 'true' || isAppLoading;
+    const showLoading = showLoadingParam || isAppLoading;
 
     const store = usePeerStore();
     const { roomCode, peer, receivedFiles, outgoingFiles, initializePeer, isHost, connectToPeer } =
