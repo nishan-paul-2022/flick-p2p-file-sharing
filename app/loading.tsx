@@ -8,26 +8,15 @@ export default function Loading() {
         <div className="min-h-screen w-full flex flex-col items-center justify-center gradient-secondary overflow-hidden relative">
             {/* Background Ambient Glow */}
             <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
-                <motion.div
-                    animate={{
-                        scale: [1, 1.2, 1],
-                        opacity: [0.3, 0.5, 0.3],
-                    }}
-                    transition={{
-                        duration: 4,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                    }}
-                    className="w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px]"
-                />
+                <div className="w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] animate-pulse-slow" />
             </div>
 
             <div className="relative z-10 flex flex-col items-center">
                 {/* Logo Animation */}
                 <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
+                    initial={{ scale: 0.95, opacity: 0.5 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
                     className="relative"
                 >
                     <div className="relative w-24 h-24 md:w-32 md:h-32">
