@@ -96,7 +96,7 @@ export function FileDropZone({
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             className={cn(
-                'relative border-2 border-dashed rounded-lg p-12 transition-all duration-200',
+                'relative border-2 border-dashed rounded-lg p-6 md:p-12 transition-all duration-200',
                 disabled
                     ? 'border-muted bg-muted/20 cursor-not-allowed'
                     : 'border-primary/50 bg-primary/5 hover:bg-primary/10 hover:border-primary cursor-pointer',

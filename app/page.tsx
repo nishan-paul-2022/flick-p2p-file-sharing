@@ -60,12 +60,12 @@ export default function HomePage() {
                 >
                     <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
                         <Zap className="w-4 h-4 text-primary" />
-                        <span className="text-sm font-medium text-primary">
+                        <span className="text-sm font-medium text-primary truncate">
                             Peer-to-Peer File Sharing
                         </span>
                     </div>
 
-                    <h1 className="text-5xl md:text-6xl font-bold mb-4 gradient-primary bg-clip-text text-transparent">
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 gradient-primary bg-clip-text text-transparent">
                         Flick
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -74,7 +74,7 @@ export default function HomePage() {
                     </p>
                 </motion.div>
 
-                <div className="grid lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {/* Connection Panel */}
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}

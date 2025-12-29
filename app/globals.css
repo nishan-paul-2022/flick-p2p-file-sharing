@@ -60,6 +60,12 @@
             'rlig' 1,
             'calt' 1;
     }
+    html {
+        scroll-behavior: smooth;
+    }
+    ::selection {
+        @apply bg-cyan-500/30 text-white;
+    }
 }
 
 @layer utilities {

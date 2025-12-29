@@ -140,7 +140,7 @@ export function ConnectionPanel() {
                                 onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                                 onKeyDown={(e) => e.key === 'Enter' && handleJoinRoom()}
                                 maxLength={6}
-                                className="uppercase font-mono text-lg tracking-wider"
+                                className="flex-1 min-w-0 uppercase font-mono text-lg tracking-wider"
                             />
                             <Button
                                 onClick={handleJoinRoom}

@@ -94,7 +94,7 @@ export function FileList({ type }: FileListProps) {
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-start justify-between gap-2 mb-2">
                                             <div className="flex-1 min-w-0">
-                                                <h4 className="font-medium truncate mb-1">
+                                                <h4 className="font-medium truncate mb-1 max-w-[150px] sm:max-w-none">
                                                     {transfer.metadata.name}
                                                 </h4>
                                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
