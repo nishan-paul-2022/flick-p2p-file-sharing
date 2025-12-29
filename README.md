@@ -55,6 +55,14 @@ npm start
 4. **Transfer Files**: Once connected, drag and drop files or click to browse
 5. **Download**: Received files appear in the "Received" tab with a download button
 
+## 🛠️ Development Tips
+
+### Previewing the Loading Screen
+Since the application loads extremely fast, the custom animated splash screen might only flash briefly. To preview the full animation during development, use the following bypass:
+- **URL**: [http://localhost:3000/?loading=true](http://localhost:3000/?loading=true)
+
+This will force the app to stay on the loading screen for testing and refinement purposes.
+
 ## 🏗️ Tech Stack
 
 - **Framework**: Next.js 15+ with App Router
@@ -66,27 +74,6 @@ npm start
 - **Theme**: next-themes for dark mode
 - **Notifications**: Sonner
 - **Type Safety**: TypeScript with strict mode
-
-## 📁 Project Structure
-
-```
-├── app/                    # Next.js App Router
-│   ├── layout.tsx         # Root layout with providers
-│   ├── page.tsx           # Main home page
-│   └── globals.css        # Global styles
-├── components/            # React components
-│   ├── ui/               # shadcn/ui components
-│   ├── ConnectionPanel.tsx
-│   ├── FileDropZone.tsx
-│   ├── FileList.tsx
-│   └── ThemeProvider.tsx
-├── hooks/                # Custom React hooks
-│   └── usePeerConnection.ts
-├── lib/                  # Utility functions
-│   └── utils.ts
-└── public/              # Static assets
-    └── manifest.json    # PWA manifest
-```
 
 ## 🔒 Security & Privacy
 

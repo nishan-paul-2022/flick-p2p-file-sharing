@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { usePeerStore } from '@/lib/store';
 import { ConnectionPanel } from '@/components/ConnectionPanel';
 import { FileDropZone } from '@/components/FileDropZone';
@@ -10,8 +11,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion } from 'framer-motion';
 import { Send, Download, Zap } from 'lucide-react';
+import Loading from './loading';
 
 export default function HomePage() {
+    const searchParams = useSearchParams();
+    const showLoading = searchParams.get('loading') === 'true';
+
     const store = usePeerStore();
     const { roomCode, peer, receivedFiles, outgoingFiles, initializePeer, isHost, connectToPeer } =
         store;
@@ -40,6 +45,10 @@ export default function HomePage() {
             handleRestore();
         }
     }, [roomCode, peer, initializePeer, isHost, connectToPeer]);
+
+    if (showLoading) {
+        return <Loading />;
+    }
 
     return (
         <div className="min-h-screen gradient-secondary">
