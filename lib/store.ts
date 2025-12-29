@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist } from 'zustand/middleware';
+import { get, set, del } from 'idb-keyval';
 import Peer, { DataConnection } from 'peerjs';
 import { toast } from 'sonner';
 import { FileMetadata, FileTransfer, ConnectionQuality, P2PMessage } from './types';
@@ -81,6 +82,21 @@ const handleIncomingData = (
             }),
         }));
     }
+};
+
+// Custom storage adapter using IndexedDB (idb-keyval)
+// This allows storing larger files (Blobs/ArrayBuffers) and avoids localStorage limits
+const idbStorage = {
+    getItem: async (name: string) => {
+        const value = await get(name);
+        return value || null;
+    },
+    setItem: async (name: string, value: unknown) => {
+        await set(name, value);
+    },
+    removeItem: async (name: string) => {
+        await del(name);
+    },
 };
 
 export const usePeerStore = create<PeerState>()(
@@ -417,7 +433,7 @@ export const usePeerStore = create<PeerState>()(
         }),
         {
             name: 'flick-peer-storage',
-            storage: createJSONStorage(() => localStorage),
+            storage: idbStorage,
             partialize: (state) => ({
                 roomCode: state.roomCode,
                 peerId: state.peerId,
