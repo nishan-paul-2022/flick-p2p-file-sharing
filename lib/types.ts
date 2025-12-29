@@ -10,8 +10,16 @@ export interface FileTransfer {
     metadata: FileMetadata;
     progress: number;
     status: 'pending' | 'transferring' | 'completed' | 'failed';
-    chunks?: ArrayBuffer[];
     totalChunks: number;
+
+    // Storage mode tracking
+    storageMode: 'power' | 'compatibility';
+
+    // Compatibility mode: RAM-based storage
+    chunks?: ArrayBuffer[];
+
+    // Power mode: OPFS-based storage
+    opfsPath?: string; // Path to file in OPFS (handle can't be serialized)
 }
 
 export type ConnectionQuality = 'excellent' | 'good' | 'poor' | 'disconnected';

@@ -1,15 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Check, Wifi, WifiOff, LogOut, RefreshCw, Trash2 } from 'lucide-react';
+import { Copy, Check, Wifi, WifiOff, LogOut, RefreshCw, Trash2, Zap, Shield } from 'lucide-react';
 import { generateRoomCode, isValidRoomCode, copyToClipboard } from '@/lib/utils';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { usePeerStore } from '@/lib/store';
+import { formatFileSize } from '@/lib/storage-mode';
 
 export function ConnectionPanel() {
     const {
@@ -21,11 +22,20 @@ export function ConnectionPanel() {
         connectToPeer,
         disconnect,
         clearHistory,
+        storageCapabilities,
+        initializeStorage,
     } = usePeerStore();
 
     const [joinCode, setJoinCode] = useState('');
     const [copied, setCopied] = useState(false);
     const [isJoining, setIsJoining] = useState(false);
+
+    // Initialize storage capabilities on mount
+    useEffect(() => {
+        if (!storageCapabilities) {
+            initializeStorage();
+        }
+    }, [storageCapabilities, initializeStorage]);
 
     const handleCreateRoom = () => {
         const code = generateRoomCode();
@@ -107,6 +117,24 @@ export function ConnectionPanel() {
                     </div>
                     {getQualityBadge()}
                 </div>
+
+                {/* Compact Storage Mode Indicator */}
+                {storageCapabilities && (
+                    <div className="mt-3 flex items-center gap-2 text-xs">
+                        {storageCapabilities.mode === 'power' ? (
+                            <Zap className="w-3 h-3 text-green-500" />
+                        ) : (
+                            <Shield className="w-3 h-3 text-yellow-500" />
+                        )}
+                        <span className="text-muted-foreground">
+                            {storageCapabilities.mode === 'power'
+                                ? 'Power Mode'
+                                : 'Compatibility Mode'}
+                            {' • '}
+                            Max: {formatFileSize(storageCapabilities.maxFileSize)}
+                        </span>
+                    </div>
+                )}
             </CardHeader>
 
             <CardContent className="space-y-6">

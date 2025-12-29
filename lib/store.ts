@@ -4,6 +4,8 @@ import { get, set, del } from 'idb-keyval';
 import Peer, { DataConnection } from 'peerjs';
 import { toast } from 'sonner';
 import { FileMetadata, FileTransfer, ConnectionQuality, P2PMessage } from './types';
+import { OPFSManager } from './opfs-manager';
+import { detectStorageCapabilities, StorageCapabilities } from './storage-mode';
 
 interface PeerState {
     // State
@@ -17,6 +19,7 @@ interface PeerState {
     receivedFiles: FileTransfer[];
     outgoingFiles: FileTransfer[];
     error: string | null;
+    storageCapabilities: StorageCapabilities | null;
 
     // Actions
     setRoomCode: (code: string | null) => void;
@@ -25,50 +28,98 @@ interface PeerState {
     disconnect: () => void;
     sendFile: (file: File) => Promise<void>;
     clearError: () => void;
-    removeFile: (id: string, type: 'received' | 'outgoing') => void;
-    clearHistory: () => void;
+    removeFile: (id: string, type: 'received' | 'outgoing') => Promise<void>;
+    clearHistory: () => Promise<void>;
+    initializeStorage: () => Promise<void>;
+    downloadFile: (transfer: FileTransfer) => Promise<void>;
 }
 
 const CHUNK_SIZE = 16 * 1024; // 16KB chunks
-const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
 
-// Helper to handle incoming data
-const handleIncomingData = (
+// Cache for OPFS file handles (can't be serialized)
+const opfsHandleCache = new Map<string, FileSystemFileHandle>();
+
+// Helper to handle incoming data with dual-mode support
+const handleIncomingData = async (
     data: unknown,
     get: () => PeerState,
     set: (state: Partial<PeerState> | ((state: PeerState) => Partial<PeerState>)) => void
 ) => {
-    // ... (keep existing handleIncomingData logic largely same, assuming it's fine)
     const msg = data as P2PMessage;
-    const { receivedFiles } = get();
+    const { receivedFiles, storageCapabilities } = get();
 
     if (msg.type === 'metadata') {
+        const storageMode = storageCapabilities?.mode || 'compatibility';
+        let opfsHandle: FileSystemFileHandle | undefined;
+        let opfsPath: string | undefined;
+
+        // Initialize OPFS file if in power mode
+        if (storageMode === 'power') {
+            try {
+                opfsHandle = await OPFSManager.createTransferFile(msg.transferId);
+                opfsPath = `${msg.transferId}.bin`;
+                opfsHandleCache.set(msg.transferId, opfsHandle);
+            } catch (error) {
+                console.error('Failed to create OPFS file, falling back to RAM:', error);
+                // Fallback to compatibility mode for this transfer
+            }
+        }
+
         const transfer: FileTransfer = {
             id: msg.transferId,
             metadata: msg.metadata,
             progress: 0,
             status: 'transferring',
-            chunks: new Array(msg.totalChunks),
             totalChunks: msg.totalChunks,
+            storageMode: opfsPath ? 'power' : 'compatibility',
+            chunks: opfsPath ? undefined : new Array(msg.totalChunks),
+            opfsPath,
         };
 
         set({ receivedFiles: [...receivedFiles, transfer] });
 
         toast.info('Receiving file', {
-            description: msg.metadata.name,
+            description: `${msg.metadata.name} (${storageMode === 'power' ? 'Power Mode' : 'Compatibility Mode'})`,
         });
     } else if (msg.type === 'chunk') {
-        set((state) => ({
-            receivedFiles: state.receivedFiles.map((t) => {
-                if (t.id === msg.transferId && t.chunks) {
-                    t.chunks[msg.chunkIndex] = msg.data;
-                    const receivedChunks = t.chunks.filter((c) => c !== undefined).length;
-                    const progress = (receivedChunks / t.totalChunks) * 100;
-                    return { ...t, progress };
+        const transfer = receivedFiles.find((t) => t.id === msg.transferId);
+
+        if (!transfer) return;
+
+        if (transfer.storageMode === 'power' && transfer.opfsPath) {
+            // Power mode: Write chunk to OPFS
+            try {
+                const handle = opfsHandleCache.get(msg.transferId);
+                if (handle) {
+                    const offset = msg.chunkIndex * CHUNK_SIZE;
+                    await OPFSManager.writeChunk(handle, msg.data, offset);
+
+                    const progress = ((msg.chunkIndex + 1) / transfer.totalChunks) * 100;
+
+                    set((state) => ({
+                        receivedFiles: state.receivedFiles.map((t) =>
+                            t.id === msg.transferId ? { ...t, progress } : t
+                        ),
+                    }));
                 }
-                return t;
-            }),
-        }));
+            } catch (error) {
+                console.error('OPFS write failed:', error);
+                toast.error('Storage error', { description: 'Failed to write chunk to disk' });
+            }
+        } else if (transfer.chunks) {
+            // Compatibility mode: Store chunk in RAM
+            set((state) => ({
+                receivedFiles: state.receivedFiles.map((t) => {
+                    if (t.id === msg.transferId && t.chunks) {
+                        t.chunks[msg.chunkIndex] = msg.data;
+                        const receivedChunks = t.chunks.filter((c) => c !== undefined).length;
+                        const progress = (receivedChunks / t.totalChunks) * 100;
+                        return { ...t, progress };
+                    }
+                    return t;
+                }),
+            }));
+        }
     } else if (msg.type === 'complete') {
         set((state) => ({
             receivedFiles: state.receivedFiles.map((t) => {
@@ -85,7 +136,6 @@ const handleIncomingData = (
 };
 
 // Custom storage adapter using IndexedDB (idb-keyval)
-// This allows storing larger files (Blobs/ArrayBuffers) and avoids localStorage limits
 const idbStorage = {
     getItem: async (name: string) => {
         const value = await get(name);
@@ -106,14 +156,27 @@ export const usePeerStore = create<PeerState>()(
             connection: null,
             peerId: null,
             roomCode: null,
-            isHost: false, // Default to false
+            isHost: false,
             isConnected: false,
             connectionQuality: 'disconnected',
             receivedFiles: [],
             outgoingFiles: [],
             error: null,
+            storageCapabilities: null,
 
             setRoomCode: (code) => set({ roomCode: code }),
+
+            initializeStorage: async () => {
+                const capabilities = await detectStorageCapabilities();
+                set({ storageCapabilities: capabilities });
+
+                toast.success(
+                    `Storage initialized: ${capabilities.mode === 'power' ? 'Power Mode' : 'Compatibility Mode'}`,
+                    {
+                        description: `Max file size: ${Math.round(capabilities.maxFileSize / (1024 * 1024))}MB`,
+                    }
+                );
+            },
 
             initializePeer: (code) => {
                 return new Promise((resolve, reject) => {
@@ -122,8 +185,6 @@ export const usePeerStore = create<PeerState>()(
                         existingPeer.destroy();
                     }
 
-                    // CRITICAL: Only set isHost to true if we're creating with a code
-                    // Guests should NEVER use the room code as their Peer ID
                     const isHost = !!code;
 
                     const peerOptions = {
@@ -136,11 +197,9 @@ export const usePeerStore = create<PeerState>()(
                                 { urls: 'stun:stun4.l.google.com:19302' },
                             ],
                         },
-                        debug: 2, // Add some debug logging to console
+                        debug: 2,
                     };
 
-                    // FIXED: Only use code as Peer ID if we're the host
-                    // Guests always get a random ID
                     const peer = isHost ? new Peer(code, peerOptions) : new Peer(peerOptions);
 
                     peer.on('open', (id) => {
@@ -202,7 +261,6 @@ export const usePeerStore = create<PeerState>()(
                                 'Session expired or ID taken. Please join or create a new room.'
                             );
                         } else {
-                            // Don't clear state for minor errors, but show them
                             set({ error: err.message });
                             toast.error('Connection error', {
                                 description: err.message,
@@ -249,7 +307,6 @@ export const usePeerStore = create<PeerState>()(
 
                     set({ connection: conn });
 
-                    // Connection Timeout Promise
                     const timeoutPromise = new Promise((_, reject) => {
                         setTimeout(
                             () =>
@@ -262,7 +319,6 @@ export const usePeerStore = create<PeerState>()(
                         );
                     });
 
-                    // Connection Open Promise
                     const openPromise = new Promise<void>((resolve, reject) => {
                         conn.on('open', () => {
                             resolve();
@@ -272,7 +328,6 @@ export const usePeerStore = create<PeerState>()(
                         });
                     });
 
-                    // Race condition: Open or Timeout
                     Promise.race([openPromise, timeoutPromise])
                         .then(() => {
                             console.log('Connection Open (Guest Side)');
@@ -328,20 +383,22 @@ export const usePeerStore = create<PeerState>()(
                     peer: null,
                     peerId: null,
                     roomCode: null,
-                    isHost: false, // Reset host state
+                    isHost: false,
                 });
             },
 
             sendFile: async (file) => {
-                // ... (keep existing sendFile logic)
-                const { connection, isConnected } = get();
+                const { connection, isConnected, storageCapabilities } = get();
                 if (!connection || !isConnected) {
                     toast.error('Not connected to peer');
                     return;
                 }
 
-                if (file.size > MAX_FILE_SIZE) {
-                    toast.error('File size exceeds 500MB limit');
+                const maxFileSize = storageCapabilities?.maxFileSize || 500 * 1024 * 1024;
+
+                if (file.size > maxFileSize) {
+                    const limitMB = Math.round(maxFileSize / (1024 * 1024));
+                    toast.error(`File size exceeds ${limitMB}MB limit`);
                     return;
                 }
 
@@ -354,6 +411,7 @@ export const usePeerStore = create<PeerState>()(
                 };
 
                 const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+                const storageMode = storageCapabilities?.mode || 'compatibility';
 
                 const transfer: FileTransfer = {
                     id: transferId,
@@ -361,6 +419,7 @@ export const usePeerStore = create<PeerState>()(
                     progress: 0,
                     status: 'transferring',
                     totalChunks,
+                    storageMode,
                 };
 
                 set((state) => ({ outgoingFiles: [...state.outgoingFiles, transfer] }));
@@ -428,7 +487,21 @@ export const usePeerStore = create<PeerState>()(
 
             clearError: () => set({ error: null }),
 
-            removeFile: (id, type) => {
+            removeFile: async (id, type) => {
+                const state = get();
+                const files = type === 'received' ? state.receivedFiles : state.outgoingFiles;
+                const file = files.find((f) => f.id === id);
+
+                // Clean up OPFS file if in power mode
+                if (file?.storageMode === 'power' && file.opfsPath) {
+                    try {
+                        await OPFSManager.deleteTransferFile(id);
+                        opfsHandleCache.delete(id);
+                    } catch (error) {
+                        console.warn('Failed to delete OPFS file:', error);
+                    }
+                }
+
                 set((state) => {
                     if (type === 'received') {
                         return {
@@ -439,27 +512,90 @@ export const usePeerStore = create<PeerState>()(
                         outgoingFiles: state.outgoingFiles.filter((f) => f.id !== id),
                     };
                 });
+
                 toast.success('File removed from history');
             },
 
-            clearHistory: () => {
+            clearHistory: async () => {
+                const { receivedFiles } = get();
+
+                // Clean up all OPFS files
+                const opfsFiles = receivedFiles.filter((f) => f.storageMode === 'power');
+                for (const file of opfsFiles) {
+                    try {
+                        await OPFSManager.deleteTransferFile(file.id);
+                        opfsHandleCache.delete(file.id);
+                    } catch (error) {
+                        console.warn('Failed to delete OPFS file:', error);
+                    }
+                }
+
                 set({ receivedFiles: [], outgoingFiles: [] });
                 toast.success('History cleared', {
                     description: 'All transfer history has been removed',
                 });
+            },
+
+            downloadFile: async (transfer: FileTransfer) => {
+                try {
+                    let blob: Blob;
+
+                    if (transfer.storageMode === 'power' && transfer.opfsPath) {
+                        // Power mode: Get file from OPFS
+                        const handle =
+                            opfsHandleCache.get(transfer.id) ||
+                            (await OPFSManager.getTransferFile(transfer.id));
+
+                        if (!handle) {
+                            toast.error('File not found in storage');
+                            return;
+                        }
+
+                        const file = await OPFSManager.getFileAsBlob(handle);
+                        blob = file;
+                    } else if (transfer.chunks) {
+                        // Compatibility mode: Reconstruct from RAM chunks
+                        blob = new Blob(transfer.chunks, { type: transfer.metadata.type });
+                    } else {
+                        toast.error('File data not available');
+                        return;
+                    }
+
+                    // Trigger download
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = transfer.metadata.name;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    toast.success('Download started', {
+                        description: transfer.metadata.name,
+                    });
+                } catch (error) {
+                    console.error('Download failed:', error);
+                    toast.error('Download failed', {
+                        description: error instanceof Error ? error.message : 'Unknown error',
+                    });
+                }
             },
         }),
         {
             name: 'flick-peer-storage',
             storage: idbStorage,
             partialize: (state) => ({
-                // Only persist roomCode if user is host
-                // Guests should reconnect manually to avoid ID collision
                 roomCode: state.isHost ? state.roomCode : null,
                 peerId: state.isHost ? state.peerId : null,
                 isHost: state.isHost,
-                receivedFiles: state.receivedFiles,
+                receivedFiles: state.receivedFiles.map((f) => ({
+                    ...f,
+                    // Don't persist chunks (too large for IndexedDB)
+                    chunks: undefined,
+                })),
                 outgoingFiles: state.outgoingFiles,
+                storageCapabilities: state.storageCapabilities,
             }),
         }
     )

@@ -15,23 +15,12 @@ interface FileListProps {
 }
 
 export function FileList({ type }: FileListProps) {
-    const { receivedFiles, outgoingFiles, removeFile } = usePeerStore();
+    const { receivedFiles, outgoingFiles, removeFile, downloadFile } = usePeerStore();
     const files = type === 'received' ? receivedFiles : outgoingFiles;
 
-    const handleDownload = (transfer: FileTransfer) => {
-        if (transfer.status !== 'completed' || !transfer.chunks) return;
-
-        // Combine chunks into a single blob
-        const blob = new Blob(transfer.chunks, { type: transfer.metadata.type });
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = transfer.metadata.name;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+    const handleDownload = async (transfer: FileTransfer) => {
+        if (transfer.status !== 'completed') return;
+        await downloadFile(transfer);
     };
 
     const getStatusIcon = (status: FileTransfer['status']) => {
@@ -107,6 +96,23 @@ export function FileList({ type }: FileListProps) {
                                                             transfer.metadata.timestamp
                                                         )}
                                                     </span>
+                                                    {transfer.storageMode && (
+                                                        <>
+                                                            <span>•</span>
+                                                            <Badge
+                                                                variant={
+                                                                    transfer.storageMode === 'power'
+                                                                        ? 'default'
+                                                                        : 'secondary'
+                                                                }
+                                                                className="text-xs"
+                                                            >
+                                                                {transfer.storageMode === 'power'
+                                                                    ? '⚡ Power'
+                                                                    : '💾 RAM'}
+                                                            </Badge>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </div>
 
