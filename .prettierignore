@@ -1,7 +1,7 @@
-.next
-node_modules
-dist
-build
-public
+.next/
+node_modules/
+dist/
+build/
+public/
 *.json
 *.md
