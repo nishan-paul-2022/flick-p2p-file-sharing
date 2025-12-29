@@ -24,6 +24,8 @@ interface PeerState {
     disconnect: () => void;
     sendFile: (file: File) => Promise<void>;
     clearError: () => void;
+    removeFile: (id: string, type: 'received' | 'outgoing') => void;
+    clearHistory: () => void;
 }
 
 const CHUNK_SIZE = 16 * 1024; // 16KB chunks
@@ -391,6 +393,27 @@ export const usePeerStore = create<PeerState>()(
             },
 
             clearError: () => set({ error: null }),
+
+            removeFile: (id, type) => {
+                set((state) => {
+                    if (type === 'received') {
+                        return {
+                            receivedFiles: state.receivedFiles.filter((f) => f.id !== id),
+                        };
+                    }
+                    return {
+                        outgoingFiles: state.outgoingFiles.filter((f) => f.id !== id),
+                    };
+                });
+                toast.success('File removed from history');
+            },
+
+            clearHistory: () => {
+                set({ receivedFiles: [], outgoingFiles: [] });
+                toast.success('History cleared', {
+                    description: 'All transfer history has been removed',
+                });
+            },
         }),
         {
             name: 'flick-peer-storage',

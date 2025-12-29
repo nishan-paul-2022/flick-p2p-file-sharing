@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Check, Wifi, WifiOff, LogOut, RefreshCw } from 'lucide-react';
+import { Copy, Check, Wifi, WifiOff, LogOut, RefreshCw, Trash2 } from 'lucide-react';
 import { generateRoomCode, isValidRoomCode, copyToClipboard } from '@/lib/utils';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -20,6 +20,7 @@ export function ConnectionPanel() {
         initializePeer,
         connectToPeer,
         disconnect,
+        clearHistory,
     } = usePeerStore();
 
     const [joinCode, setJoinCode] = useState('');
@@ -201,6 +202,18 @@ export function ConnectionPanel() {
                         </Button>
                     </motion.div>
                 )}
+
+                <div className="pt-4 border-t border-primary/10">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full text-muted-foreground hover:text-destructive transition-colors"
+                        onClick={clearHistory}
+                    >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Clear Transfer History
+                    </Button>
+                </div>
             </CardContent>
         </Card>
     );

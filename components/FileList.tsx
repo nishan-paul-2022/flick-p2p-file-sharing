@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Download, File, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { Download, File, CheckCircle2, XCircle, Clock, Trash2 } from 'lucide-react';
 import { formatBytes, formatTimestamp } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileTransfer } from '@/lib/types';
@@ -15,7 +15,7 @@ interface FileListProps {
 }
 
 export function FileList({ type }: FileListProps) {
-    const { receivedFiles, outgoingFiles } = usePeerStore();
+    const { receivedFiles, outgoingFiles, removeFile } = usePeerStore();
     const files = type === 'received' ? receivedFiles : outgoingFiles;
 
     const handleDownload = (transfer: FileTransfer) => {
@@ -113,6 +113,21 @@ export function FileList({ type }: FileListProps) {
                                             <div className="flex items-center gap-2">
                                                 {getStatusIcon(transfer.status)}
                                                 {getStatusBadge(transfer.status)}
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                                                    onClick={() =>
+                                                        removeFile(
+                                                            transfer.id,
+                                                            type === 'received'
+                                                                ? 'received'
+                                                                : 'outgoing'
+                                                        )
+                                                    }
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
                                             </div>
                                         </div>
 
