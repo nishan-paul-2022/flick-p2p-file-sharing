@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from 'react';
-import { usePeerConnection } from '@/hooks/usePeerConnection';
+import { useEffect } from 'react';
+import { usePeerStore } from '@/lib/store';
 import { ConnectionPanel } from '@/components/ConnectionPanel';
 import { FileDropZone } from '@/components/FileDropZone';
 import { FileList } from '@/components/FileList';
@@ -9,52 +9,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion } from 'framer-motion';
 import { Send, Download, Zap } from 'lucide-react';
-import { toast } from 'sonner';
 
 export default function HomePage() {
-    const [roomCode, setRoomCode] = useState<string | null>(null);
-
     const {
-        peerId,
+        roomCode,
         isConnected,
-        connectionQuality,
-        connect,
-        disconnect,
-        sendFile,
         receivedFiles,
         outgoingFiles,
-    } = usePeerConnection(roomCode);
+        initializePeer,
+    } = usePeerStore();
 
-    const handleCreateRoom = (code: string) => {
-        setRoomCode(code);
-    };
-
-    const handleJoinRoom = async (code: string) => {
-        setRoomCode(code);
-        try {
-            await connect(code);
-        } catch (error) {
-            console.error('Failed to join room:', error);
+    // Re-initialize peer on refresh if roomCode exists
+    useEffect(() => {
+        if (roomCode && typeof window !== 'undefined') {
+            initializePeer(roomCode);
         }
-    };
-
-    const handleDisconnect = () => {
-        disconnect();
-        setRoomCode(null);
-    };
-
-    const handleFilesSelected = async (files: File[]) => {
-        for (const file of files) {
-            try {
-                await sendFile(file);
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'Failed to send file';
-                toast.error('Failed to send file', {
-                    description: errorMessage,
-                });
-            }
-        }
-    };
+    }, []); // Only on mount
 
     return (
         <div className="min-h-screen gradient-secondary">
@@ -92,15 +62,7 @@ export default function HomePage() {
                         transition={{ delay: 0.1 }}
                         className="lg:col-span-1"
                     >
-                        <ConnectionPanel
-                            roomCode={roomCode}
-                            peerId={peerId}
-                            isConnected={isConnected}
-                            connectionQuality={connectionQuality}
-                            onCreateRoom={handleCreateRoom}
-                            onJoinRoom={handleJoinRoom}
-                            onDisconnect={handleDisconnect}
-                        />
+                        <ConnectionPanel />
                     </motion.div>
 
                     {/* File Transfer Area */}
@@ -122,10 +84,7 @@ export default function HomePage() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <FileDropZone
-                                    onFilesSelected={handleFilesSelected}
-                                    disabled={!isConnected}
-                                />
+                                <FileDropZone />
                             </CardContent>
                         </Card>
 
@@ -143,11 +102,11 @@ export default function HomePage() {
                             </TabsList>
 
                             <TabsContent value="received" className="mt-4">
-                                <FileList files={receivedFiles} type="received" />
+                                <FileList type="received" />
                             </TabsContent>
 
                             <TabsContent value="sent" className="mt-4">
-                                <FileList files={outgoingFiles} type="sent" />
+                                <FileList type="sent" />
                             </TabsContent>
                         </Tabs>
                     </motion.div>

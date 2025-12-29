@@ -9,32 +9,25 @@ import { Copy, Check, Wifi, WifiOff, LogOut, RefreshCw } from 'lucide-react';
 import { generateRoomCode, isValidRoomCode, copyToClipboard } from '@/lib/utils';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { usePeerStore } from '@/lib/store';
 
-interface ConnectionPanelProps {
-    roomCode: string | null;
-    peerId: string | null;
-    isConnected: boolean;
-    connectionQuality: 'excellent' | 'good' | 'poor' | 'disconnected';
-    onCreateRoom: (code: string) => void;
-    onJoinRoom: (code: string) => void;
-    onDisconnect: () => void;
-}
+export function ConnectionPanel() {
+    const {
+        roomCode,
+        peerId,
+        isConnected,
+        connectionQuality,
+        initializePeer,
+        connectToPeer,
+        disconnect,
+    } = usePeerStore();
 
-export function ConnectionPanel({
-    roomCode,
-    peerId,
-    isConnected,
-    connectionQuality,
-    onCreateRoom,
-    onJoinRoom,
-    onDisconnect,
-}: ConnectionPanelProps) {
     const [joinCode, setJoinCode] = useState('');
     const [copied, setCopied] = useState(false);
 
     const handleCreateRoom = () => {
         const code = generateRoomCode();
-        onCreateRoom(code);
+        initializePeer(code);
         toast.success('Room created', {
             description: `Room code: ${code}`,
         });
@@ -50,7 +43,12 @@ export function ConnectionPanel({
             return;
         }
 
-        onJoinRoom(code);
+        initializePeer(generateRoomCode()); // Initialize our own peer first if not already done, or just use a random one
+        // Wait, the logic should be: if we join, we need a peer id too. 
+        // In the previous version, roomCode was set in HomePage then usePeerConnection initialized.
+        // Let's ensure initializePeer is called.
+        
+        connectToPeer(code);
         setJoinCode('');
     };
 
@@ -175,7 +173,7 @@ export function ConnectionPanel({
                         </div>
 
                         <Button
-                            onClick={onDisconnect}
+                            onClick={disconnect}
                             variant="destructive"
                             className="w-full"
                         >

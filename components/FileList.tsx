@@ -1,6 +1,6 @@
 "use client";
 
-import { FileTransfer } from '@/hooks/usePeerConnection';
+import { usePeerStore } from '@/lib/store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
@@ -8,15 +8,18 @@ import { Button } from '@/components/ui/button';
 import { Download, File, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { formatBytes, formatTimestamp } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { FileTransfer } from '@/lib/types';
 
 interface FileListProps {
-    files: FileTransfer[];
     type: 'received' | 'sent';
 }
 
-export function FileList({ files, type }: FileListProps) {
+export function FileList({ type }: FileListProps) {
+    const { receivedFiles, outgoingFiles } = usePeerStore();
+    const files = type === 'received' ? receivedFiles : outgoingFiles;
+
     const handleDownload = (transfer: FileTransfer) => {
-        if (transfer.status !== 'completed') return;
+        if (transfer.status !== 'completed' || !transfer.chunks) return;
 
         // Combine chunks into a single blob
         const blob = new Blob(transfer.chunks, { type: transfer.metadata.type });

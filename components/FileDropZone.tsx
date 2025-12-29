@@ -4,18 +4,31 @@ import { useCallback } from 'react';
 import { Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { usePeerStore } from '@/lib/store';
 
 interface FileDropZoneProps {
-    onFilesSelected: (files: File[]) => void;
-    disabled?: boolean;
     maxSize?: number;
 }
 
 export function FileDropZone({
-    onFilesSelected,
-    disabled = false,
     maxSize = 500 * 1024 * 1024 // 500MB
 }: FileDropZoneProps) {
+    const { isConnected, sendFile } = usePeerStore();
+    const disabled = !isConnected;
+
+    const handleFilesSelected = useCallback(async (files: File[]) => {
+        for (const file of files) {
+            try {
+                await sendFile(file);
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'Failed to send file';
+                toast.error('Failed to send file', {
+                    description: errorMessage,
+                });
+            }
+        }
+    }, [sendFile]);
+
     const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
@@ -36,9 +49,9 @@ export function FileDropZone({
         });
 
         if (validFiles.length > 0) {
-            onFilesSelected(validFiles);
+            handleFilesSelected(validFiles);
         }
-    }, [onFilesSelected, disabled, maxSize]);
+    }, [handleFilesSelected, disabled, maxSize]);
 
     const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -61,12 +74,12 @@ export function FileDropZone({
         });
 
         if (validFiles.length > 0) {
-            onFilesSelected(validFiles);
+            handleFilesSelected(validFiles);
         }
 
         // Reset input
         e.target.value = '';
-    }, [onFilesSelected, disabled, maxSize]);
+    }, [handleFilesSelected, disabled, maxSize]);
 
     return (
         <div
