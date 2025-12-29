@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect } from 'react';
 import { usePeerStore } from '@/lib/store';
@@ -11,27 +11,24 @@ import { motion } from 'framer-motion';
 import { Send, Download, Zap } from 'lucide-react';
 
 export default function HomePage() {
-    const {
-        roomCode,
-        isConnected,
-        receivedFiles,
-        outgoingFiles,
-        initializePeer,
-    } = usePeerStore();
+    const { roomCode, receivedFiles, outgoingFiles, initializePeer } = usePeerStore();
 
     // Re-initialize peer on refresh if roomCode exists
     useEffect(() => {
         if (roomCode && typeof window !== 'undefined') {
             initializePeer(roomCode);
         }
-    }, []); // Only on mount
+    }, [roomCode, initializePeer]); // Re-initialize if roomCode or initializePeer changes
 
     return (
         <div className="min-h-screen gradient-secondary">
             {/* Animated background elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-1/4 -left-48 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-1/4 -right-48 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+                <div
+                    className="absolute bottom-1/4 -right-48 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl animate-pulse"
+                    style={{ animationDelay: '2s' }}
+                />
             </div>
 
             <div className="relative container mx-auto px-4 py-8 max-w-7xl">
@@ -43,14 +40,17 @@ export default function HomePage() {
                 >
                     <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
                         <Zap className="w-4 h-4 text-primary" />
-                        <span className="text-sm font-medium text-primary">Peer-to-Peer File Sharing</span>
+                        <span className="text-sm font-medium text-primary">
+                            Peer-to-Peer File Sharing
+                        </span>
                     </div>
 
                     <h1 className="text-5xl md:text-6xl font-bold mb-4 gradient-primary bg-clip-text text-transparent">
                         Flick
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Share files instantly between devices with zero backend. Fast, secure, and private.
+                        Share files instantly between devices with zero backend. Fast, secure, and
+                        private.
                     </p>
                 </motion.div>
 
@@ -130,13 +130,19 @@ export default function HomePage() {
                         },
                         {
                             title: 'Private & Secure',
-                            description: 'End-to-end encrypted. Your files never touch our servers.',
+                            description:
+                                'End-to-end encrypted. Your files never touch our servers.',
                         },
                     ].map((feature, i) => (
-                        <Card key={i} className="glass-dark border-primary/10 hover:border-primary/30 transition-all">
+                        <Card
+                            key={i}
+                            className="glass-dark border-primary/10 hover:border-primary/30 transition-all"
+                        >
                             <CardContent className="p-6">
                                 <h3 className="font-semibold mb-2">{feature.title}</h3>
-                                <p className="text-sm text-muted-foreground">{feature.description}</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {feature.description}
+                                </p>
                             </CardContent>
                         </Card>
                     ))}

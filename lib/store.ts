@@ -29,7 +29,11 @@ const CHUNK_SIZE = 16 * 1024; // 16KB chunks
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
 
 // Helper to handle incoming data
-const handleIncomingData = (data: unknown, get: () => PeerState, set: (state: Partial<PeerState> | ((state: PeerState) => Partial<PeerState>)) => void) => {
+const handleIncomingData = (
+    data: unknown,
+    get: () => PeerState,
+    set: (state: Partial<PeerState> | ((state: PeerState) => Partial<PeerState>)) => void
+) => {
     const msg = data as P2PMessage;
     const { receivedFiles } = get();
 
@@ -116,7 +120,7 @@ export const usePeerStore = create<PeerState>()(
                 peer.on('connection', (conn) => {
                     get().disconnect(); // Close existing connection if any
                     set({ connection: conn });
-                    
+
                     conn.on('open', () => {
                         set({ isConnected: true, connectionQuality: 'excellent' });
                         toast.success('Connected to peer', {
@@ -127,7 +131,11 @@ export const usePeerStore = create<PeerState>()(
                     conn.on('data', (data) => handleIncomingData(data, get, set));
 
                     conn.on('close', () => {
-                        set({ isConnected: false, connectionQuality: 'disconnected', connection: null });
+                        set({
+                            isConnected: false,
+                            connectionQuality: 'disconnected',
+                            connection: null,
+                        });
                         toast.info('Peer disconnected');
                     });
 
@@ -170,7 +178,11 @@ export const usePeerStore = create<PeerState>()(
                     conn.on('data', (data) => handleIncomingData(data, get, set));
 
                     conn.on('close', () => {
-                        set({ isConnected: false, connectionQuality: 'disconnected', connection: null });
+                        set({
+                            isConnected: false,
+                            connectionQuality: 'disconnected',
+                            connection: null,
+                        });
                         toast.info('Peer disconnected');
                     });
 
@@ -194,13 +206,13 @@ export const usePeerStore = create<PeerState>()(
                 if (peer) {
                     peer.destroy();
                 }
-                set({ 
-                    isConnected: false, 
-                    connectionQuality: 'disconnected', 
+                set({
+                    isConnected: false,
+                    connectionQuality: 'disconnected',
                     connection: null,
                     peer: null,
                     peerId: null,
-                    roomCode: null 
+                    roomCode: null,
                 });
             },
 
@@ -271,7 +283,11 @@ export const usePeerStore = create<PeerState>()(
                         set((state) => ({
                             outgoingFiles: state.outgoingFiles.map((t) =>
                                 t.id === transferId
-                                    ? { ...t, progress, status: progress === 100 ? 'completed' : 'transferring' }
+                                    ? {
+                                          ...t,
+                                          progress,
+                                          status: progress === 100 ? 'completed' : 'transferring',
+                                      }
                                     : t
                             ),
                         }));

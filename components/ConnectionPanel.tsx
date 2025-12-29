@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -44,10 +44,10 @@ export function ConnectionPanel() {
         }
 
         initializePeer(generateRoomCode()); // Initialize our own peer first if not already done, or just use a random one
-        // Wait, the logic should be: if we join, we need a peer id too. 
+        // Wait, the logic should be: if we join, we need a peer id too.
         // In the previous version, roomCode was set in HomePage then usePeerConnection initialized.
         // Let's ensure initializePeer is called.
-        
+
         connectToPeer(code);
         setJoinCode('');
     };
@@ -66,13 +66,29 @@ export function ConnectionPanel() {
     const getQualityBadge = () => {
         switch (connectionQuality) {
             case 'excellent':
-                return <Badge variant="success" className="gap-1"><Wifi className="w-3 h-3" /> Excellent</Badge>;
+                return (
+                    <Badge variant="success" className="gap-1">
+                        <Wifi className="w-3 h-3" /> Excellent
+                    </Badge>
+                );
             case 'good':
-                return <Badge variant="default" className="gap-1"><Wifi className="w-3 h-3" /> Good</Badge>;
+                return (
+                    <Badge variant="default" className="gap-1">
+                        <Wifi className="w-3 h-3" /> Good
+                    </Badge>
+                );
             case 'poor':
-                return <Badge variant="warning" className="gap-1"><Wifi className="w-3 h-3" /> Poor</Badge>;
+                return (
+                    <Badge variant="warning" className="gap-1">
+                        <Wifi className="w-3 h-3" /> Poor
+                    </Badge>
+                );
             default:
-                return <Badge variant="outline" className="gap-1"><WifiOff className="w-3 h-3" /> Disconnected</Badge>;
+                return (
+                    <Badge variant="outline" className="gap-1">
+                        <WifiOff className="w-3 h-3" /> Disconnected
+                    </Badge>
+                );
         }
     };
 
@@ -96,11 +112,7 @@ export function ConnectionPanel() {
                         className="space-y-4"
                     >
                         <div>
-                            <Button
-                                onClick={handleCreateRoom}
-                                className="w-full"
-                                size="lg"
-                            >
+                            <Button onClick={handleCreateRoom} className="w-full" size="lg">
                                 <RefreshCw className="w-4 h-4 mr-2" />
                                 Create New Room
                             </Button>
@@ -111,7 +123,9 @@ export function ConnectionPanel() {
                                 <span className="w-full border-t border-muted" />
                             </div>
                             <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-card px-2 text-muted-foreground">Or join existing</span>
+                                <span className="bg-card px-2 text-muted-foreground">
+                                    Or join existing
+                                </span>
                             </div>
                         </div>
 
@@ -165,18 +179,16 @@ export function ConnectionPanel() {
 
                         <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                             <div className="flex items-center gap-2">
-                                <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-muted-foreground'}`} />
+                                <div
+                                    className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-muted-foreground'}`}
+                                />
                                 <span className="text-sm font-medium">
                                     {isConnected ? 'Connected' : 'Waiting for peer...'}
                                 </span>
                             </div>
                         </div>
 
-                        <Button
-                            onClick={disconnect}
-                            variant="destructive"
-                            className="w-full"
-                        >
+                        <Button onClick={disconnect} variant="destructive" className="w-full">
                             <LogOut className="w-4 h-4 mr-2" />
                             Leave Room
                         </Button>

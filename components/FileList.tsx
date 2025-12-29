@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { usePeerStore } from '@/lib/store';
 import { Card, CardContent } from '@/components/ui/card';
@@ -98,9 +98,15 @@ export function FileList({ type }: FileListProps) {
                                                     {transfer.metadata.name}
                                                 </h4>
                                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                    <span>{formatBytes(transfer.metadata.size)}</span>
+                                                    <span>
+                                                        {formatBytes(transfer.metadata.size)}
+                                                    </span>
                                                     <span>•</span>
-                                                    <span>{formatTimestamp(transfer.metadata.timestamp)}</span>
+                                                    <span>
+                                                        {formatTimestamp(
+                                                            transfer.metadata.timestamp
+                                                        )}
+                                                    </span>
                                                 </div>
                                             </div>
 
@@ -112,7 +118,10 @@ export function FileList({ type }: FileListProps) {
 
                                         {transfer.status === 'transferring' && (
                                             <div className="space-y-2">
-                                                <Progress value={transfer.progress} className="animate-pulse" />
+                                                <Progress
+                                                    value={transfer.progress}
+                                                    className="animate-pulse"
+                                                />
                                                 <p className="text-xs text-muted-foreground text-right">
                                                     {Math.round(transfer.progress)}%
                                                 </p>

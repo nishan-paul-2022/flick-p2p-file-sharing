@@ -16,7 +16,7 @@ export interface FileTransfer {
 
 export type ConnectionQuality = 'excellent' | 'good' | 'poor' | 'disconnected';
 
-export type P2PMessage = 
+export type P2PMessage =
     | { type: 'metadata'; transferId: string; metadata: FileMetadata; totalChunks: number }
     | { type: 'chunk'; transferId: string; chunkIndex: number; data: ArrayBuffer }
     | { type: 'complete'; transferId: string };
