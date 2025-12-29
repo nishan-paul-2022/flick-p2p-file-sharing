@@ -49,7 +49,7 @@ export function ConnectionPanel() {
             await initializePeer(); // Initialize our own peer first and wait for ID
             await connectToPeer(code);
             setJoinCode('');
-        } catch (error) {
+        } catch {
             // Error handling is already done in store
         } finally {
             setIsJoining(false);

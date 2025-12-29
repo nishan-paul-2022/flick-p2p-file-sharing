@@ -18,7 +18,7 @@ export default function HomePage() {
     // Expose store for testing
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            (window as any).store = store;
+            (window as unknown as { store: typeof store }).store = store;
         }
     }, [store]);
 

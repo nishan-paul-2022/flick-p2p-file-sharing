@@ -167,7 +167,7 @@ export const usePeerStore = create<PeerState>()(
                         });
                     });
 
-                    peer.on('error', (err: any) => {
+                    peer.on('error', (err: { type: string; message: string }) => {
                         console.error('Peer Error:', err);
                         if (err.type === 'unavailable-id') {
                             set({
