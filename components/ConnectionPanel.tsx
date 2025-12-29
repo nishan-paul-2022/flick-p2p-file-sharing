@@ -100,7 +100,7 @@ export function ConnectionPanel({
                         <div>
                             <Button
                                 onClick={handleCreateRoom}
-                                className="w-full gradient-primary shadow-lg shadow-primary/50 hover:shadow-primary/70 transition-all"
+                                className="w-full"
                                 size="lg"
                             >
                                 <RefreshCw className="w-4 h-4 mr-2" />
