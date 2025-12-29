@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Image from 'next/image';
 import { usePeerStore } from '@/lib/store';
 import { ConnectionPanel } from '@/components/ConnectionPanel';
 import { FileDropZone } from '@/components/FileDropZone';
@@ -65,8 +66,18 @@ export default function HomePage() {
                         </span>
                     </div>
 
-                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 gradient-primary bg-clip-text text-transparent">
-                        Flick
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 flex items-center justify-center gap-4">
+                        <Image
+                            src="/icon.svg"
+                            alt="Flick Icon"
+                            width={64}
+                            height={64}
+                            className="w-12 h-12 md:w-16 md:h-16"
+                            priority
+                        />
+                        <span className="gradient-primary bg-clip-text text-transparent">
+                            Flick
+                        </span>
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                         Share files instantly between devices with zero backend. Fast, secure, and

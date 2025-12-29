@@ -4,8 +4,8 @@
   "description": "Share files instantly between devices with zero backend. Fast, secure, and private peer-to-peer file transfer.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#7c3aed",
+  "background_color": "#343541",
+  "theme_color": "#38BDF8",
   "orientation": "portrait-primary",
   "icons": [
     {
