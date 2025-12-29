@@ -11,14 +11,14 @@ import { motion } from 'framer-motion';
 import { Send, Download, Zap } from 'lucide-react';
 
 export default function HomePage() {
-    const { roomCode, receivedFiles, outgoingFiles, initializePeer } = usePeerStore();
+    const { roomCode, peer, receivedFiles, outgoingFiles, initializePeer } = usePeerStore();
 
     // Re-initialize peer on refresh if roomCode exists
     useEffect(() => {
-        if (roomCode && typeof window !== 'undefined') {
+        if (roomCode && !peer && typeof window !== 'undefined') {
             initializePeer(roomCode);
         }
-    }, [roomCode, initializePeer]); // Re-initialize if roomCode or initializePeer changes
+    }, [roomCode, peer, initializePeer]);
 
     return (
         <div className="min-h-screen gradient-secondary">
