@@ -224,7 +224,6 @@ export const usePeerStore = create<PeerState>()(
                     console.log('Connecting to:', targetCode);
                     const conn = peer.connect(targetCode, {
                         reliable: true,
-                        serialization: 'json',
                     });
 
                     set({ connection: conn });
