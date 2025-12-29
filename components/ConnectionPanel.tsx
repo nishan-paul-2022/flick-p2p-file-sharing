@@ -24,6 +24,7 @@ export function ConnectionPanel() {
 
     const [joinCode, setJoinCode] = useState('');
     const [copied, setCopied] = useState(false);
+    const [isJoining, setIsJoining] = useState(false);
 
     const handleCreateRoom = () => {
         const code = generateRoomCode();
@@ -33,7 +34,7 @@ export function ConnectionPanel() {
         });
     };
 
-    const handleJoinRoom = () => {
+    const handleJoinRoom = async () => {
         const code = joinCode.toUpperCase().trim();
 
         if (!isValidRoomCode(code)) {
@@ -43,13 +44,16 @@ export function ConnectionPanel() {
             return;
         }
 
-        initializePeer(); // Initialize our own peer first if not already done, or just use a random one
-        // Wait, the logic should be: if we join, we need a peer id too.
-        // In the previous version, roomCode was set in HomePage then usePeerConnection initialized.
-        // Let's ensure initializePeer is called.
-
-        connectToPeer(code);
-        setJoinCode('');
+        setIsJoining(true);
+        try {
+            await initializePeer(); // Initialize our own peer first and wait for ID
+            await connectToPeer(code);
+            setJoinCode('');
+        } catch (error) {
+            // Error handling is already done in store
+        } finally {
+            setIsJoining(false);
+        }
     };
 
     const handleCopyCode = async () => {
@@ -138,8 +142,11 @@ export function ConnectionPanel() {
                                 maxLength={6}
                                 className="uppercase font-mono text-lg tracking-wider"
                             />
-                            <Button onClick={handleJoinRoom} disabled={joinCode.length !== 6}>
-                                Join
+                            <Button
+                                onClick={handleJoinRoom}
+                                disabled={joinCode.length !== 6 || isJoining}
+                            >
+                                {isJoining ? 'Joining...' : 'Join'}
                             </Button>
                         </div>
                     </motion.div>

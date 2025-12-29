@@ -13,7 +13,7 @@ interface FileDropZoneProps {
 export function FileDropZone({
     maxSize = 500 * 1024 * 1024, // 500MB
 }: FileDropZoneProps) {
-    const { isConnected, sendFile } = usePeerStore();
+    const { isConnected, sendFile, roomCode } = usePeerStore();
     const disabled = !isConnected;
 
     const handleFilesSelected = useCallback(
@@ -137,7 +137,9 @@ export function FileDropZone({
                         )}
                     >
                         {disabled
-                            ? 'Connect to a peer first'
+                            ? roomCode
+                                ? 'Waiting for connection...'
+                                : 'Connect to a peer first'
                             : 'Drop files here or click to browse'}
                     </p>
                     <p className="text-sm text-muted-foreground">

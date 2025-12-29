@@ -10,6 +10,7 @@ interface PeerState {
     connection: DataConnection | null;
     peerId: string | null;
     roomCode: string | null;
+    isHost: boolean;
     isConnected: boolean;
     connectionQuality: ConnectionQuality;
     receivedFiles: FileTransfer[];
@@ -18,7 +19,7 @@ interface PeerState {
 
     // Actions
     setRoomCode: (code: string | null) => void;
-    initializePeer: (code?: string) => void;
+    initializePeer: (code?: string) => Promise<string>;
     connectToPeer: (targetCode: string) => Promise<void>;
     disconnect: () => void;
     sendFile: (file: File) => Promise<void>;
@@ -34,6 +35,7 @@ const handleIncomingData = (
     get: () => PeerState,
     set: (state: Partial<PeerState> | ((state: PeerState) => Partial<PeerState>)) => void
 ) => {
+    // ... (keep existing handleIncomingData logic largely same, assuming it's fine)
     const msg = data as P2PMessage;
     const { receivedFiles } = get();
 
@@ -56,7 +58,6 @@ const handleIncomingData = (
         set((state) => ({
             receivedFiles: state.receivedFiles.map((t) => {
                 if (t.id === msg.transferId && t.chunks) {
-                    // Mutate chunks array in-place for performance
                     t.chunks[msg.chunkIndex] = msg.data;
                     const receivedChunks = t.chunks.filter((c) => c !== undefined).length;
                     const progress = (receivedChunks / t.totalChunks) * 100;
@@ -87,6 +88,7 @@ export const usePeerStore = create<PeerState>()(
             connection: null,
             peerId: null,
             roomCode: null,
+            isHost: false, // Default to false
             isConnected: false,
             connectionQuality: 'disconnected',
             receivedFiles: [],
@@ -96,76 +98,117 @@ export const usePeerStore = create<PeerState>()(
             setRoomCode: (code) => set({ roomCode: code }),
 
             initializePeer: (code) => {
-                const { peer: existingPeer } = get();
-                if (existingPeer) {
-                    existingPeer.destroy();
-                }
-
-                const peerOptions = {
-                    config: {
-                        iceServers: [
-                            { urls: 'stun:stun.l.google.com:19302' },
-                            { urls: 'stun:stun1.l.google.com:19302' },
-                        ],
-                    },
-                };
-
-                const peer = code ? new Peer(code, peerOptions) : new Peer(peerOptions);
-
-                peer.on('open', (id) => {
-                    set({ peerId: id, error: null, roomCode: id });
-                    toast.success('Peer initialized', {
-                        description: `Your ID: ${id}`,
-                    });
-                });
-
-                peer.on('connection', (conn) => {
-                    get().disconnect(); // Close existing connection if any
-                    set({ connection: conn });
-
-                    conn.on('open', () => {
-                        set({ isConnected: true, connectionQuality: 'excellent' });
-                        toast.success('Connected to peer', {
-                            description: 'You can now share files',
-                        });
-                    });
-
-                    conn.on('data', (data) => handleIncomingData(data, get, set));
-
-                    conn.on('close', () => {
-                        set({
-                            isConnected: false,
-                            connectionQuality: 'disconnected',
-                            connection: null,
-                        });
-                        toast.info('Peer disconnected');
-                    });
-
-                    conn.on('error', (err) => {
-                        set({ error: err.message, connectionQuality: 'poor' });
-                    });
-                });
-
-                peer.on('error', (err: any) => {
-                    if (err.type === 'unavailable-id') {
-                        set({
-                            error: 'ID taken. Please try again.',
-                            roomCode: null,
-                            peerId: null,
-                            peer: null,
-                        });
-                        toast.error(
-                            'Session expired or ID taken. Please join or create a new room.'
-                        );
-                    } else {
-                        set({ error: err.message });
-                        toast.error('Connection error', {
-                            description: err.message,
-                        });
+                return new Promise((resolve, reject) => {
+                    const { peer: existingPeer } = get();
+                    if (existingPeer) {
+                        existingPeer.destroy();
                     }
-                });
 
-                set({ peer, ...(code && { roomCode: code }) });
+                    const isHost = !!code;
+
+                    const peerOptions = {
+                        config: {
+                            iceServers: [
+                                { urls: 'stun:stun.l.google.com:19302' },
+                                { urls: 'stun:stun1.l.google.com:19302' },
+                                { urls: 'stun:stun2.l.google.com:19302' },
+                                { urls: 'stun:stun3.l.google.com:19302' },
+                                { urls: 'stun:stun4.l.google.com:19302' },
+                            ],
+                        },
+                        debug: 2, // Add some debug logging to console
+                    };
+
+                    // If Host, use code. If Guest, use random (undefined)
+                    const peer = code ? new Peer(code, peerOptions) : new Peer(peerOptions);
+
+                    peer.on('open', (id) => {
+                        console.log('Peer Open:', id);
+                        set({ peerId: id, error: null });
+                        toast.success('Peer initialized', {
+                            description: `Your ID: ${id}`,
+                        });
+                        resolve(id);
+                    });
+
+                    peer.on('connection', (conn) => {
+                        console.log('Incoming Connection:', conn.peer);
+
+                        const { connection: activeConnection } = get();
+                        if (activeConnection) {
+                            activeConnection.close();
+                        }
+
+                        set({ connection: conn });
+
+                        conn.on('open', () => {
+                            console.log('Connection Open (Host Side)');
+                            set({ isConnected: true, connectionQuality: 'excellent' });
+                            toast.success('Connected to peer', {
+                                description: 'You can now share files',
+                            });
+                        });
+
+                        conn.on('data', (data) => handleIncomingData(data, get, set));
+
+                        conn.on('close', () => {
+                            console.log('Connection Closed');
+                            set({
+                                isConnected: false,
+                                connectionQuality: 'disconnected',
+                                connection: null,
+                            });
+                            toast.info('Peer disconnected');
+                        });
+
+                        conn.on('error', (err) => {
+                            console.error('Connection Error:', err);
+                            set({ error: err.message, connectionQuality: 'poor' });
+                        });
+                    });
+
+                    peer.on('error', (err: any) => {
+                        console.error('Peer Error:', err);
+                        if (err.type === 'unavailable-id') {
+                            set({
+                                error: 'ID taken. Please try again.',
+                                roomCode: null,
+                                peerId: null,
+                                peer: null,
+                                isHost: false,
+                            });
+                            toast.error(
+                                'Session expired or ID taken. Please join or create a new room.'
+                            );
+                        } else {
+                            // Don't clear state for minor errors, but show them
+                            set({ error: err.message });
+                            toast.error('Connection error', {
+                                description: err.message,
+                            });
+                        }
+                        reject(err);
+                    });
+
+                    peer.on('disconnected', () => {
+                        console.log('Peer disconnected from signaling server');
+                        toast.warning('Connection lost. Reconnecting...');
+                        peer.reconnect();
+                    });
+
+                    peer.on('close', () => {
+                        console.log('Peer destroyed');
+                        set({
+                            peer: null,
+                            peerId: null,
+                            isHost: false,
+                            roomCode: null,
+                            isConnected: false,
+                        });
+                    });
+
+                    set({ peer, isHost, ...(code && { roomCode: code }) });
+                });
             },
 
             connectToPeer: async (targetCode) => {
@@ -175,19 +218,46 @@ export const usePeerStore = create<PeerState>()(
                     return;
                 }
 
+                set({ roomCode: targetCode });
+
                 try {
+                    console.log('Connecting to:', targetCode);
                     const conn = peer.connect(targetCode, {
                         reliable: true,
+                        serialization: 'json',
                     });
 
                     set({ connection: conn });
 
-                    conn.on('open', () => {
-                        set({ isConnected: true, connectionQuality: 'excellent' });
-                        toast.success('Connected to peer', {
-                            description: 'You can now share files',
+                    // Connection Timeout Promise
+                    const timeoutPromise = new Promise((_, reject) => {
+                        setTimeout(() => reject(new Error('Connection timed out')), 20000);
+                    });
+
+                    // Connection Open Promise
+                    const openPromise = new Promise<void>((resolve, reject) => {
+                        conn.on('open', () => {
+                            resolve();
+                        });
+                        conn.on('error', (err) => {
+                            reject(err);
                         });
                     });
+
+                    // Race condition: Open or Timeout
+                    Promise.race([openPromise, timeoutPromise])
+                        .then(() => {
+                            console.log('Connection Open (Guest Side)');
+                            set({ isConnected: true, connectionQuality: 'excellent' });
+                            toast.success('Connected to peer', {
+                                description: 'You can now share files',
+                            });
+                        })
+                        .catch((err) => {
+                            set({ error: err.message, isConnected: false });
+                            toast.error('Connection Failed', { description: err.message });
+                            conn.close();
+                        });
 
                     conn.on('data', (data) => handleIncomingData(data, get, set));
 
@@ -198,10 +268,6 @@ export const usePeerStore = create<PeerState>()(
                             connection: null,
                         });
                         toast.info('Peer disconnected');
-                    });
-
-                    conn.on('error', (err) => {
-                        set({ error: err.message, connectionQuality: 'poor' });
                     });
                 } catch (err) {
                     const errorMessage = err instanceof Error ? err.message : 'Failed to connect';
@@ -227,10 +293,12 @@ export const usePeerStore = create<PeerState>()(
                     peer: null,
                     peerId: null,
                     roomCode: null,
+                    isHost: false, // Reset host state
                 });
             },
 
             sendFile: async (file) => {
+                // ... (keep existing sendFile logic)
                 const { connection, isConnected } = get();
                 if (!connection || !isConnected) {
                     toast.error('Not connected to peer');
@@ -331,6 +399,7 @@ export const usePeerStore = create<PeerState>()(
             partialize: (state) => ({
                 roomCode: state.roomCode,
                 peerId: state.peerId,
+                isHost: state.isHost,
                 receivedFiles: state.receivedFiles,
                 outgoingFiles: state.outgoingFiles,
             }),

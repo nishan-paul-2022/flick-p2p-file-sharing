@@ -11,14 +11,34 @@ import { motion } from 'framer-motion';
 import { Send, Download, Zap } from 'lucide-react';
 
 export default function HomePage() {
-    const { roomCode, peer, receivedFiles, outgoingFiles, initializePeer } = usePeerStore();
+    const store = usePeerStore();
+    const { roomCode, peer, receivedFiles, outgoingFiles, initializePeer, isHost, connectToPeer } =
+        store;
+
+    // Expose store for testing
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            (window as any).store = store;
+        }
+    }, [store]);
 
     // Re-initialize peer on refresh if roomCode exists
     useEffect(() => {
         if (roomCode && !peer && typeof window !== 'undefined') {
-            initializePeer(roomCode);
+            const handleRestore = async () => {
+                if (isHost) {
+                    await initializePeer(roomCode);
+                } else {
+                    // Guest: Initialize new peer then reconnect to host
+                    await initializePeer();
+                    // Small delay to ensure stability before connecting
+                    setTimeout(() => connectToPeer(roomCode), 500);
+                }
+            };
+
+            handleRestore();
         }
-    }, [roomCode, peer, initializePeer]);
+    }, [roomCode, peer, initializePeer, isHost, connectToPeer]);
 
     return (
         <div className="min-h-screen gradient-secondary">
