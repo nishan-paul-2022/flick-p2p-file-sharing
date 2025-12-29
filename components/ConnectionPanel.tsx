@@ -43,7 +43,7 @@ export function ConnectionPanel() {
             return;
         }
 
-        initializePeer(generateRoomCode()); // Initialize our own peer first if not already done, or just use a random one
+        initializePeer(); // Initialize our own peer first if not already done, or just use a random one
         // Wait, the logic should be: if we join, we need a peer id too.
         // In the previous version, roomCode was set in HomePage then usePeerConnection initialized.
         // Let's ensure initializePeer is called.

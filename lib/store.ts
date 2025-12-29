@@ -18,7 +18,7 @@ interface PeerState {
 
     // Actions
     setRoomCode: (code: string | null) => void;
-    initializePeer: (code: string) => void;
+    initializePeer: (code?: string) => void;
     connectToPeer: (targetCode: string) => Promise<void>;
     disconnect: () => void;
     sendFile: (file: File) => Promise<void>;
@@ -101,17 +101,19 @@ export const usePeerStore = create<PeerState>()(
                     existingPeer.destroy();
                 }
 
-                const peer = new Peer(code, {
+                const peerOptions = {
                     config: {
                         iceServers: [
                             { urls: 'stun:stun.l.google.com:19302' },
                             { urls: 'stun:stun1.l.google.com:19302' },
                         ],
                     },
-                });
+                };
+
+                const peer = code ? new Peer(code, peerOptions) : new Peer(peerOptions);
 
                 peer.on('open', (id) => {
-                    set({ peerId: id, error: null });
+                    set({ peerId: id, error: null, roomCode: id });
                     toast.success('Peer initialized', {
                         description: `Your ID: ${id}`,
                     });
@@ -144,14 +146,26 @@ export const usePeerStore = create<PeerState>()(
                     });
                 });
 
-                peer.on('error', (err) => {
-                    set({ error: err.message });
-                    toast.error('Connection error', {
-                        description: err.message,
-                    });
+                peer.on('error', (err: any) => {
+                    if (err.type === 'unavailable-id') {
+                        set({
+                            error: 'ID taken. Please try again.',
+                            roomCode: null,
+                            peerId: null,
+                            peer: null,
+                        });
+                        toast.error(
+                            'Session expired or ID taken. Please join or create a new room.'
+                        );
+                    } else {
+                        set({ error: err.message });
+                        toast.error('Connection error', {
+                            description: err.message,
+                        });
+                    }
                 });
 
-                set({ peer, roomCode: code });
+                set({ peer, ...(code && { roomCode: code }) });
             },
 
             connectToPeer: async (targetCode) => {
