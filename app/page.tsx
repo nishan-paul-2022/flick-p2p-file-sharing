@@ -162,7 +162,7 @@ export default function HomePage() {
                                             <Send className="w-5 h-5 text-primary" />
                                             Send Files
                                         </CardTitle>
-                                        <div className="hidden sm:block px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-xs font-medium text-zinc-400/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] backdrop-blur-md transition-colors hover:bg-white/[0.05] hover:text-zinc-300">
+                                        <div className="hidden sm:block px-4 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-xs font-medium text-zinc-300 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] backdrop-blur-md">
                                             Drag and drop files or click to browse
                                         </div>
                                     </CardHeader>
