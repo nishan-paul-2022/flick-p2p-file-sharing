@@ -2,8 +2,6 @@
 
 import { usePeerStore } from '@/lib/store';
 import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Download, File, CheckCircle2, XCircle, Clock, Trash2 } from 'lucide-react';
 import { formatBytes, formatTimestamp } from '@/lib/utils';
@@ -30,22 +28,9 @@ export function FileList({ type }: FileListProps) {
             case 'failed':
                 return <XCircle className="w-5 h-5 text-red-500" />;
             case 'transferring':
-                return <Clock className="w-5 h-5 text-blue-500 animate-pulse" />;
+                return <Clock className="w-5 h-5 text-blue-500" />;
             default:
                 return <Clock className="w-5 h-5 text-muted-foreground" />;
-        }
-    };
-
-    const getStatusBadge = (status: FileTransfer['status']) => {
-        switch (status) {
-            case 'completed':
-                return <Badge variant="success">Completed</Badge>;
-            case 'failed':
-                return <Badge variant="destructive">Failed</Badge>;
-            case 'transferring':
-                return <Badge variant="default">Transferring</Badge>;
-            default:
-                return <Badge variant="outline">Pending</Badge>;
         }
     };
 
@@ -73,7 +58,7 @@ export function FileList({ type }: FileListProps) {
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.2 }}
                     >
-                        <Card className="glass-dark hover:bg-white/5 transition-all duration-200">
+                        <Card className="glass-dark hover:bg-white/5 transition-all duration-200 relative overflow-hidden">
                             <CardContent className="p-4">
                                 <div className="flex items-start gap-4">
                                     <div className="p-3 rounded-lg bg-primary/10">
@@ -96,16 +81,35 @@ export function FileList({ type }: FileListProps) {
                                                             transfer.metadata.timestamp
                                                         )}
                                                     </span>
+                                                    {transfer.status === 'transferring' && (
+                                                        <>
+                                                            <span>•</span>
+                                                            <span className="text-sky-400 font-semibold tabular-nums">
+                                                                {Math.round(transfer.progress)}%
+                                                            </span>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </div>
 
                                             <div className="flex items-center gap-2">
+                                                {transfer.status === 'completed' &&
+                                                    type === 'received' && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8 text-primary hover:text-primary/80 hover:bg-primary/10"
+                                                            onClick={() => handleDownload(transfer)}
+                                                            title="Download"
+                                                        >
+                                                            <Download className="w-4 h-4" />
+                                                        </Button>
+                                                    )}
                                                 {getStatusIcon(transfer.status)}
-                                                {getStatusBadge(transfer.status)}
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                                                    className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                                                     onClick={() =>
                                                         removeFile(
                                                             transfer.id,
@@ -114,37 +118,23 @@ export function FileList({ type }: FileListProps) {
                                                                 : 'outgoing'
                                                         )
                                                     }
+                                                    title="Remove"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </Button>
                                             </div>
                                         </div>
-
-                                        {transfer.status === 'transferring' && (
-                                            <div className="space-y-2">
-                                                <Progress
-                                                    value={transfer.progress}
-                                                    className="animate-pulse"
-                                                />
-                                                <p className="text-xs text-muted-foreground text-right">
-                                                    {Math.round(transfer.progress)}%
-                                                </p>
-                                            </div>
-                                        )}
-
-                                        {transfer.status === 'completed' && type === 'received' && (
-                                            <Button
-                                                onClick={() => handleDownload(transfer)}
-                                                size="sm"
-                                                className="mt-2"
-                                            >
-                                                <Download className="w-4 h-4 mr-2" />
-                                                Download
-                                            </Button>
-                                        )}
                                     </div>
                                 </div>
                             </CardContent>
+                            {transfer.status === 'transferring' && (
+                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/5">
+                                    <div
+                                        className="h-full bg-sky-500 transition-all duration-300 ease-out"
+                                        style={{ width: `${transfer.progress}%` }}
+                                    />
+                                </div>
+                            )}
                         </Card>
                     </motion.div>
                 ))}
