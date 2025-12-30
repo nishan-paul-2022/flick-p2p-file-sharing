@@ -176,17 +176,27 @@ export default function HomePage() {
                                     <TabsList className="grid w-full grid-cols-2 glass-dark p-1 rounded-xl border-white/10">
                                         <TabsTrigger
                                             value="received"
-                                            className="gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold"
+                                            className="group gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold"
                                         >
-                                            <Download className="w-4 h-4" />
-                                            Received ({receivedFiles.length})
+                                            <div className="flex items-center gap-2">
+                                                <Download className="w-4 h-4 group-data-[state=active]:text-primary transition-colors" />
+                                                <span>Received</span>
+                                                <span className="ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-white/5 border border-white/5 px-1.5 text-[11px] font-bold text-muted-foreground group-data-[state=active]:bg-primary/15 group-data-[state=active]:text-primary group-data-[state=active]:border-primary/20 transition-all">
+                                                    {receivedFiles.length}
+                                                </span>
+                                            </div>
                                         </TabsTrigger>
                                         <TabsTrigger
                                             value="sent"
-                                            className="gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold"
+                                            className="group gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold"
                                         >
-                                            <Send className="w-4 h-4" />
-                                            Sent ({outgoingFiles.length})
+                                            <div className="flex items-center gap-2">
+                                                <Send className="w-4 h-4 group-data-[state=active]:text-primary transition-colors" />
+                                                <span>Sent</span>
+                                                <span className="ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-white/5 border border-white/5 px-1.5 text-[11px] font-bold text-muted-foreground group-data-[state=active]:bg-primary/15 group-data-[state=active]:text-primary group-data-[state=active]:border-primary/20 transition-all">
+                                                    {outgoingFiles.length}
+                                                </span>
+                                            </div>
                                         </TabsTrigger>
                                     </TabsList>
 
