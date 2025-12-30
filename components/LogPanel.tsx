@@ -53,7 +53,7 @@ export const LogPanel: React.FC = () => {
                 className={cn(
                     'w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 border shadow-md backdrop-blur-xl relative',
                     isOpen
-                        ? 'bg-white/10 border-white/20 text-white shadow-white/5'
+                        ? 'bg-white/10 border-white/20 text-white'
                         : 'bg-white/[0.02] border-white/5 text-white/30 hover:text-white/50 hover:bg-white/[0.05]'
                 )}
                 title="Activity Timeline"

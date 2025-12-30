@@ -84,15 +84,6 @@ export default function HomePage() {
                     transition={{ duration: 0.3 }}
                     className="min-h-screen gradient-secondary"
                 >
-                    {/* Animated background elements - toned down for ChatGPT look */}
-                    <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                        <div className="absolute top-1/4 -left-48 w-96 h-96 bg-white/[0.02] rounded-full blur-3xl animate-pulse" />
-                        <div
-                            className="absolute bottom-1/4 -right-48 w-96 h-96 bg-white/[0.02] rounded-full blur-3xl animate-pulse"
-                            style={{ animationDelay: '2s' }}
-                        />
-                    </div>
-
                     <div className="relative container mx-auto px-4 py-8 max-w-7xl">
                         {/* Top Right Actions / Info */}
                         <div className="absolute top-4 right-4 md:top-8 md:right-4 z-40">

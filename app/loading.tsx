@@ -6,11 +6,6 @@ import Image from 'next/image';
 export default function Loading() {
     return (
         <div className="min-h-screen w-full flex flex-col items-center justify-center gradient-secondary overflow-hidden relative">
-            {/* Background Ambient Glow */}
-            <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
-                <div className="w-[500px] h-[500px] bg-white/[0.03] rounded-full blur-[100px] animate-pulse-slow" />
-            </div>
-
             <div className="relative z-10 flex flex-col items-center">
                 {/* Logo Animation */}
                 <motion.div
@@ -37,7 +32,7 @@ export default function Loading() {
                             src="/icon.svg"
                             alt="Flick Logo"
                             fill
-                            className="object-contain drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]"
+                            className="object-contain"
                             priority
                         />
                     </div>
