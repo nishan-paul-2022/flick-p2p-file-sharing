@@ -88,11 +88,7 @@ const handleIncomingData = async (
         };
 
         set({ receivedFiles: [...receivedFiles, transfer] });
-        addLog(
-            'info',
-            'Receiving file',
-            `${msg.metadata.name} (${storageMode === 'power' ? 'Power Mode' : 'Compatibility Mode'})`
-        );
+        addLog('info', 'Receiving file', msg.metadata.name);
     } else if (msg.type === 'chunk') {
         const transfer = receivedFiles.find((t) => t.id === msg.transferId);
 
@@ -208,11 +204,7 @@ export const usePeerStore = create<PeerState>()(
                 set({ storageCapabilities: capabilities });
 
                 const { addLog } = get();
-                addLog(
-                    'success',
-                    `Storage initialized: ${capabilities.mode === 'power' ? 'Power Mode' : 'Compatibility Mode'}`,
-                    'Ready for unlimited file sharing'
-                );
+                addLog('success', 'Storage initialized', 'Ready for unlimited file sharing');
             },
 
             initializePeer: (code) => {

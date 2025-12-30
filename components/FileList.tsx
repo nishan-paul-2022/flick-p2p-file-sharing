@@ -96,23 +96,6 @@ export function FileList({ type }: FileListProps) {
                                                             transfer.metadata.timestamp
                                                         )}
                                                     </span>
-                                                    {transfer.storageMode && (
-                                                        <>
-                                                            <span>•</span>
-                                                            <Badge
-                                                                variant={
-                                                                    transfer.storageMode === 'power'
-                                                                        ? 'default'
-                                                                        : 'secondary'
-                                                                }
-                                                                className="text-xs"
-                                                            >
-                                                                {transfer.storageMode === 'power'
-                                                                    ? '⚡ Power'
-                                                                    : '💾 RAM'}
-                                                            </Badge>
-                                                        </>
-                                                    )}
                                                 </div>
                                             </div>
 
