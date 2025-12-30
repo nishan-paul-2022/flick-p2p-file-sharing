@@ -8,7 +8,7 @@ export default function Loading() {
         <div className="min-h-screen w-full flex flex-col items-center justify-center gradient-secondary overflow-hidden relative">
             {/* Background Ambient Glow */}
             <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
-                <div className="w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] animate-pulse-slow" />
+                <div className="w-[500px] h-[500px] bg-white/[0.03] rounded-full blur-[100px] animate-pulse-slow" />
             </div>
 
             <div className="relative z-10 flex flex-col items-center">

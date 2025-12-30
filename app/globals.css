@@ -4,25 +4,25 @@
 
 @layer base {
     :root {
-        --background: 222 47% 4%;
+        --background: 0 0% 13%;
         --foreground: 210 40% 98%;
-        --card: 222 47% 6%;
+        --card: 0 0% 16%;
         --card-foreground: 210 40% 98%;
-        --popover: 222 47% 4%;
+        --popover: 0 0% 13%;
         --popover-foreground: 210 40% 98%;
         --primary: 199 89% 48%;
         --primary-foreground: 222 47% 4%;
-        --secondary: 217.2 32.6% 12%;
+        --secondary: 0 0% 16%;
         --secondary-foreground: 210 40% 98%;
-        --muted: 217.2 32.6% 12%;
-        --muted-foreground: 215 20.2% 65.1%;
-        --accent: 217.2 32.6% 12%;
+        --muted: 0 0% 20%;
+        --muted-foreground: 0 0% 63.9%;
+        --accent: 0 0% 20%;
         --accent-foreground: 210 40% 98%;
         --destructive: 0 62.8% 30.6%;
         --destructive-foreground: 210 40% 98%;
-        --border: 217.2 32.6% 17%;
-        --input: 217.2 32.6% 17%;
-        --ring: 199 89% 48%;
+        --border: 0 0% 24%;
+        --input: 0 0% 24%;
+        --ring: 0 0% 63.9%;
         --radius: 0.75rem;
     }
 
@@ -97,7 +97,7 @@
     }
 
     .gradient-secondary {
-        @apply bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950;
+        @apply bg-background;
     }
 
     .animate-pulse-slow {
