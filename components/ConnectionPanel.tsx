@@ -188,7 +188,7 @@ export function ConnectionPanel() {
                         <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
                             <p className="text-sm text-muted-foreground mb-2">Your Room Code</p>
                             <div className="flex items-center justify-between gap-2">
-                                <code className="text-3xl font-bold tracking-wider font-mono gradient-primary bg-clip-text text-transparent">
+                                <code className="text-3xl font-bold tracking-wider font-mono text-primary">
                                     {roomCode}
                                 </code>
                                 <Button

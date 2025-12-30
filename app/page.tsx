@@ -108,15 +108,13 @@ export default function HomePage() {
                                     <Image
                                         src="/icon.svg"
                                         alt="Flick Icon"
-                                        width={40}
-                                        height={40}
+                                        width={48}
+                                        height={48}
                                         className="w-9 h-9 md:w-11 md:h-11 relative z-10"
                                         priority
                                     />
                                 </motion.div>
-                                <span className="gradient-primary bg-clip-text text-transparent">
-                                    Flick
-                                </span>
+                                <span className="text-primary">Flick</span>
                             </h1>
 
                             <motion.div
