@@ -24,15 +24,13 @@ export const metadata: Metadata = {
         locale: 'en_US',
         url: 'https://flick-p2p.vercel.app',
         title: 'Flick - P2P File Sharing',
-        description:
-            'Share files instantly between devices with zero backend. Fast, secure, and private.',
+        description: 'Share Files Between Devices in Seconds',
         siteName: 'Flick',
     },
     twitter: {
         card: 'summary_large_image',
         title: 'Flick - P2P File Sharing',
-        description:
-            'Share files instantly between devices with zero backend. Fast, secure, and private.',
+        description: 'Share Files Between Devices in Seconds',
     },
     robots: {
         index: true,

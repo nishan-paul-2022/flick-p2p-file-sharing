@@ -96,32 +96,40 @@ export default function HomePage() {
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="text-center mb-12"
+                            className="text-center mb-10 flex flex-col items-center"
                         >
-                            <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-                                <Zap className="w-4 h-4 text-primary" />
-                                <span className="text-sm font-medium text-primary truncate">
-                                    Peer-to-Peer File Sharing
-                                </span>
-                            </div>
-
-                            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 flex items-center justify-center gap-4">
-                                <Image
-                                    src="/icon.svg"
-                                    alt="Flick Icon"
-                                    width={64}
-                                    height={64}
-                                    className="w-12 h-12 md:w-16 md:h-16"
-                                    priority
-                                />
+                            <h1 className="text-4xl sm:text-5xl font-extrabold mb-3 tracking-tight flex items-center justify-center gap-3">
+                                <motion.div
+                                    className="relative flex items-center justify-center"
+                                    whileHover={{ scale: 1.05 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                                >
+                                    <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
+                                    <Image
+                                        src="/icon.svg"
+                                        alt="Flick Icon"
+                                        width={40}
+                                        height={40}
+                                        className="w-9 h-9 md:w-11 md:h-11 relative z-10"
+                                        priority
+                                    />
+                                </motion.div>
                                 <span className="gradient-primary bg-clip-text text-transparent">
                                     Flick
                                 </span>
                             </h1>
-                            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                                Share files instantly between devices with zero backend. Fast,
-                                secure, and private.
-                            </p>
+
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.2 }}
+                                className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 backdrop-blur-sm shadow-sm"
+                            >
+                                <Zap className="w-3.5 h-3.5 text-primary" />
+                                <span className="text-xs md:text-sm font-semibold tracking-tight text-foreground/80">
+                                    Share Files Between Devices in Seconds
+                                </span>
+                            </motion.div>
                         </motion.div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
