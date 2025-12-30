@@ -7,7 +7,7 @@ import { usePeerStore } from '@/lib/store';
 import { ConnectionPanel } from '@/components/ConnectionPanel';
 import { FileDropZone } from '@/components/FileDropZone';
 import { FileList } from '@/components/FileList';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Download, Zap } from 'lucide-react';
@@ -157,14 +157,14 @@ export default function HomePage() {
                             >
                                 {/* Upload Zone */}
                                 <Card className="glass-dark border-primary/20">
-                                    <CardHeader>
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
                                         <CardTitle className="flex items-center gap-2">
-                                            <Send className="w-5 h-5" />
+                                            <Send className="w-5 h-5 text-primary" />
                                             Send Files
                                         </CardTitle>
-                                        <CardDescription>
+                                        <div className="hidden sm:block px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-xs font-medium text-zinc-400/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] backdrop-blur-md transition-colors hover:bg-white/[0.05] hover:text-zinc-300">
                                             Drag and drop files or click to browse
-                                        </CardDescription>
+                                        </div>
                                     </CardHeader>
                                     <CardContent>
                                         <FileDropZone />
