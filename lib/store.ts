@@ -34,10 +34,12 @@ interface PeerState {
     downloadFile: (transfer: FileTransfer) => Promise<void>;
 }
 
-const CHUNK_SIZE = 16 * 1024; // 16KB chunks
+const CHUNK_SIZE = 64 * 1024; // 64KB chunks (more efficient for WebRTC)
+const MAX_BUFFERED_AMOUNT = 1 * 1024 * 1024; // 1MB buffer limit for backpressure
 
-// Cache for OPFS file handles (can't be serialized)
+// Cache for OPFS file handles and writables (can't be serialized)
 const opfsHandleCache = new Map<string, FileSystemFileHandle>();
+const opfsWritableCache = new Map<string, FileSystemWritableFileStream>();
 
 // Helper to handle incoming data with dual-mode support
 const handleIncomingData = async (
@@ -59,6 +61,10 @@ const handleIncomingData = async (
                 opfsHandle = await OPFSManager.createTransferFile(msg.transferId);
                 opfsPath = `${msg.transferId}.bin`;
                 opfsHandleCache.set(msg.transferId, opfsHandle);
+
+                // Keep the writable stream open for the duration of the transfer
+                const writable = await OPFSManager.getWritableStream(opfsHandle);
+                opfsWritableCache.set(msg.transferId, writable);
             } catch (error) {
                 console.error('Failed to create OPFS file, falling back to RAM:', error);
                 // Fallback to compatibility mode for this transfer
@@ -89,10 +95,10 @@ const handleIncomingData = async (
         if (transfer.storageMode === 'power' && transfer.opfsPath) {
             // Power mode: Write chunk to OPFS
             try {
-                const handle = opfsHandleCache.get(msg.transferId);
-                if (handle) {
+                const writable = opfsWritableCache.get(msg.transferId);
+                if (writable) {
                     const offset = msg.chunkIndex * CHUNK_SIZE;
-                    await OPFSManager.writeChunk(handle, msg.data, offset);
+                    await OPFSManager.writeChunkWithWritable(writable, msg.data, offset);
 
                     const progress = ((msg.chunkIndex + 1) / transfer.totalChunks) * 100;
 
@@ -121,6 +127,13 @@ const handleIncomingData = async (
             }));
         }
     } else if (msg.type === 'complete') {
+        // Close the writable stream for this transfer
+        const writable = opfsWritableCache.get(msg.transferId);
+        if (writable) {
+            await writable.close();
+            opfsWritableCache.delete(msg.transferId);
+        }
+
         set((state) => ({
             receivedFiles: state.receivedFiles.map((t) => {
                 if (t.id === msg.transferId) {
@@ -231,8 +244,22 @@ export const usePeerStore = create<PeerState>()(
 
                         conn.on('data', (data) => handleIncomingData(data, get, set));
 
-                        conn.on('close', () => {
+                        conn.on('close', async () => {
                             console.log('Connection Closed');
+
+                            // Clean up any active OPFS writables
+                            for (const [id, writable] of opfsWritableCache.entries()) {
+                                try {
+                                    await writable.close();
+                                } catch (e) {
+                                    console.warn(
+                                        'Failed to close writable on connection close:',
+                                        e
+                                    );
+                                }
+                                opfsWritableCache.delete(id);
+                            }
+
                             set({
                                 isConnected: false,
                                 connectionQuality: 'disconnected',
@@ -351,7 +378,17 @@ export const usePeerStore = create<PeerState>()(
 
                     conn.on('data', (data) => handleIncomingData(data, get, set));
 
-                    conn.on('close', () => {
+                    conn.on('close', async () => {
+                        // Clean up any active OPFS writables
+                        for (const [id, writable] of opfsWritableCache.entries()) {
+                            try {
+                                await writable.close();
+                            } catch (e) {
+                                console.warn('Failed to close writable on connection close:', e);
+                            }
+                            opfsWritableCache.delete(id);
+                        }
+
                         set({
                             isConnected: false,
                             connectionQuality: 'disconnected',
@@ -368,8 +405,19 @@ export const usePeerStore = create<PeerState>()(
                 }
             },
 
-            disconnect: () => {
+            disconnect: async () => {
                 const { connection, peer } = get();
+
+                // Clean up any active OPFS writables
+                for (const [id, writable] of opfsWritableCache.entries()) {
+                    try {
+                        await writable.close();
+                    } catch (e) {
+                        console.warn('Failed to close writable on disconnect:', e);
+                    }
+                    opfsWritableCache.delete(id);
+                }
+
                 if (connection) {
                     connection.close();
                 }
@@ -394,7 +442,7 @@ export const usePeerStore = create<PeerState>()(
                     return;
                 }
 
-                const maxFileSize = storageCapabilities?.maxFileSize || 500 * 1024 * 1024;
+                const maxFileSize = storageCapabilities?.maxFileSize || 100 * 1024 * 1024 * 1024;
 
                 if (file.size > maxFileSize) {
                     const limitMB = Math.round(maxFileSize / (1024 * 1024));
@@ -432,23 +480,37 @@ export const usePeerStore = create<PeerState>()(
                     totalChunks,
                 });
 
-                // Send file in chunks
-                const reader = new FileReader();
+                // Send file in chunks with backpressure
                 let offset = 0;
                 let chunkIndex = 0;
 
-                const sendNextChunk = () => {
-                    const chunk = file.slice(offset, offset + CHUNK_SIZE);
-                    reader.readAsArrayBuffer(chunk);
-                };
+                const sendNextChunk = async () => {
+                    if (offset >= file.size) {
+                        connection.send({
+                            type: 'complete',
+                            transferId,
+                        });
+                        toast.success('File sent successfully', {
+                            description: file.name,
+                        });
+                        return;
+                    }
 
-                reader.onload = (e) => {
-                    if (e.target?.result && connection) {
+                    // Backpressure: if buffer is too full, wait before sending next chunk
+                    const dc = (connection as any).dataChannel as RTCDataChannel;
+                    if (dc && dc.bufferedAmount > MAX_BUFFERED_AMOUNT) {
+                        setTimeout(sendNextChunk, 50);
+                        return;
+                    }
+
+                    const chunk = file.slice(offset, offset + CHUNK_SIZE);
+                    try {
+                        const arrayBuffer = await chunk.arrayBuffer();
                         connection.send({
                             type: 'chunk',
                             transferId,
                             chunkIndex,
-                            data: e.target.result,
+                            data: arrayBuffer,
                         });
 
                         chunkIndex++;
@@ -468,17 +530,16 @@ export const usePeerStore = create<PeerState>()(
                             ),
                         }));
 
-                        if (offset < file.size) {
-                            sendNextChunk();
+                        // Continue to next chunk
+                        // Use microtask or timeout to prevent stack overflow and let UI breathe
+                        if (chunkIndex % 10 === 0) {
+                            setTimeout(sendNextChunk, 0);
                         } else {
-                            connection.send({
-                                type: 'complete',
-                                transferId,
-                            });
-                            toast.success('File sent successfully', {
-                                description: file.name,
-                            });
+                            sendNextChunk();
                         }
+                    } catch (error) {
+                        console.error('Error reading/sending chunk:', error);
+                        toast.error('Transfer failed', { description: 'Error reading file' });
                     }
                 };
 

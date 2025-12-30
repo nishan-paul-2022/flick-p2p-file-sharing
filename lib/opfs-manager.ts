@@ -34,18 +34,37 @@ export class OPFSManager {
     }
 
     /**
-     * Write a chunk to a file at a specific offset
+     * Get a writable stream for a file
+     */
+    static async getWritableStream(
+        fileHandle: FileSystemFileHandle
+    ): Promise<FileSystemWritableFileStream> {
+        return await fileHandle.createWritable({ keepExistingData: true });
+    }
+
+    /**
+     * Write a chunk to a file at a specific offset using an existing writable
+     */
+    static async writeChunkWithWritable(
+        writable: FileSystemWritableFileStream,
+        chunkData: ArrayBuffer,
+        offset: number
+    ): Promise<void> {
+        await writable.seek(offset);
+        await writable.write(chunkData);
+    }
+
+    /**
+     * Write a chunk to a file at a specific offset (one-off)
      */
     static async writeChunk(
         fileHandle: FileSystemFileHandle,
         chunkData: ArrayBuffer,
         offset: number
     ): Promise<void> {
-        const writable = await fileHandle.createWritable({ keepExistingData: true });
-
+        const writable = await this.getWritableStream(fileHandle);
         try {
-            await writable.seek(offset);
-            await writable.write(chunkData);
+            await this.writeChunkWithWritable(writable, chunkData, offset);
         } finally {
             await writable.close();
         }

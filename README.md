@@ -8,7 +8,7 @@ A modern, industry-standard Progressive Web App for peer-to-peer file sharing be
 - 🔄 **Bidirectional transfers** - both devices can send and receive simultaneously
 - 📱 **Fully responsive** - works on PC, mobile, and tablet
 - 🎨 **Modern UI** with dark mode, glassmorphism, and smooth animations
-- 📦 **Large file support** - up to 500MB with chunked transfer (16KB chunks)
+- 📦 **Large file support** - up to 100GB+ (Power Mode) / 2GB (Compatibility Mode) with optimized 64KB chunks
 - 📊 **Real-time progress tracking** for all file transfers
 - 🔒 **Zero backend** - completely client-side with no data persistence
 - 🚀 **PWA ready** - installable on all devices with offline support
@@ -86,8 +86,9 @@ This will force the app to stay on the loading screen for testing and refinement
 ## 🎨 Features in Detail
 
 ### File Transfer
-- Chunked transfer (16KB) for efficient P2P communication
-- Support for files up to 500MB
+- Optimized chunked transfer (64KB) with backpressure for high-speed P2P communication
+- Support for files up to 100GB+ using OPFS (Origin Private File System)
+- Hybrid storage strategy (Power Mode vs Compatibility Mode)
 - Real-time progress tracking
 - Queue system for multiple simultaneous transfers
 - Automatic retry logic for failed chunks
@@ -160,7 +161,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 🐛 Known Issues
 
-- Large files (>500MB) are not supported due to browser memory limitations
+- Mobile browsers may experience storage quota limits for extremely large files
 - Connection may fail behind strict corporate firewalls
 - Some older browsers may not support WebRTC
 

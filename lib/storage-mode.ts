@@ -58,7 +58,7 @@ export async function detectStorageCapabilities(): Promise<StorageCapabilities> 
     if (supportsOPFS) {
         return {
             mode: 'power',
-            maxFileSize: 10 * 1024 * 1024 * 1024, // 10GB
+            maxFileSize: 100 * 1024 * 1024 * 1024, // 100GB (Practically unlimited)
             supportsOPFS: true,
             browserInfo,
         };
@@ -66,7 +66,7 @@ export async function detectStorageCapabilities(): Promise<StorageCapabilities> 
 
     return {
         mode: 'compatibility',
-        maxFileSize: 500 * 1024 * 1024, // 500MB
+        maxFileSize: 2 * 1024 * 1024 * 1024, // 2GB
         supportsOPFS: false,
         browserInfo,
     };
@@ -97,7 +97,7 @@ export function getStorageModeLabel(mode: StorageMode): string {
  */
 export function getStorageModeDescription(mode: StorageMode): string {
     if (mode === 'power') {
-        return 'Files streamed to disk. Zero memory pressure, supports 10GB+ transfers.';
+        return 'Files streamed to disk. Zero memory pressure, supports very large transfers (100GB+).';
     }
-    return 'Files stored in memory. Stable across all browsers, 500MB limit.';
+    return 'Files stored in memory. Recommended for files under 2GB.';
 }

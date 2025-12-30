@@ -59,10 +59,10 @@ PWA CONFIGURATION:
 - iOS meta tags for Add to Home Screen
 
 FILE TRANSFER IMPLEMENTATION:
-- Chunk files into 16KB pieces for efficient P2P transfer
+- Chunk files into 64KB pieces for efficient P2P transfer
 - ArrayBuffer for binary data handling
 - Show real-time progress bars using React state
-- Support files up to 500MB
+- Support files up to 100GB+ (using OPFS)
 - Validate file types and sizes client-side
 - Queue system for multiple simultaneous transfers
 - Retry logic for failed chunks

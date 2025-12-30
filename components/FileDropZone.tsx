@@ -6,14 +6,10 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { usePeerStore } from '@/lib/store';
 
-interface FileDropZoneProps {
-    maxSize?: number;
-}
+export function FileDropZone() {
+    const { isConnected, sendFile, roomCode, storageCapabilities } = usePeerStore();
 
-export function FileDropZone({
-    maxSize = 500 * 1024 * 1024, // 500MB
-}: FileDropZoneProps) {
-    const { isConnected, sendFile, roomCode } = usePeerStore();
+    const maxFileSize = storageCapabilities?.maxFileSize || 100 * 1024 * 1024 * 1024;
     const disabled = !isConnected;
 
     const handleFilesSelected = useCallback(
@@ -44,9 +40,9 @@ export function FileDropZone({
 
             // Validate file sizes
             const validFiles = files.filter((file) => {
-                if (file.size > maxSize) {
+                if (file.size > maxFileSize) {
                     toast.error('File too large', {
-                        description: `${file.name} exceeds ${maxSize / (1024 * 1024)}MB limit`,
+                        description: `${file.name} exceeds storage limit`,
                     });
                     return false;
                 }
@@ -57,7 +53,7 @@ export function FileDropZone({
                 handleFilesSelected(validFiles);
             }
         },
-        [handleFilesSelected, disabled, maxSize]
+        [handleFilesSelected, disabled, maxFileSize]
     );
 
     const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -72,9 +68,9 @@ export function FileDropZone({
             const files = Array.from(e.target.files || []);
 
             const validFiles = files.filter((file) => {
-                if (file.size > maxSize) {
+                if (file.size > maxFileSize) {
                     toast.error('File too large', {
-                        description: `${file.name} exceeds ${maxSize / (1024 * 1024)}MB limit`,
+                        description: `${file.name} exceeds storage limit`,
                     });
                     return false;
                 }
@@ -88,7 +84,7 @@ export function FileDropZone({
             // Reset input
             e.target.value = '';
         },
-        [handleFilesSelected, disabled, maxSize]
+        [handleFilesSelected, disabled, maxFileSize]
     );
 
     return (
@@ -143,7 +139,9 @@ export function FileDropZone({
                             : 'Drop files here or click to browse'}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                        Maximum file size: {maxSize / (1024 * 1024)}MB
+                        {storageCapabilities?.mode === 'power'
+                            ? 'Practically unlimited (100GB+)'
+                            : 'Recommended for files under 2GB'}
                     </p>
                 </div>
             </div>
