@@ -158,7 +158,7 @@ export default function HomePage() {
                                 <Card className="glass-dark border-primary/20">
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
                                         <CardTitle className="flex items-center gap-2">
-                                            <Send className="w-5 h-5 text-foreground" />
+                                            <Send className="w-5 h-5 text-sky-400" />
                                             Send Files
                                         </CardTitle>
                                         <div className="hidden sm:block px-4 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-xs font-medium text-zinc-300 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] backdrop-blur-md">
