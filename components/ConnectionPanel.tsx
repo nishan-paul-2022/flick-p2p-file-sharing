@@ -13,8 +13,6 @@ import { usePeerStore } from '@/lib/store';
 export function ConnectionPanel() {
     const {
         roomCode,
-        peerId,
-        isConnected,
         connectionQuality,
         initializePeer,
         connectToPeer,
@@ -180,24 +178,6 @@ export function ConnectionPanel() {
                                         <Copy className="w-5 h-5" />
                                     )}
                                 </Button>
-                            </div>
-                        </div>
-
-                        {peerId && (
-                            <div className="p-3 rounded-lg bg-muted/50 text-xs">
-                                <p className="text-muted-foreground mb-1">Peer ID</p>
-                                <code className="font-mono break-all">{peerId}</code>
-                            </div>
-                        )}
-
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                            <div className="flex items-center gap-2">
-                                <div
-                                    className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-muted-foreground'}`}
-                                />
-                                <span className="text-sm font-medium">
-                                    {isConnected ? 'Connected' : 'Waiting for peer...'}
-                                </span>
                             </div>
                         </div>
 
