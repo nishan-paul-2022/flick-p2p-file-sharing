@@ -194,43 +194,41 @@ export default function HomePage() {
                             </motion.div>
                         </div>
 
-                        {/* Features */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3 }}
-                            className="mt-12 grid md:grid-cols-3 gap-6"
-                        >
-                            {[
-                                {
-                                    title: 'Zero Backend',
-                                    description:
-                                        'Direct peer-to-peer connection. No servers, no storage.',
-                                },
-                                {
-                                    title: 'Fast Transfer',
-                                    description:
-                                        'WebRTC technology for maximum speed and efficiency.',
-                                },
-                                {
-                                    title: 'Private & Secure',
-                                    description:
-                                        'End-to-end encrypted. Your files never touch our servers.',
-                                },
-                            ].map((feature, i) => (
-                                <Card
-                                    key={i}
-                                    className="glass-dark border-primary/10 hover:border-primary/30 transition-all"
-                                >
-                                    <CardContent className="p-6">
-                                        <h3 className="font-semibold mb-2">{feature.title}</h3>
-                                        <p className="text-sm text-muted-foreground">
-                                            {feature.description}
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </motion.div>
+                        {/* Footer */}
+                        <footer className="mt-16 pt-8 border-t border-primary/5">
+                            <div className="grid md:grid-cols-3 gap-8 mb-8 text-center md:text-left">
+                                <div className="space-y-2">
+                                    <h4 className="text-sm font-semibold text-foreground">
+                                        No Servers
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground leading-relaxed">
+                                        Files go directly between devices. We never see or store
+                                        your data.
+                                    </p>
+                                </div>
+                                <div className="space-y-2">
+                                    <h4 className="text-sm font-semibold text-foreground">
+                                        Direct & Fast
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground leading-relaxed">
+                                        Powered by WebRTC for the fastest possible transfer speeds.
+                                    </p>
+                                </div>
+                                <div className="space-y-2">
+                                    <h4 className="text-sm font-semibold text-foreground">
+                                        Always Private
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground leading-relaxed">
+                                        End-to-end encrypted and completely anonymous file sharing.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="pt-8 border-t border-primary/5 text-center">
+                                <p className="text-[10px] text-muted-foreground/40 uppercase tracking-[0.2em] font-medium">
+                                    Flick &bull; Simple &bull; Fast &bull; Private
+                                </p>
+                            </div>
+                        </footer>
                     </div>
                 </motion.div>
             )}
