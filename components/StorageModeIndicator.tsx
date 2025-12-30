@@ -27,15 +27,15 @@ export function StorageModeIndicator() {
         <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center gap-2 px-4 py-2 rounded-full glass-dark border border-primary/20 shadow-lg hover:border-primary/40 transition-all duration-300 group"
+            className="flex items-center gap-2 px-4 py-2 rounded-full glass-dark border border-white/10 shadow-lg hover:border-white/20 transition-all duration-300 group"
         >
             <div
-                className={`p-1 rounded-full ${isPowerMode ? 'bg-green-500/20' : 'bg-yellow-500/20'}`}
+                className={`p-1 rounded-full ${isPowerMode ? 'bg-emerald-500/10' : 'bg-amber-500/10'}`}
             >
                 {isPowerMode ? (
-                    <Zap className="w-3.5 h-3.5 text-green-500" />
+                    <Zap className="w-3.5 h-3.5 text-emerald-500" />
                 ) : (
-                    <Shield className="w-3.5 h-3.5 text-yellow-500" />
+                    <Shield className="w-3.5 h-3.5 text-amber-500" />
                 )}
             </div>
 
@@ -49,20 +49,22 @@ export function StorageModeIndicator() {
 
             <Badge
                 variant="outline"
-                className="bg-transparent border-primary/10 text-[9px] px-1.5 py-0 h-4 uppercase font-bold text-muted-foreground group-hover:text-primary transition-colors"
+                className="bg-transparent border-white/10 text-[9px] px-1.5 py-0 h-4 uppercase font-bold text-muted-foreground group-hover:text-foreground transition-colors"
             >
                 {storageCapabilities.browserInfo}
             </Badge>
 
             {/* Tooltip-like effect on hover */}
-            <div className="absolute top-full right-0 mt-2 p-3 rounded-xl glass-dark border border-primary/20 shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 translate-y-2 group-hover:translate-y-0 w-64 z-50">
-                <p className="text-xs font-semibold mb-1 text-primary">
-                    {isPowerMode ? 'Direct Stream Enabled' : 'RAM Buffer Mode'}
+            <div className="absolute top-full right-0 mt-2 p-3 rounded-xl glass-dark border border-white/10 shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 translate-y-2 group-hover:translate-y-0 w-56 z-50">
+                <p
+                    className={`text-xs font-semibold mb-1 ${isPowerMode ? 'text-emerald-500' : 'text-amber-500'}`}
+                >
+                    {isPowerMode ? 'Direct Storage' : 'Memory Buffer'}
                 </p>
                 <p className="text-[10px] text-muted-foreground leading-relaxed">
                     {isPowerMode
-                        ? 'Files are streamed directly to your disk using OPFS. Zero RAM impact, support for unlimited file sizes.'
-                        : "Files are buffered in memory. Best for smaller transfers on browsers that don't support disk streaming yet."}
+                        ? 'Saves directly to disk. Unlimited file sizes.'
+                        : 'Buffers in RAM. Best for small files.'}
                 </p>
             </div>
         </motion.div>

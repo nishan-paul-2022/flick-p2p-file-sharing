@@ -10,7 +10,7 @@ import { FileList } from '@/components/FileList';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Download, Zap } from 'lucide-react';
+import { Send, Download, Sparkles } from 'lucide-react';
 import { StorageModeIndicator } from '@/components/StorageModeIndicator';
 import Loading from './loading';
 import { LogPanel } from '@/components/LogPanel';
@@ -111,7 +111,6 @@ export default function HomePage() {
                                     whileHover={{ scale: 1.05 }}
                                     transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                                 >
-                                    <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
                                     <Image
                                         src="/icon.svg"
                                         alt="Flick Icon"
@@ -128,9 +127,9 @@ export default function HomePage() {
                                 initial={{ opacity: 0, scale: 0.98 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: 0.2 }}
-                                className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 backdrop-blur-sm shadow-sm"
+                                className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/30 border border-white/10 backdrop-blur-sm shadow-sm"
                             >
-                                <Zap className="w-3.5 h-3.5 text-primary" />
+                                <Sparkles className="w-3.5 h-3.5 text-muted-foreground" />
                                 <span className="text-xs md:text-sm font-semibold tracking-tight text-foreground/80">
                                     Share Files Between Devices in Seconds
                                 </span>
@@ -159,7 +158,7 @@ export default function HomePage() {
                                 <Card className="glass-dark border-primary/20">
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
                                         <CardTitle className="flex items-center gap-2">
-                                            <Send className="w-5 h-5 text-primary" />
+                                            <Send className="w-5 h-5 text-foreground" />
                                             Send Files
                                         </CardTitle>
                                         <div className="hidden sm:block px-4 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-xs font-medium text-zinc-300 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] backdrop-blur-md">
@@ -179,9 +178,9 @@ export default function HomePage() {
                                             className="group gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold"
                                         >
                                             <div className="flex items-center gap-2">
-                                                <Download className="w-4 h-4 group-data-[state=active]:text-primary transition-colors" />
+                                                <Download className="w-4 h-4 group-data-[state=active]:text-foreground transition-colors" />
                                                 <span>Received</span>
-                                                <span className="ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-white/5 border border-white/5 px-1.5 text-[11px] font-bold text-muted-foreground group-data-[state=active]:bg-primary/15 group-data-[state=active]:text-primary group-data-[state=active]:border-primary/20 transition-all">
+                                                <span className="ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-white/5 border border-white/5 px-1.5 text-[11px] font-bold text-muted-foreground group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground group-data-[state=active]:border-white/20 transition-all">
                                                     {receivedFiles.length}
                                                 </span>
                                             </div>
@@ -191,9 +190,9 @@ export default function HomePage() {
                                             className="group gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold"
                                         >
                                             <div className="flex items-center gap-2">
-                                                <Send className="w-4 h-4 group-data-[state=active]:text-primary transition-colors" />
+                                                <Send className="w-4 h-4 group-data-[state=active]:text-foreground transition-colors" />
                                                 <span>Sent</span>
-                                                <span className="ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-white/5 border border-white/5 px-1.5 text-[11px] font-bold text-muted-foreground group-data-[state=active]:bg-primary/15 group-data-[state=active]:text-primary group-data-[state=active]:border-primary/20 transition-all">
+                                                <span className="ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-white/5 border border-white/5 px-1.5 text-[11px] font-bold text-muted-foreground group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground group-data-[state=active]:border-white/20 transition-all">
                                                     {outgoingFiles.length}
                                                 </span>
                                             </div>
