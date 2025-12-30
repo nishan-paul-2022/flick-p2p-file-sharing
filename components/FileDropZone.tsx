@@ -3,11 +3,10 @@
 import { useCallback } from 'react';
 import { Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 import { usePeerStore } from '@/lib/store';
 
 export function FileDropZone() {
-    const { isConnected, sendFile, roomCode, storageCapabilities } = usePeerStore();
+    const { isConnected, sendFile, roomCode, storageCapabilities, addLog } = usePeerStore();
 
     const disabled = !isConnected;
 
@@ -19,9 +18,7 @@ export function FileDropZone() {
                 } catch (error) {
                     const errorMessage =
                         error instanceof Error ? error.message : 'Failed to send file';
-                    toast.error('Failed to send file', {
-                        description: errorMessage,
-                    });
+                    addLog('error', 'Failed to send file', errorMessage);
                 }
             }
         },

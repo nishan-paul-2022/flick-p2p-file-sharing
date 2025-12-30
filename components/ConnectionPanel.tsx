@@ -6,8 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Copy, Check, Wifi, WifiOff, LogOut, RefreshCw, Trash2, Zap, Shield } from 'lucide-react';
-import { generateRoomCode, isValidRoomCode, copyToClipboard } from '@/lib/utils';
-import { toast } from 'sonner';
+import { copyToClipboard, generateRoomCode, isValidRoomCode } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { usePeerStore } from '@/lib/store';
 
@@ -23,6 +22,7 @@ export function ConnectionPanel() {
         clearHistory,
         storageCapabilities,
         initializeStorage,
+        addLog,
     } = usePeerStore();
 
     const [joinCode, setJoinCode] = useState('');
@@ -39,18 +39,14 @@ export function ConnectionPanel() {
     const handleCreateRoom = () => {
         const code = generateRoomCode();
         initializePeer(code);
-        toast.success('Room created', {
-            description: `Room code: ${code}`,
-        });
+        addLog('success', 'Room created', `Room code: ${code}`);
     };
 
     const handleJoinRoom = async () => {
         const code = joinCode.toUpperCase().trim();
 
         if (!isValidRoomCode(code)) {
-            toast.error('Invalid room code', {
-                description: 'Room code must be 6 alphanumeric characters',
-            });
+            addLog('error', 'Invalid room code', 'Room code must be 6 alphanumeric characters');
             return;
         }
 
@@ -72,7 +68,7 @@ export function ConnectionPanel() {
         const success = await copyToClipboard(roomCode);
         if (success) {
             setCopied(true);
-            toast.success('Copied to clipboard');
+            addLog('success', 'Copied to clipboard');
             setTimeout(() => setCopied(false), 2000);
         }
     };

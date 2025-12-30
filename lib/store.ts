@@ -2,8 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { get, set, del } from 'idb-keyval';
 import Peer, { DataConnection } from 'peerjs';
-import { toast } from 'sonner';
-import { FileMetadata, FileTransfer, ConnectionQuality, P2PMessage } from './types';
+
+import { FileMetadata, FileTransfer, ConnectionQuality, P2PMessage, LogEntry } from './types';
 import { OPFSManager } from './opfs-manager';
 import { detectStorageCapabilities, StorageCapabilities } from './storage-mode';
 
@@ -20,6 +20,8 @@ interface PeerState {
     outgoingFiles: FileTransfer[];
     error: string | null;
     storageCapabilities: StorageCapabilities | null;
+    logs: LogEntry[];
+    hasUnreadLogs: boolean;
 
     // Actions
     setRoomCode: (code: string | null) => void;
@@ -32,6 +34,9 @@ interface PeerState {
     clearHistory: () => Promise<void>;
     initializeStorage: () => Promise<void>;
     downloadFile: (transfer: FileTransfer) => Promise<void>;
+    addLog: (type: LogEntry['type'], message: string, description?: string) => void;
+    clearLogs: () => void;
+    setLogsRead: () => void;
 }
 
 const CHUNK_SIZE = 64 * 1024; // 64KB chunks (more efficient for WebRTC)
@@ -48,7 +53,7 @@ const handleIncomingData = async (
     set: (state: Partial<PeerState> | ((state: PeerState) => Partial<PeerState>)) => void
 ) => {
     const msg = data as P2PMessage;
-    const { receivedFiles, storageCapabilities } = get();
+    const { receivedFiles, storageCapabilities, addLog } = get();
 
     if (msg.type === 'metadata') {
         const storageMode = storageCapabilities?.mode || 'compatibility';
@@ -83,10 +88,11 @@ const handleIncomingData = async (
         };
 
         set({ receivedFiles: [...receivedFiles, transfer] });
-
-        toast.info('Receiving file', {
-            description: `${msg.metadata.name} (${storageMode === 'power' ? 'Power Mode' : 'Compatibility Mode'})`,
-        });
+        addLog(
+            'info',
+            'Receiving file',
+            `${msg.metadata.name} (${storageMode === 'power' ? 'Power Mode' : 'Compatibility Mode'})`
+        );
     } else if (msg.type === 'chunk') {
         const transfer = receivedFiles.find((t) => t.id === msg.transferId);
 
@@ -110,7 +116,7 @@ const handleIncomingData = async (
                 }
             } catch (error) {
                 console.error('OPFS write failed:', error);
-                toast.error('Storage error', { description: 'Failed to write chunk to disk' });
+                addLog('error', 'Storage error', 'Failed to write chunk to disk');
             }
         } else if (transfer.chunks) {
             // Compatibility mode: Store chunk in RAM
@@ -137,9 +143,7 @@ const handleIncomingData = async (
         set((state) => ({
             receivedFiles: state.receivedFiles.map((t) => {
                 if (t.id === msg.transferId) {
-                    toast.success('File received', {
-                        description: t.metadata.name,
-                    });
+                    addLog('success', 'File received', t.metadata.name);
                     return { ...t, status: 'completed', progress: 100 };
                 }
                 return t;
@@ -176,18 +180,38 @@ export const usePeerStore = create<PeerState>()(
             outgoingFiles: [],
             error: null,
             storageCapabilities: null,
+            logs: [],
+            hasUnreadLogs: false,
 
             setRoomCode: (code) => set({ roomCode: code }),
+
+            addLog: (type, message, description) => {
+                const log: LogEntry = {
+                    id: Math.random().toString(36).substring(7),
+                    timestamp: Date.now(),
+                    type,
+                    message,
+                    description,
+                };
+                set((state) => ({
+                    logs: [log, ...state.logs].slice(0, 100),
+                    hasUnreadLogs: true,
+                })); // Keep last 100 logs
+            },
+
+            clearLogs: () => set({ logs: [], hasUnreadLogs: false }),
+
+            setLogsRead: () => set({ hasUnreadLogs: false }),
 
             initializeStorage: async () => {
                 const capabilities = await detectStorageCapabilities();
                 set({ storageCapabilities: capabilities });
 
-                toast.success(
+                const { addLog } = get();
+                addLog(
+                    'success',
                     `Storage initialized: ${capabilities.mode === 'power' ? 'Power Mode' : 'Compatibility Mode'}`,
-                    {
-                        description: 'Ready for unlimited file sharing',
-                    }
+                    'Ready for unlimited file sharing'
                 );
             },
 
@@ -218,9 +242,8 @@ export const usePeerStore = create<PeerState>()(
                     peer.on('open', (id) => {
                         console.log('Peer Open:', id);
                         set({ peerId: id, error: null });
-                        toast.success('Peer initialized', {
-                            description: `Your ID: ${id}`,
-                        });
+                        const { addLog } = get();
+                        addLog('success', 'Peer initialized', `Your ID: ${id}`);
                         resolve(id);
                     });
 
@@ -237,9 +260,8 @@ export const usePeerStore = create<PeerState>()(
                         conn.on('open', () => {
                             console.log('Connection Open (Host Side)');
                             set({ isConnected: true, connectionQuality: 'excellent' });
-                            toast.success('Connected to peer', {
-                                description: 'You can now share files',
-                            });
+                            const { addLog } = get();
+                            addLog('success', 'Connected to peer', 'You can now share files');
                         });
 
                         conn.on('data', (data) => handleIncomingData(data, get, set));
@@ -265,7 +287,8 @@ export const usePeerStore = create<PeerState>()(
                                 connectionQuality: 'disconnected',
                                 connection: null,
                             });
-                            toast.info('Peer disconnected');
+                            const { addLog } = get();
+                            addLog('info', 'Peer disconnected');
                         });
 
                         conn.on('error', (err) => {
@@ -284,21 +307,23 @@ export const usePeerStore = create<PeerState>()(
                                 peer: null,
                                 isHost: false,
                             });
-                            toast.error(
+                            const { addLog } = get();
+                            addLog(
+                                'error',
                                 'Session expired or ID taken. Please join or create a new room.'
                             );
                         } else {
                             set({ error: err.message });
-                            toast.error('Connection error', {
-                                description: err.message,
-                            });
+                            const { addLog } = get();
+                            addLog('error', 'Connection error', err.message);
                         }
                         reject(err);
                     });
 
                     peer.on('disconnected', () => {
                         console.log('Peer disconnected from signaling server');
-                        toast.warning('Connection lost. Reconnecting...');
+                        const { addLog } = get();
+                        addLog('warning', 'Connection lost. Reconnecting...');
                         peer.reconnect();
                     });
 
@@ -318,9 +343,9 @@ export const usePeerStore = create<PeerState>()(
             },
 
             connectToPeer: async (targetCode) => {
-                const { peer } = get();
+                const { peer, addLog } = get();
                 if (!peer) {
-                    toast.error('Peer not initialized');
+                    addLog('error', 'Peer not initialized');
                     return;
                 }
 
@@ -359,9 +384,8 @@ export const usePeerStore = create<PeerState>()(
                         .then(() => {
                             console.log('Connection Open (Guest Side)');
                             set({ isConnected: true, connectionQuality: 'excellent' });
-                            toast.success('Connected to peer', {
-                                description: 'You can now share files',
-                            });
+                            const { addLog } = get();
+                            addLog('success', 'Connected to peer', 'You can now share files');
                         })
                         .catch((err) => {
                             const errorMessage =
@@ -372,7 +396,8 @@ export const usePeerStore = create<PeerState>()(
                                 connection: null,
                                 connectionQuality: 'disconnected',
                             });
-                            toast.error('Connection Failed', { description: errorMessage });
+                            const { addLog } = get();
+                            addLog('error', 'Connection Failed', errorMessage);
                             conn.close();
                         });
 
@@ -394,14 +419,14 @@ export const usePeerStore = create<PeerState>()(
                             connectionQuality: 'disconnected',
                             connection: null,
                         });
-                        toast.info('Peer disconnected');
+                        const { addLog } = get();
+                        addLog('info', 'Peer disconnected');
                     });
                 } catch (err) {
                     const errorMessage = err instanceof Error ? err.message : 'Failed to connect';
                     set({ error: errorMessage });
-                    toast.error('Failed to connect', {
-                        description: errorMessage,
-                    });
+                    const { addLog } = get();
+                    addLog('error', 'Failed to connect', errorMessage);
                 }
             },
 
@@ -436,9 +461,9 @@ export const usePeerStore = create<PeerState>()(
             },
 
             sendFile: async (file) => {
-                const { connection, isConnected, storageCapabilities } = get();
+                const { connection, isConnected, storageCapabilities, addLog } = get();
                 if (!connection || !isConnected) {
-                    toast.error('Not connected to peer');
+                    addLog('error', 'Not connected to peer');
                     return;
                 }
 
@@ -482,9 +507,8 @@ export const usePeerStore = create<PeerState>()(
                             type: 'complete',
                             transferId,
                         });
-                        toast.success('File sent successfully', {
-                            description: file.name,
-                        });
+                        const { addLog } = get();
+                        addLog('success', 'File sent successfully', file.name);
                         return;
                     }
 
@@ -531,7 +555,8 @@ export const usePeerStore = create<PeerState>()(
                         }
                     } catch (error) {
                         console.error('Error reading/sending chunk:', error);
-                        toast.error('Transfer failed', { description: 'Error reading file' });
+                        const { addLog } = get();
+                        addLog('error', 'Transfer failed', 'Error reading file');
                     }
                 };
 
@@ -566,7 +591,8 @@ export const usePeerStore = create<PeerState>()(
                     };
                 });
 
-                toast.success('File removed from history');
+                const { addLog } = get();
+                addLog('success', 'File removed from history');
             },
 
             clearHistory: async () => {
@@ -584,9 +610,8 @@ export const usePeerStore = create<PeerState>()(
                 }
 
                 set({ receivedFiles: [], outgoingFiles: [] });
-                toast.success('History cleared', {
-                    description: 'All transfer history has been removed',
-                });
+                const { addLog } = get();
+                addLog('success', 'History cleared', 'All transfer history has been removed');
             },
 
             downloadFile: async (transfer: FileTransfer) => {
@@ -600,7 +625,8 @@ export const usePeerStore = create<PeerState>()(
                             (await OPFSManager.getTransferFile(transfer.id));
 
                         if (!handle) {
-                            toast.error('File not found in storage');
+                            const { addLog } = get();
+                            addLog('error', 'File not found in storage');
                             return;
                         }
 
@@ -610,7 +636,8 @@ export const usePeerStore = create<PeerState>()(
                         // Compatibility mode: Reconstruct from RAM chunks
                         blob = new Blob(transfer.chunks, { type: transfer.metadata.type });
                     } else {
-                        toast.error('File data not available');
+                        const { addLog } = get();
+                        addLog('error', 'File data not available');
                         return;
                     }
 
@@ -624,14 +651,16 @@ export const usePeerStore = create<PeerState>()(
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
 
-                    toast.success('Download started', {
-                        description: transfer.metadata.name,
-                    });
+                    const { addLog } = get();
+                    addLog('success', 'Download started', transfer.metadata.name);
                 } catch (error) {
                     console.error('Download failed:', error);
-                    toast.error('Download failed', {
-                        description: error instanceof Error ? error.message : 'Unknown error',
-                    });
+                    const { addLog } = get();
+                    addLog(
+                        'error',
+                        'Download failed',
+                        error instanceof Error ? error.message : 'Unknown error'
+                    );
                 }
             },
         }),
@@ -649,6 +678,8 @@ export const usePeerStore = create<PeerState>()(
                 })),
                 outgoingFiles: state.outgoingFiles,
                 storageCapabilities: state.storageCapabilities,
+                logs: state.logs,
+                hasUnreadLogs: state.hasUnreadLogs,
             }),
         }
     )

@@ -28,3 +28,11 @@ export type P2PMessage =
     | { type: 'metadata'; transferId: string; metadata: FileMetadata; totalChunks: number }
     | { type: 'chunk'; transferId: string; chunkIndex: number; data: ArrayBuffer }
     | { type: 'complete'; transferId: string };
+
+export interface LogEntry {
+    id: string;
+    timestamp: number;
+    type: 'info' | 'success' | 'warning' | 'error';
+    message: string;
+    description?: string;
+}

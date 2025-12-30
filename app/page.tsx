@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Download, Zap } from 'lucide-react';
 import { StorageModeIndicator } from '@/components/StorageModeIndicator';
 import Loading from './loading';
+import { LogPanel } from '@/components/LogPanel';
 
 export default function HomePage() {
     const searchParams = useSearchParams();
@@ -236,6 +237,7 @@ export default function HomePage() {
                             </div>
                         </footer>
                     </div>
+                    <LogPanel />
                 </motion.div>
             )}
         </AnimatePresence>
