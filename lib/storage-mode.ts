@@ -7,7 +7,6 @@ export type StorageMode = 'power' | 'compatibility';
 
 export interface StorageCapabilities {
     mode: StorageMode;
-    maxFileSize: number;
     supportsOPFS: boolean;
     browserInfo: string;
 }
@@ -58,7 +57,6 @@ export async function detectStorageCapabilities(): Promise<StorageCapabilities> 
     if (supportsOPFS) {
         return {
             mode: 'power',
-            maxFileSize: 100 * 1024 * 1024 * 1024, // 100GB (Practically unlimited)
             supportsOPFS: true,
             browserInfo,
         };
@@ -66,23 +64,9 @@ export async function detectStorageCapabilities(): Promise<StorageCapabilities> 
 
     return {
         mode: 'compatibility',
-        maxFileSize: 2 * 1024 * 1024 * 1024, // 2GB
         supportsOPFS: false,
         browserInfo,
     };
-}
-
-/**
- * Format file size for display
- */
-export function formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
-
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
 }
 
 /**
@@ -97,7 +81,7 @@ export function getStorageModeLabel(mode: StorageMode): string {
  */
 export function getStorageModeDescription(mode: StorageMode): string {
     if (mode === 'power') {
-        return 'Files streamed to disk. Zero memory pressure, supports very large transfers (100GB+).';
+        return 'Files streamed to disk. Zero memory pressure, supports unlimited file sizes.';
     }
-    return 'Files stored in memory. Recommended for files under 2GB.';
+    return 'Files stored in memory. Supports fast, peer-to-peer transfers.';
 }

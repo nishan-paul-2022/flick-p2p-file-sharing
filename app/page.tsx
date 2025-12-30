@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Download, Zap } from 'lucide-react';
+import { StorageModeIndicator } from '@/components/StorageModeIndicator';
 import Loading from './loading';
 
 export default function HomePage() {
@@ -92,6 +93,11 @@ export default function HomePage() {
                     </div>
 
                     <div className="relative container mx-auto px-4 py-8 max-w-7xl">
+                        {/* Top Right Actions / Info */}
+                        <div className="absolute top-4 right-4 md:top-8 md:right-4 z-40">
+                            <StorageModeIndicator />
+                        </div>
+
                         {/* Header */}
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}

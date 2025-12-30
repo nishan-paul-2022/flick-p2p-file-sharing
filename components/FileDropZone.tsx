@@ -9,7 +9,6 @@ import { usePeerStore } from '@/lib/store';
 export function FileDropZone() {
     const { isConnected, sendFile, roomCode, storageCapabilities } = usePeerStore();
 
-    const maxFileSize = storageCapabilities?.maxFileSize || 100 * 1024 * 1024 * 1024;
     const disabled = !isConnected;
 
     const handleFilesSelected = useCallback(
@@ -38,22 +37,11 @@ export function FileDropZone() {
 
             const files = Array.from(e.dataTransfer.files);
 
-            // Validate file sizes
-            const validFiles = files.filter((file) => {
-                if (file.size > maxFileSize) {
-                    toast.error('File too large', {
-                        description: `${file.name} exceeds storage limit`,
-                    });
-                    return false;
-                }
-                return true;
-            });
-
-            if (validFiles.length > 0) {
-                handleFilesSelected(validFiles);
+            if (files.length > 0) {
+                handleFilesSelected(files);
             }
         },
-        [handleFilesSelected, disabled, maxFileSize]
+        [handleFilesSelected, disabled]
     );
 
     const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -67,24 +55,14 @@ export function FileDropZone() {
 
             const files = Array.from(e.target.files || []);
 
-            const validFiles = files.filter((file) => {
-                if (file.size > maxFileSize) {
-                    toast.error('File too large', {
-                        description: `${file.name} exceeds storage limit`,
-                    });
-                    return false;
-                }
-                return true;
-            });
-
-            if (validFiles.length > 0) {
-                handleFilesSelected(validFiles);
+            if (files.length > 0) {
+                handleFilesSelected(files);
             }
 
             // Reset input
             e.target.value = '';
         },
-        [handleFilesSelected, disabled, maxFileSize]
+        [handleFilesSelected, disabled]
     );
 
     return (
@@ -137,11 +115,6 @@ export function FileDropZone() {
                                 ? 'Waiting for connection...'
                                 : 'Connect to a peer first'
                             : 'Drop files here or click to browse'}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                        {storageCapabilities?.mode === 'power'
-                            ? 'Practically unlimited (100GB+)'
-                            : 'Recommended for files under 2GB'}
                     </p>
                 </div>
             </div>

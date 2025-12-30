@@ -186,7 +186,7 @@ export const usePeerStore = create<PeerState>()(
                 toast.success(
                     `Storage initialized: ${capabilities.mode === 'power' ? 'Power Mode' : 'Compatibility Mode'}`,
                     {
-                        description: `Max file size: ${Math.round(capabilities.maxFileSize / (1024 * 1024))}MB`,
+                        description: 'Ready for unlimited file sharing',
                     }
                 );
             },
@@ -439,14 +439,6 @@ export const usePeerStore = create<PeerState>()(
                 const { connection, isConnected, storageCapabilities } = get();
                 if (!connection || !isConnected) {
                     toast.error('Not connected to peer');
-                    return;
-                }
-
-                const maxFileSize = storageCapabilities?.maxFileSize || 100 * 1024 * 1024 * 1024;
-
-                if (file.size > maxFileSize) {
-                    const limitMB = Math.round(maxFileSize / (1024 * 1024));
-                    toast.error(`File size exceeds ${limitMB}MB limit`);
                     return;
                 }
 

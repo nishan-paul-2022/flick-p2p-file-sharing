@@ -3,8 +3,9 @@
 import { usePeerStore } from '@/lib/store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Zap, Shield, HardDrive, Database } from 'lucide-react';
-import { formatFileSize } from '@/lib/storage-mode';
+import { Zap, Shield } from 'lucide-react';
+import { motion } from 'framer-motion';
+
 import { useEffect } from 'react';
 
 export function StorageModeIndicator() {
@@ -23,55 +24,47 @@ export function StorageModeIndicator() {
     const isPowerMode = storageCapabilities.mode === 'power';
 
     return (
-        <Card className="glass-dark border-primary/20">
-            <CardContent className="p-4">
-                <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        {isPowerMode ? (
-                            <div className="p-2 rounded-lg bg-green-500/10 border border-green-500/20">
-                                <Zap className="w-5 h-5 text-green-500" />
-                            </div>
-                        ) : (
-                            <div className="p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-                                <Shield className="w-5 h-5 text-yellow-500" />
-                            </div>
-                        )}
+        <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex items-center gap-2 px-4 py-2 rounded-full glass-dark border border-primary/20 shadow-lg hover:border-primary/40 transition-all duration-300 group"
+        >
+            <div
+                className={`p-1 rounded-full ${isPowerMode ? 'bg-green-500/20' : 'bg-yellow-500/20'}`}
+            >
+                {isPowerMode ? (
+                    <Zap className="w-3.5 h-3.5 text-green-500" />
+                ) : (
+                    <Shield className="w-3.5 h-3.5 text-yellow-500" />
+                )}
+            </div>
 
-                        <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-semibold text-sm">
-                                    {isPowerMode ? 'Power Mode' : 'Compatibility Mode'}
-                                </h3>
-                                <Badge
-                                    variant={isPowerMode ? 'default' : 'secondary'}
-                                    className="text-xs"
-                                >
-                                    {storageCapabilities.browserInfo}
-                                </Badge>
-                            </div>
-                            <p className="text-xs text-muted-foreground line-clamp-1">
-                                {isPowerMode
-                                    ? 'Files streamed to disk • Zero memory pressure'
-                                    : 'Files stored in memory • Universal compatibility'}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 shrink-0">
-                        {isPowerMode ? (
-                            <HardDrive className="w-4 h-4 text-muted-foreground" />
-                        ) : (
-                            <Database className="w-4 h-4 text-muted-foreground" />
-                        )}
-                        <div className="text-right">
-                            <p className="text-xs font-medium">
-                                {formatFileSize(storageCapabilities.maxFileSize)}
-                            </p>
-                            <p className="text-xs text-muted-foreground">Max Size</p>
-                        </div>
-                    </div>
+            <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-foreground hidden sm:block">
+                        {isPowerMode ? 'Power Mode' : 'Compatibility Mode'}
+                    </span>
                 </div>
-            </CardContent>
-        </Card>
+            </div>
+
+            <Badge
+                variant="outline"
+                className="bg-transparent border-primary/10 text-[9px] px-1.5 py-0 h-4 uppercase font-bold text-muted-foreground group-hover:text-primary transition-colors"
+            >
+                {storageCapabilities.browserInfo}
+            </Badge>
+
+            {/* Tooltip-like effect on hover */}
+            <div className="absolute top-full right-0 mt-2 p-3 rounded-xl glass-dark border border-primary/20 shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 translate-y-2 group-hover:translate-y-0 w-64 z-50">
+                <p className="text-xs font-semibold mb-1 text-primary">
+                    {isPowerMode ? 'Direct Stream Enabled' : 'RAM Buffer Mode'}
+                </p>
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                    {isPowerMode
+                        ? 'Files are streamed directly to your disk using OPFS. Zero RAM impact, support for unlimited file sizes.'
+                        : "Files are buffered in memory. Best for smaller transfers on browsers that don't support disk streaming yet."}
+                </p>
+            </div>
+        </motion.div>
     );
 }
