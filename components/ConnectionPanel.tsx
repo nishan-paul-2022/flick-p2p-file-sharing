@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -101,12 +101,14 @@ export function ConnectionPanel() {
     };
 
     return (
-        <Card className="glass-dark border-primary/20">
+        <Card className="glass-dark border-primary/20 overflow-hidden">
+            <div className="w-full py-3 bg-gradient-to-r from-transparent via-primary/5 to-transparent border-b border-white/5 text-center text-xs font-medium tracking-widest text-muted-foreground/80 uppercase backdrop-blur-sm">
+                Create or join a room to share files
+            </div>
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>
                         <CardTitle className="text-2xl">Connection</CardTitle>
-                        <CardDescription>Create or join a room to share files</CardDescription>
                     </div>
                     {getQualityBadge()}
                 </div>
