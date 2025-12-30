@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Copy, Check, Wifi, WifiOff, LogOut, RefreshCw, Trash2, Zap, Shield } from 'lucide-react';
-import { copyToClipboard, generateRoomCode, isValidRoomCode } from '@/lib/utils';
+import { copyToClipboard, generateRoomCode, isValidRoomCode, cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { usePeerStore } from '@/lib/store';
 
@@ -144,11 +144,18 @@ export function ConnectionPanel() {
                                 onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                                 onKeyDown={(e) => e.key === 'Enter' && handleJoinRoom()}
                                 maxLength={6}
-                                className="flex-1 min-w-0 uppercase font-mono text-lg tracking-wider"
+                                className="flex-1 min-w-0 uppercase font-mono text-lg tracking-wider focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:border-white/50 focus-visible:ring-offset-0 bg-secondary/50"
                             />
                             <Button
                                 onClick={handleJoinRoom}
                                 disabled={joinCode.length !== 6 || isJoining}
+                                variant="secondary"
+                                className={cn(
+                                    'transition-all duration-300',
+                                    joinCode.length === 6 && !isJoining
+                                        ? 'bg-secondary text-secondary-foreground border border-white/10'
+                                        : 'opacity-50'
+                                )}
                             >
                                 {isJoining ? 'Joining...' : 'Join'}
                             </Button>

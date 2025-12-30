@@ -173,17 +173,17 @@ export default function HomePage() {
 
                                 {/* File Lists */}
                                 <Tabs defaultValue="received" className="w-full">
-                                    <TabsList className="grid w-full grid-cols-2 glass-dark p-1 rounded-xl border-primary/20">
+                                    <TabsList className="grid w-full grid-cols-2 glass-dark p-1 rounded-xl border-white/10">
                                         <TabsTrigger
                                             value="received"
-                                            className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300 font-semibold"
+                                            className="gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold"
                                         >
                                             <Download className="w-4 h-4" />
                                             Received ({receivedFiles.length})
                                         </TabsTrigger>
                                         <TabsTrigger
                                             value="sent"
-                                            className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300 font-semibold"
+                                            className="gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold"
                                         >
                                             <Send className="w-4 h-4" />
                                             Sent ({outgoingFiles.length})
