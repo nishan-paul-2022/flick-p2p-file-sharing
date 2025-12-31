@@ -8,7 +8,8 @@ import { usePeerStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
 export function StorageModeIndicator() {
-    const { storageCapabilities, initializeStorage } = usePeerStore();
+    const storageCapabilities = usePeerStore((state) => state.storageCapabilities);
+    const initializeStorage = usePeerStore((state) => state.initializeStorage);
 
     useEffect(() => {
         if (!storageCapabilities) {

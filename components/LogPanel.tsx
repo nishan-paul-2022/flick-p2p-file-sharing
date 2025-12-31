@@ -8,7 +8,10 @@ import { Button } from '@/components/ui/button';
 import { usePeerStore } from '@/lib/store';
 
 export const LogPanel: React.FC = () => {
-    const { logs, clearLogs, isLogPanelOpen, toggleLogPanel } = usePeerStore();
+    const logs = usePeerStore((state) => state.logs);
+    const clearLogs = usePeerStore((state) => state.clearLogs);
+    const isLogPanelOpen = usePeerStore((state) => state.isLogPanelOpen);
+    const toggleLogPanel = usePeerStore((state) => state.toggleLogPanel);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll to bottom when new logs arrive

@@ -14,17 +14,15 @@ import { cn, copyToClipboard, generateRoomCode, isValidRoomCode } from '@/lib/ut
 import { StorageModeIndicator } from './StorageModeIndicator';
 
 export function ConnectionPanel() {
-    const {
-        roomCode,
-        connectionQuality,
-        initializePeer,
-        connectToPeer,
-        disconnect,
-        clearHistory,
-        storageCapabilities,
-        initializeStorage,
-        addLog,
-    } = usePeerStore();
+    const roomCode = usePeerStore((state) => state.roomCode);
+    const connectionQuality = usePeerStore((state) => state.connectionQuality);
+    const initializePeer = usePeerStore((state) => state.initializePeer);
+    const connectToPeer = usePeerStore((state) => state.connectToPeer);
+    const disconnect = usePeerStore((state) => state.disconnect);
+    const clearHistory = usePeerStore((state) => state.clearHistory);
+    const storageCapabilities = usePeerStore((state) => state.storageCapabilities);
+    const initializeStorage = usePeerStore((state) => state.initializeStorage);
+    const addLog = usePeerStore((state) => state.addLog);
 
     const [joinCode, setJoinCode] = useState('');
     const [copied, setCopied] = useState(false);

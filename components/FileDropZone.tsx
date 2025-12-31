@@ -7,7 +7,10 @@ import { usePeerStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
 export function FileDropZone() {
-    const { isConnected, sendFile, roomCode, addLog } = usePeerStore();
+    const isConnected = usePeerStore((state) => state.isConnected);
+    const sendFile = usePeerStore((state) => state.sendFile);
+    const roomCode = usePeerStore((state) => state.roomCode);
+    const addLog = usePeerStore((state) => state.addLog);
 
     const disabled = !isConnected;
 

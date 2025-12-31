@@ -28,7 +28,11 @@ interface FileListProps {
 }
 
 export function FileList({ type }: FileListProps) {
-    const { receivedFiles, outgoingFiles, removeFile, downloadFile } = usePeerStore();
+    const receivedFiles = usePeerStore((state) => state.receivedFiles);
+    const outgoingFiles = usePeerStore((state) => state.outgoingFiles);
+    const removeFile = usePeerStore((state) => state.removeFile);
+    const downloadFile = usePeerStore((state) => state.downloadFile);
+
     const files = type === 'received' ? receivedFiles : outgoingFiles;
 
     const handleDownload = async (transfer: FileTransfer) => {
