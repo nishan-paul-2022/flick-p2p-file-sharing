@@ -140,7 +140,7 @@ export function ConnectionPanel() {
 
     return (
         <Card className="glass-dark border-primary/20 overflow-hidden">
-            <div className="w-full py-3 bg-gradient-to-r from-transparent via-primary/5 to-transparent border-b border-white/5 text-center text-xs font-medium tracking-widest text-muted-foreground/80 uppercase backdrop-blur-sm">
+            <div className="w-full py-3 bg-gradient-to-r from-transparent via-primary/5 to-transparent border-b border-white/5 text-center text-xs font-semibold tracking-widest text-muted-foreground transition-colors uppercase backdrop-blur-sm">
                 Create or join a room to share files
             </div>
             <CardHeader className="pb-4">
@@ -172,7 +172,7 @@ export function ConnectionPanel() {
 
                         <div className="flex items-center gap-4 py-4">
                             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/[0.05] to-white/[0.05]" />
-                            <span className="flex items-center justify-center px-4 py-1.5 rounded-full border border-white/5 bg-black/20 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 backdrop-blur-md">
+                            <span className="flex items-center justify-center px-4 py-1.5 rounded-full border border-white/5 bg-black/20 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/70 backdrop-blur-md">
                                 or
                             </span>
                             <div className="h-px flex-1 bg-gradient-to-l from-transparent via-white/[0.05] to-white/[0.05]" />
@@ -246,9 +246,9 @@ export function ConnectionPanel() {
                 <div className="pt-2 flex justify-center">
                     <button
                         onClick={clearHistory}
-                        className="flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 border border-white/5 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-300 group"
+                        className="flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80 border border-white/5 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-300 group"
                     >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100" />
                         Clear History
                     </button>
                 </div>

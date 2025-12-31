@@ -132,7 +132,7 @@ export function FileList({ type }: FileListProps) {
                                                     <h4 className="font-medium truncate mb-0.5 max-w-[150px] sm:max-w-none transition-colors cursor-text">
                                                         {transfer.metadata.name}
                                                     </h4>
-                                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                    <div className="flex items-center gap-2 text-xs text-muted-foreground/80">
                                                         <span className="tabular-nums">
                                                             {formatBytes(transfer.metadata.size)}
                                                         </span>

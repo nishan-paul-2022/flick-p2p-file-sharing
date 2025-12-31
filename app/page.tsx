@@ -14,6 +14,7 @@ import { Send, Download, Sparkles } from 'lucide-react';
 import { StorageModeIndicator } from '@/components/StorageModeIndicator';
 import Loading from './loading';
 import { LogPanel } from '@/components/LogPanel';
+import { Footer } from '@/components/Footer';
 
 export default function HomePage() {
     const searchParams = useSearchParams();
@@ -82,9 +83,9 @@ export default function HomePage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
-                    className="min-h-screen gradient-secondary"
+                    className="min-h-screen flex flex-col gradient-secondary"
                 >
-                    <div className="relative container mx-auto px-4 py-8 max-w-7xl">
+                    <main className="flex-grow relative container mx-auto px-4 py-8 max-w-7xl">
                         {/* Header */}
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}
@@ -195,43 +196,11 @@ export default function HomePage() {
                                 </Tabs>
                             </motion.div>
                         </div>
+                    </main>
 
-                        {/* Footer */}
-                        <footer className="mt-16 pt-8 border-t border-primary/5">
-                            <div className="grid md:grid-cols-3 gap-8 mb-8 text-center md:text-left">
-                                <div className="space-y-2">
-                                    <h4 className="text-sm font-semibold text-foreground">
-                                        No Servers
-                                    </h4>
-                                    <p className="text-xs text-muted-foreground leading-relaxed">
-                                        Files go directly between devices. We never see or store
-                                        your data.
-                                    </p>
-                                </div>
-                                <div className="space-y-2">
-                                    <h4 className="text-sm font-semibold text-foreground">
-                                        Direct & Fast
-                                    </h4>
-                                    <p className="text-xs text-muted-foreground leading-relaxed">
-                                        Powered by WebRTC for the fastest possible transfer speeds.
-                                    </p>
-                                </div>
-                                <div className="space-y-2">
-                                    <h4 className="text-sm font-semibold text-foreground">
-                                        Always Private
-                                    </h4>
-                                    <p className="text-xs text-muted-foreground leading-relaxed">
-                                        Direct peer-to-peer and completely anonymous file sharing.
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="pt-8 border-t border-primary/5 text-center">
-                                <p className="text-[10px] text-muted-foreground/40 uppercase tracking-[0.2em] font-medium">
-                                    Flick &bull; Simple &bull; Fast &bull; Private
-                                </p>
-                            </div>
-                        </footer>
-                    </div>
+                    {/* Footer */}
+                    <Footer />
+
                     <LogPanel />
                 </motion.div>
             )}
