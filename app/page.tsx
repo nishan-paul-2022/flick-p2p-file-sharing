@@ -91,8 +91,10 @@ export default function HomePage() {
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="flex items-center justify-between mb-12 w-full glass-dark border border-white/10 rounded-2xl px-6 py-4 backdrop-blur-xl shadow-2xl relative overflow-hidden"
+                            className="flex items-center justify-between mb-12 w-full bg-zinc-900/30 border border-white/[0.08] rounded-full px-8 py-5 backdrop-blur-3xl shadow-[0_8px_40px_-12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] relative overflow-hidden"
                         >
+                            {/* Ambient Glow */}
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1/2 bg-primary/10 blur-[60px] rounded-full pointer-events-none opacity-50" />
                             {/* Left: Fingerprint Icon (Event Logs) */}
                             <div className="flex-1 flex justify-start relative z-10">
                                 <motion.div
@@ -131,12 +133,10 @@ export default function HomePage() {
 
                             {/* Right: Slogan */}
                             <div className="flex-1 flex justify-end relative z-10">
-                                <div className="hidden sm:flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-sm shadow-inner group/slogan transition-all duration-300 hover:bg-white/[0.05]">
-                                    <Sparkles className="w-3.5 h-3.5 text-muted-foreground" />
-                                    <span className="text-[11px] md:text-xs font-bold tracking-tight text-white/60 group-hover/slogan:text-white/90 transition-colors">
-                                        P2P SHARING{' '}
-                                        <span className="text-white/20 px-1 font-light">|</span>{' '}
-                                        SECONDS
+                                <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm shadow-sm">
+                                    <Sparkles className="w-3.5 h-3.5 text-white" />
+                                    <span className="text-[11px] md:text-xs font-bold tracking-tight text-white/90">
+                                        Securely share files across devices in seconds
                                     </span>
                                 </div>
                             </div>
