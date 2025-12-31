@@ -119,7 +119,7 @@ export function FileList({ type }: FileListProps) {
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.2 }}
                         >
-                            <Card className="glass-dark hover:bg-white/5 transition-all duration-200 relative overflow-hidden group">
+                            <Card className="group relative overflow-hidden transition-all duration-200 glass-dark hover:bg-white/5">
                                 <CardContent className="p-3 md:p-4">
                                     <div className="flex items-center gap-3 md:gap-4">
                                         <div className="flex-shrink-0">
@@ -134,7 +134,7 @@ export function FileList({ type }: FileListProps) {
                                                     <h4 className="font-medium truncate mb-0.5 text-sm md:text-base transition-colors cursor-text">
                                                         {transfer.metadata.name}
                                                     </h4>
-                                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] md:text-xs text-muted-foreground/80">
+                                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-2xs text-muted-foreground/80 md:text-xs">
                                                         <span className="tabular-nums">
                                                             {formatBytes(transfer.metadata.size)}
                                                         </span>
@@ -162,7 +162,7 @@ export function FileList({ type }: FileListProps) {
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 className={cn(
-                                                                    'h-8 w-8 md:h-9 md:w-9 hover:bg-white/10 transition-none hover:text-white',
+                                                                    'h-8 w-8 md:h-9 md:w-9 transition-colors hover:bg-white/10 hover:text-white',
                                                                     transfer.downloaded
                                                                         ? 'text-emerald-500'
                                                                         : 'text-zinc-400'
@@ -182,7 +182,7 @@ export function FileList({ type }: FileListProps) {
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        className="h-8 w-8 md:h-9 md:w-9 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10"
+                                                        className="h-8 w-8 text-muted-foreground transition-colors hover:bg-rose-500/10 hover:text-rose-500 md:h-9 md:w-9"
                                                         onClick={() =>
                                                             removeFile(
                                                                 transfer.id,

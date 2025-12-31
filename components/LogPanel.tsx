@@ -62,7 +62,7 @@ export const LogPanel: React.FC = () => {
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: '-100%', opacity: 0 }}
                         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                        className="fixed inset-y-0 left-0 z-[60] w-[280px] xs:w-80 lg:w-96 bg-zinc-950/95 backdrop-blur-3xl border-r border-white/10 shadow-2xl flex flex-col"
+                        className="fixed inset-y-0 left-0 z-[60] flex w-72 flex-col border-r border-white/10 bg-zinc-950/95 shadow-2xl backdrop-blur-3xl xs:w-80 lg:w-96"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}

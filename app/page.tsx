@@ -8,8 +8,9 @@ import { FileDropZone } from '@/components/FileDropZone';
 import { FileList } from '@/components/FileList';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Send, Download, Menu } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Download } from 'lucide-react';
 
 import Loading from './loading';
 import { LogPanel } from '@/components/LogPanel';
@@ -84,11 +85,12 @@ export default function HomePage() {
                     className="min-h-screen flex flex-col gradient-secondary"
                 >
                     <div
-                        className={`flex-grow flex flex-col transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                        className={cn(
+                            'flex-grow flex flex-col transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]',
                             isLogPanelOpen
-                                ? 'lg:pl-96 md:pl-80 translate-x-[280px] xs:translate-x-[320px] md:translate-x-0'
+                                ? 'lg:pl-96 md:pl-80 translate-x-72 xs:translate-x-80 md:translate-x-0'
                                 : 'translate-x-0'
-                        }`}
+                        )}
                     >
                         <main className="flex-grow relative px-fluid py-fluid max-w-[1440px] mx-auto w-full">
                             <Header
@@ -103,7 +105,7 @@ export default function HomePage() {
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: 0.1 }}
-                                    className="lg:col-span-4 xl:col-span-4"
+                                    className="lg:col-span-4"
                                 >
                                     <ConnectionPanel />
                                 </motion.div>
@@ -113,7 +115,7 @@ export default function HomePage() {
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: 0.2 }}
-                                    className="lg:col-span-8 xl:col-span-8 flex flex-col gap-6"
+                                    className="flex flex-col gap-6 lg:col-span-8"
                                 >
                                     {/* Upload Zone */}
                                     <Card className="glass-dark border-primary/20">

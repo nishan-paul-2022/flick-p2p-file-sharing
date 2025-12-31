@@ -120,6 +120,20 @@ const config: Config = {
                 float: 'float 4s ease-in-out infinite',
                 glow: 'glow 2s ease-in-out infinite',
             },
+            letterSpacing: {
+                tightest: '0.05em',
+                'widest-lg': '0.15em',
+                'widest-xl': '0.2em',
+                'widest-2xl': '0.25em',
+                'widest-3xl': '0.3em',
+                'widest-4xl': '0.4em',
+            },
+            fontSize: {
+                '2xs': ['0.625rem', { lineHeight: '1rem' }], // 10px
+                '3xs': ['0.5625rem', { lineHeight: '0.875rem' }], // 9px
+                '4xs': ['0.5rem', { lineHeight: '0.75rem' }], // 8px
+                'tiny-plus': ['0.6875rem', { lineHeight: '1rem' }], // 11px
+            },
             boxShadow: {
                 'glass-sm': '0 2px 8px 0 rgba(0, 0, 0, 0.1)',
                 'glass-md': '0 4px 16px 0 rgba(0, 0, 0, 0.15)',
