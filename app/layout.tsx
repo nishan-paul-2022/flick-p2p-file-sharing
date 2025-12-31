@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
-import { Toaster } from 'sonner';
 
 const inter = Inter({
     subsets: ['latin'],
@@ -24,15 +23,13 @@ export const metadata: Metadata = {
         locale: 'en_US',
         url: 'https://flick-p2p.vercel.app',
         title: 'Flick - P2P File Sharing',
-        description:
-            'Share files instantly between devices with zero backend. Fast, secure, and private.',
+        description: 'Share Files Between Devices in Seconds',
         siteName: 'Flick',
     },
     twitter: {
         card: 'summary_large_image',
         title: 'Flick - P2P File Sharing',
-        description:
-            'Share files instantly between devices with zero backend. Fast, secure, and private.',
+        description: 'Share Files Between Devices in Seconds',
     },
     robots: {
         index: true,
@@ -71,7 +68,6 @@ export default function RootLayout({
                     disableTransitionOnChange
                 >
                     {children}
-                    <Toaster position="top-right" richColors closeButton theme="dark" />
                 </ThemeProvider>
             </body>
         </html>

@@ -2,8 +2,10 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { get, set, del } from 'idb-keyval';
 import Peer, { DataConnection } from 'peerjs';
-import { toast } from 'sonner';
-import { FileMetadata, FileTransfer, ConnectionQuality, P2PMessage } from './types';
+
+import { FileMetadata, FileTransfer, ConnectionQuality, P2PMessage, LogEntry } from './types';
+import { OPFSManager } from './opfs-manager';
+import { detectStorageCapabilities, StorageCapabilities } from './storage-mode';
 
 interface PeerState {
     // State
@@ -17,6 +19,9 @@ interface PeerState {
     receivedFiles: FileTransfer[];
     outgoingFiles: FileTransfer[];
     error: string | null;
+    storageCapabilities: StorageCapabilities | null;
+    logs: LogEntry[];
+    hasUnreadLogs: boolean;
 
     // Actions
     setRoomCode: (code: string | null) => void;
@@ -25,57 +30,116 @@ interface PeerState {
     disconnect: () => void;
     sendFile: (file: File) => Promise<void>;
     clearError: () => void;
-    removeFile: (id: string, type: 'received' | 'outgoing') => void;
-    clearHistory: () => void;
+    removeFile: (id: string, type: 'received' | 'outgoing') => Promise<void>;
+    clearHistory: () => Promise<void>;
+    initializeStorage: () => Promise<void>;
+    downloadFile: (transfer: FileTransfer) => Promise<void>;
+    addLog: (type: LogEntry['type'], message: string, description?: string) => void;
+    clearLogs: () => void;
+    setLogsRead: () => void;
 }
 
-const CHUNK_SIZE = 16 * 1024; // 16KB chunks
-const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
+const CHUNK_SIZE = 64 * 1024; // 64KB chunks (more efficient for WebRTC)
+const MAX_BUFFERED_AMOUNT = 1 * 1024 * 1024; // 1MB buffer limit for backpressure
 
-// Helper to handle incoming data
-const handleIncomingData = (
+// Cache for OPFS file handles and writables (can't be serialized)
+const opfsHandleCache = new Map<string, FileSystemFileHandle>();
+const opfsWritableCache = new Map<string, FileSystemWritableFileStream>();
+
+// Helper to handle incoming data with dual-mode support
+const handleIncomingData = async (
     data: unknown,
     get: () => PeerState,
     set: (state: Partial<PeerState> | ((state: PeerState) => Partial<PeerState>)) => void
 ) => {
-    // ... (keep existing handleIncomingData logic largely same, assuming it's fine)
     const msg = data as P2PMessage;
-    const { receivedFiles } = get();
+    const { receivedFiles, storageCapabilities, addLog } = get();
 
     if (msg.type === 'metadata') {
+        const storageMode = storageCapabilities?.mode || 'compatibility';
+        let opfsHandle: FileSystemFileHandle | undefined;
+        let opfsPath: string | undefined;
+
+        // Initialize OPFS file if in power mode
+        if (storageMode === 'power') {
+            try {
+                opfsHandle = await OPFSManager.createTransferFile(msg.transferId);
+                opfsPath = `${msg.transferId}.bin`;
+                opfsHandleCache.set(msg.transferId, opfsHandle);
+
+                // Keep the writable stream open for the duration of the transfer
+                const writable = await OPFSManager.getWritableStream(opfsHandle);
+                opfsWritableCache.set(msg.transferId, writable);
+            } catch (error) {
+                console.error('Failed to create OPFS file, falling back to RAM:', error);
+                // Fallback to compatibility mode for this transfer
+            }
+        }
+
         const transfer: FileTransfer = {
             id: msg.transferId,
             metadata: msg.metadata,
             progress: 0,
             status: 'transferring',
-            chunks: new Array(msg.totalChunks),
             totalChunks: msg.totalChunks,
+            storageMode: opfsPath ? 'power' : 'compatibility',
+            chunks: opfsPath ? undefined : new Array(msg.totalChunks),
+            opfsPath,
         };
 
         set({ receivedFiles: [...receivedFiles, transfer] });
-
-        toast.info('Receiving file', {
-            description: msg.metadata.name,
-        });
+        addLog('info', 'Receiving file', msg.metadata.name);
     } else if (msg.type === 'chunk') {
-        set((state) => ({
-            receivedFiles: state.receivedFiles.map((t) => {
-                if (t.id === msg.transferId && t.chunks) {
-                    t.chunks[msg.chunkIndex] = msg.data;
-                    const receivedChunks = t.chunks.filter((c) => c !== undefined).length;
-                    const progress = (receivedChunks / t.totalChunks) * 100;
-                    return { ...t, progress };
+        const transfer = receivedFiles.find((t) => t.id === msg.transferId);
+
+        if (!transfer) return;
+
+        if (transfer.storageMode === 'power' && transfer.opfsPath) {
+            // Power mode: Write chunk to OPFS
+            try {
+                const writable = opfsWritableCache.get(msg.transferId);
+                if (writable) {
+                    const offset = msg.chunkIndex * CHUNK_SIZE;
+                    await OPFSManager.writeChunkWithWritable(writable, msg.data, offset);
+
+                    const progress = ((msg.chunkIndex + 1) / transfer.totalChunks) * 100;
+
+                    set((state) => ({
+                        receivedFiles: state.receivedFiles.map((t) =>
+                            t.id === msg.transferId ? { ...t, progress } : t
+                        ),
+                    }));
                 }
-                return t;
-            }),
-        }));
+            } catch (error) {
+                console.error('OPFS write failed:', error);
+                addLog('error', 'Storage error', 'Failed to write chunk to disk');
+            }
+        } else if (transfer.chunks) {
+            // Compatibility mode: Store chunk in RAM
+            set((state) => ({
+                receivedFiles: state.receivedFiles.map((t) => {
+                    if (t.id === msg.transferId && t.chunks) {
+                        t.chunks[msg.chunkIndex] = msg.data;
+                        const receivedChunks = t.chunks.filter((c) => c !== undefined).length;
+                        const progress = (receivedChunks / t.totalChunks) * 100;
+                        return { ...t, progress };
+                    }
+                    return t;
+                }),
+            }));
+        }
     } else if (msg.type === 'complete') {
+        // Close the writable stream for this transfer
+        const writable = opfsWritableCache.get(msg.transferId);
+        if (writable) {
+            await writable.close();
+            opfsWritableCache.delete(msg.transferId);
+        }
+
         set((state) => ({
             receivedFiles: state.receivedFiles.map((t) => {
                 if (t.id === msg.transferId) {
-                    toast.success('File received', {
-                        description: t.metadata.name,
-                    });
+                    addLog('success', 'File received', t.metadata.name);
                     return { ...t, status: 'completed', progress: 100 };
                 }
                 return t;
@@ -85,7 +149,6 @@ const handleIncomingData = (
 };
 
 // Custom storage adapter using IndexedDB (idb-keyval)
-// This allows storing larger files (Blobs/ArrayBuffers) and avoids localStorage limits
 const idbStorage = {
     getItem: async (name: string) => {
         const value = await get(name);
@@ -106,14 +169,43 @@ export const usePeerStore = create<PeerState>()(
             connection: null,
             peerId: null,
             roomCode: null,
-            isHost: false, // Default to false
+            isHost: false,
             isConnected: false,
             connectionQuality: 'disconnected',
             receivedFiles: [],
             outgoingFiles: [],
             error: null,
+            storageCapabilities: null,
+            logs: [],
+            hasUnreadLogs: false,
 
             setRoomCode: (code) => set({ roomCode: code }),
+
+            addLog: (type, message, description) => {
+                const log: LogEntry = {
+                    id: Math.random().toString(36).substring(7),
+                    timestamp: Date.now(),
+                    type,
+                    message,
+                    description,
+                };
+                set((state) => ({
+                    logs: [log, ...state.logs].slice(0, 100),
+                    hasUnreadLogs: true,
+                })); // Keep last 100 logs
+            },
+
+            clearLogs: () => set({ logs: [], hasUnreadLogs: false }),
+
+            setLogsRead: () => set({ hasUnreadLogs: false }),
+
+            initializeStorage: async () => {
+                const capabilities = await detectStorageCapabilities();
+                set({ storageCapabilities: capabilities });
+
+                const { addLog } = get();
+                addLog('success', 'Storage initialized', 'Ready for unlimited file sharing');
+            },
 
             initializePeer: (code) => {
                 return new Promise((resolve, reject) => {
@@ -122,8 +214,6 @@ export const usePeerStore = create<PeerState>()(
                         existingPeer.destroy();
                     }
 
-                    // CRITICAL: Only set isHost to true if we're creating with a code
-                    // Guests should NEVER use the room code as their Peer ID
                     const isHost = !!code;
 
                     const peerOptions = {
@@ -136,19 +226,16 @@ export const usePeerStore = create<PeerState>()(
                                 { urls: 'stun:stun4.l.google.com:19302' },
                             ],
                         },
-                        debug: 2, // Add some debug logging to console
+                        debug: 2,
                     };
 
-                    // FIXED: Only use code as Peer ID if we're the host
-                    // Guests always get a random ID
                     const peer = isHost ? new Peer(code, peerOptions) : new Peer(peerOptions);
 
                     peer.on('open', (id) => {
                         console.log('Peer Open:', id);
                         set({ peerId: id, error: null });
-                        toast.success('Peer initialized', {
-                            description: `Your ID: ${id}`,
-                        });
+                        const { addLog } = get();
+                        addLog('success', 'Peer initialized', `Your ID: ${id}`);
                         resolve(id);
                     });
 
@@ -165,21 +252,35 @@ export const usePeerStore = create<PeerState>()(
                         conn.on('open', () => {
                             console.log('Connection Open (Host Side)');
                             set({ isConnected: true, connectionQuality: 'excellent' });
-                            toast.success('Connected to peer', {
-                                description: 'You can now share files',
-                            });
+                            const { addLog } = get();
+                            addLog('success', 'Connected to peer', 'You can now share files');
                         });
 
                         conn.on('data', (data) => handleIncomingData(data, get, set));
 
-                        conn.on('close', () => {
+                        conn.on('close', async () => {
                             console.log('Connection Closed');
+
+                            // Clean up any active OPFS writables
+                            for (const [id, writable] of opfsWritableCache.entries()) {
+                                try {
+                                    await writable.close();
+                                } catch (e) {
+                                    console.warn(
+                                        'Failed to close writable on connection close:',
+                                        e
+                                    );
+                                }
+                                opfsWritableCache.delete(id);
+                            }
+
                             set({
                                 isConnected: false,
                                 connectionQuality: 'disconnected',
                                 connection: null,
                             });
-                            toast.info('Peer disconnected');
+                            const { addLog } = get();
+                            addLog('info', 'Peer disconnected');
                         });
 
                         conn.on('error', (err) => {
@@ -198,22 +299,23 @@ export const usePeerStore = create<PeerState>()(
                                 peer: null,
                                 isHost: false,
                             });
-                            toast.error(
+                            const { addLog } = get();
+                            addLog(
+                                'error',
                                 'Session expired or ID taken. Please join or create a new room.'
                             );
                         } else {
-                            // Don't clear state for minor errors, but show them
                             set({ error: err.message });
-                            toast.error('Connection error', {
-                                description: err.message,
-                            });
+                            const { addLog } = get();
+                            addLog('error', 'Connection error', err.message);
                         }
                         reject(err);
                     });
 
                     peer.on('disconnected', () => {
                         console.log('Peer disconnected from signaling server');
-                        toast.warning('Connection lost. Reconnecting...');
+                        const { addLog } = get();
+                        addLog('warning', 'Connection lost. Reconnecting...');
                         peer.reconnect();
                     });
 
@@ -233,9 +335,9 @@ export const usePeerStore = create<PeerState>()(
             },
 
             connectToPeer: async (targetCode) => {
-                const { peer } = get();
+                const { peer, addLog } = get();
                 if (!peer) {
-                    toast.error('Peer not initialized');
+                    addLog('error', 'Peer not initialized');
                     return;
                 }
 
@@ -249,7 +351,6 @@ export const usePeerStore = create<PeerState>()(
 
                     set({ connection: conn });
 
-                    // Connection Timeout Promise
                     const timeoutPromise = new Promise((_, reject) => {
                         setTimeout(
                             () =>
@@ -262,7 +363,6 @@ export const usePeerStore = create<PeerState>()(
                         );
                     });
 
-                    // Connection Open Promise
                     const openPromise = new Promise<void>((resolve, reject) => {
                         conn.on('open', () => {
                             resolve();
@@ -272,14 +372,12 @@ export const usePeerStore = create<PeerState>()(
                         });
                     });
 
-                    // Race condition: Open or Timeout
                     Promise.race([openPromise, timeoutPromise])
                         .then(() => {
                             console.log('Connection Open (Guest Side)');
                             set({ isConnected: true, connectionQuality: 'excellent' });
-                            toast.success('Connected to peer', {
-                                description: 'You can now share files',
-                            });
+                            const { addLog } = get();
+                            addLog('success', 'Connected to peer', 'You can now share files');
                         })
                         .catch((err) => {
                             const errorMessage =
@@ -290,31 +388,53 @@ export const usePeerStore = create<PeerState>()(
                                 connection: null,
                                 connectionQuality: 'disconnected',
                             });
-                            toast.error('Connection Failed', { description: errorMessage });
+                            const { addLog } = get();
+                            addLog('error', 'Connection Failed', errorMessage);
                             conn.close();
                         });
 
                     conn.on('data', (data) => handleIncomingData(data, get, set));
 
-                    conn.on('close', () => {
+                    conn.on('close', async () => {
+                        // Clean up any active OPFS writables
+                        for (const [id, writable] of opfsWritableCache.entries()) {
+                            try {
+                                await writable.close();
+                            } catch (e) {
+                                console.warn('Failed to close writable on connection close:', e);
+                            }
+                            opfsWritableCache.delete(id);
+                        }
+
                         set({
                             isConnected: false,
                             connectionQuality: 'disconnected',
                             connection: null,
                         });
-                        toast.info('Peer disconnected');
+                        const { addLog } = get();
+                        addLog('info', 'Peer disconnected');
                     });
                 } catch (err) {
                     const errorMessage = err instanceof Error ? err.message : 'Failed to connect';
                     set({ error: errorMessage });
-                    toast.error('Failed to connect', {
-                        description: errorMessage,
-                    });
+                    const { addLog } = get();
+                    addLog('error', 'Failed to connect', errorMessage);
                 }
             },
 
-            disconnect: () => {
+            disconnect: async () => {
                 const { connection, peer } = get();
+
+                // Clean up any active OPFS writables
+                for (const [id, writable] of opfsWritableCache.entries()) {
+                    try {
+                        await writable.close();
+                    } catch (e) {
+                        console.warn('Failed to close writable on disconnect:', e);
+                    }
+                    opfsWritableCache.delete(id);
+                }
+
                 if (connection) {
                     connection.close();
                 }
@@ -328,20 +448,14 @@ export const usePeerStore = create<PeerState>()(
                     peer: null,
                     peerId: null,
                     roomCode: null,
-                    isHost: false, // Reset host state
+                    isHost: false,
                 });
             },
 
             sendFile: async (file) => {
-                // ... (keep existing sendFile logic)
-                const { connection, isConnected } = get();
+                const { connection, isConnected, storageCapabilities, addLog } = get();
                 if (!connection || !isConnected) {
-                    toast.error('Not connected to peer');
-                    return;
-                }
-
-                if (file.size > MAX_FILE_SIZE) {
-                    toast.error('File size exceeds 500MB limit');
+                    addLog('error', 'Not connected to peer');
                     return;
                 }
 
@@ -354,6 +468,7 @@ export const usePeerStore = create<PeerState>()(
                 };
 
                 const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+                const storageMode = storageCapabilities?.mode || 'compatibility';
 
                 const transfer: FileTransfer = {
                     id: transferId,
@@ -361,6 +476,7 @@ export const usePeerStore = create<PeerState>()(
                     progress: 0,
                     status: 'transferring',
                     totalChunks,
+                    storageMode,
                 };
 
                 set((state) => ({ outgoingFiles: [...state.outgoingFiles, transfer] }));
@@ -373,23 +489,36 @@ export const usePeerStore = create<PeerState>()(
                     totalChunks,
                 });
 
-                // Send file in chunks
-                const reader = new FileReader();
+                // Send file in chunks with backpressure
                 let offset = 0;
                 let chunkIndex = 0;
 
-                const sendNextChunk = () => {
-                    const chunk = file.slice(offset, offset + CHUNK_SIZE);
-                    reader.readAsArrayBuffer(chunk);
-                };
+                const sendNextChunk = async () => {
+                    if (offset >= file.size) {
+                        connection.send({
+                            type: 'complete',
+                            transferId,
+                        });
+                        const { addLog } = get();
+                        addLog('success', 'File sent successfully', file.name);
+                        return;
+                    }
 
-                reader.onload = (e) => {
-                    if (e.target?.result && connection) {
+                    // Backpressure: if buffer is too full, wait before sending next chunk
+                    const dc = (connection as any).dataChannel as RTCDataChannel;
+                    if (dc && dc.bufferedAmount > MAX_BUFFERED_AMOUNT) {
+                        setTimeout(sendNextChunk, 50);
+                        return;
+                    }
+
+                    const chunk = file.slice(offset, offset + CHUNK_SIZE);
+                    try {
+                        const arrayBuffer = await chunk.arrayBuffer();
                         connection.send({
                             type: 'chunk',
                             transferId,
                             chunkIndex,
-                            data: e.target.result,
+                            data: arrayBuffer,
                         });
 
                         chunkIndex++;
@@ -409,17 +538,17 @@ export const usePeerStore = create<PeerState>()(
                             ),
                         }));
 
-                        if (offset < file.size) {
-                            sendNextChunk();
+                        // Continue to next chunk
+                        // Use microtask or timeout to prevent stack overflow and let UI breathe
+                        if (chunkIndex % 10 === 0) {
+                            setTimeout(sendNextChunk, 0);
                         } else {
-                            connection.send({
-                                type: 'complete',
-                                transferId,
-                            });
-                            toast.success('File sent successfully', {
-                                description: file.name,
-                            });
+                            sendNextChunk();
                         }
+                    } catch (error) {
+                        console.error('Error reading/sending chunk:', error);
+                        const { addLog } = get();
+                        addLog('error', 'Transfer failed', 'Error reading file');
                     }
                 };
 
@@ -428,7 +557,21 @@ export const usePeerStore = create<PeerState>()(
 
             clearError: () => set({ error: null }),
 
-            removeFile: (id, type) => {
+            removeFile: async (id, type) => {
+                const state = get();
+                const files = type === 'received' ? state.receivedFiles : state.outgoingFiles;
+                const file = files.find((f) => f.id === id);
+
+                // Clean up OPFS file if in power mode
+                if (file?.storageMode === 'power' && file.opfsPath) {
+                    try {
+                        await OPFSManager.deleteTransferFile(id);
+                        opfsHandleCache.delete(id);
+                    } catch (error) {
+                        console.warn('Failed to delete OPFS file:', error);
+                    }
+                }
+
                 set((state) => {
                     if (type === 'received') {
                         return {
@@ -439,27 +582,96 @@ export const usePeerStore = create<PeerState>()(
                         outgoingFiles: state.outgoingFiles.filter((f) => f.id !== id),
                     };
                 });
-                toast.success('File removed from history');
+
+                const { addLog } = get();
+                addLog('success', 'File removed from history');
             },
 
-            clearHistory: () => {
+            clearHistory: async () => {
+                const { receivedFiles } = get();
+
+                // Clean up all OPFS files
+                const opfsFiles = receivedFiles.filter((f) => f.storageMode === 'power');
+                for (const file of opfsFiles) {
+                    try {
+                        await OPFSManager.deleteTransferFile(file.id);
+                        opfsHandleCache.delete(file.id);
+                    } catch (error) {
+                        console.warn('Failed to delete OPFS file:', error);
+                    }
+                }
+
                 set({ receivedFiles: [], outgoingFiles: [] });
-                toast.success('History cleared', {
-                    description: 'All transfer history has been removed',
-                });
+                const { addLog } = get();
+                addLog('success', 'History cleared', 'All transfer history has been removed');
+            },
+
+            downloadFile: async (transfer: FileTransfer) => {
+                try {
+                    let blob: Blob;
+
+                    if (transfer.storageMode === 'power' && transfer.opfsPath) {
+                        // Power mode: Get file from OPFS
+                        const handle =
+                            opfsHandleCache.get(transfer.id) ||
+                            (await OPFSManager.getTransferFile(transfer.id));
+
+                        if (!handle) {
+                            const { addLog } = get();
+                            addLog('error', 'File not found in storage');
+                            return;
+                        }
+
+                        const file = await OPFSManager.getFileAsBlob(handle);
+                        blob = file;
+                    } else if (transfer.chunks) {
+                        // Compatibility mode: Reconstruct from RAM chunks
+                        blob = new Blob(transfer.chunks, { type: transfer.metadata.type });
+                    } else {
+                        const { addLog } = get();
+                        addLog('error', 'File data not available');
+                        return;
+                    }
+
+                    // Trigger download
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = transfer.metadata.name;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    const { addLog } = get();
+                    addLog('success', 'Download started', transfer.metadata.name);
+                } catch (error) {
+                    console.error('Download failed:', error);
+                    const { addLog } = get();
+                    addLog(
+                        'error',
+                        'Download failed',
+                        error instanceof Error ? error.message : 'Unknown error'
+                    );
+                }
             },
         }),
         {
             name: 'flick-peer-storage',
             storage: idbStorage,
             partialize: (state) => ({
-                // Only persist roomCode if user is host
-                // Guests should reconnect manually to avoid ID collision
                 roomCode: state.isHost ? state.roomCode : null,
                 peerId: state.isHost ? state.peerId : null,
                 isHost: state.isHost,
-                receivedFiles: state.receivedFiles,
+                receivedFiles: state.receivedFiles.map((f) => ({
+                    ...f,
+                    // Don't persist chunks (too large for IndexedDB)
+                    chunks: undefined,
+                })),
                 outgoingFiles: state.outgoingFiles,
+                storageCapabilities: state.storageCapabilities,
+                logs: state.logs,
+                hasUnreadLogs: state.hasUnreadLogs,
             }),
         }
     )

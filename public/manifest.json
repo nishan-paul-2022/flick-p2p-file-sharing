@@ -1,7 +1,7 @@
 {
   "name": "Flick - P2P File Sharing",
   "short_name": "Flick",
-  "description": "Share files instantly between devices with zero backend. Fast, secure, and private peer-to-peer file transfer.",
+  "description": "Share Files Between Devices in Seconds",
   "start_url": "/",
   "display": "standalone",
   "background_color": "transparent",

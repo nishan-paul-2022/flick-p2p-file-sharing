@@ -3,17 +3,11 @@
 import { useCallback } from 'react';
 import { Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 import { usePeerStore } from '@/lib/store';
 
-interface FileDropZoneProps {
-    maxSize?: number;
-}
+export function FileDropZone() {
+    const { isConnected, sendFile, roomCode, storageCapabilities, addLog } = usePeerStore();
 
-export function FileDropZone({
-    maxSize = 500 * 1024 * 1024, // 500MB
-}: FileDropZoneProps) {
-    const { isConnected, sendFile, roomCode } = usePeerStore();
     const disabled = !isConnected;
 
     const handleFilesSelected = useCallback(
@@ -24,9 +18,7 @@ export function FileDropZone({
                 } catch (error) {
                     const errorMessage =
                         error instanceof Error ? error.message : 'Failed to send file';
-                    toast.error('Failed to send file', {
-                        description: errorMessage,
-                    });
+                    addLog('error', 'Failed to send file', errorMessage);
                 }
             }
         },
@@ -42,22 +34,11 @@ export function FileDropZone({
 
             const files = Array.from(e.dataTransfer.files);
 
-            // Validate file sizes
-            const validFiles = files.filter((file) => {
-                if (file.size > maxSize) {
-                    toast.error('File too large', {
-                        description: `${file.name} exceeds ${maxSize / (1024 * 1024)}MB limit`,
-                    });
-                    return false;
-                }
-                return true;
-            });
-
-            if (validFiles.length > 0) {
-                handleFilesSelected(validFiles);
+            if (files.length > 0) {
+                handleFilesSelected(files);
             }
         },
-        [handleFilesSelected, disabled, maxSize]
+        [handleFilesSelected, disabled]
     );
 
     const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -71,24 +52,14 @@ export function FileDropZone({
 
             const files = Array.from(e.target.files || []);
 
-            const validFiles = files.filter((file) => {
-                if (file.size > maxSize) {
-                    toast.error('File too large', {
-                        description: `${file.name} exceeds ${maxSize / (1024 * 1024)}MB limit`,
-                    });
-                    return false;
-                }
-                return true;
-            });
-
-            if (validFiles.length > 0) {
-                handleFilesSelected(validFiles);
+            if (files.length > 0) {
+                handleFilesSelected(files);
             }
 
             // Reset input
             e.target.value = '';
         },
-        [handleFilesSelected, disabled, maxSize]
+        [handleFilesSelected, disabled]
     );
 
     return (
@@ -141,9 +112,6 @@ export function FileDropZone({
                                 ? 'Waiting for connection...'
                                 : 'Connect to a peer first'
                             : 'Drop files here or click to browse'}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                        Maximum file size: {maxSize / (1024 * 1024)}MB
                     </p>
                 </div>
             </div>

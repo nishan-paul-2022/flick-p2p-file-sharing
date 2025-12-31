@@ -7,11 +7,13 @@ import { usePeerStore } from '@/lib/store';
 import { ConnectionPanel } from '@/components/ConnectionPanel';
 import { FileDropZone } from '@/components/FileDropZone';
 import { FileList } from '@/components/FileList';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Download, Zap } from 'lucide-react';
+import { Send, Download, Sparkles } from 'lucide-react';
+import { StorageModeIndicator } from '@/components/StorageModeIndicator';
 import Loading from './loading';
+import { LogPanel } from '@/components/LogPanel';
 
 export default function HomePage() {
     const searchParams = useSearchParams();
@@ -82,46 +84,42 @@ export default function HomePage() {
                     transition={{ duration: 0.3 }}
                     className="min-h-screen gradient-secondary"
                 >
-                    {/* Animated background elements */}
-                    <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                        <div className="absolute top-1/4 -left-48 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
-                        <div
-                            className="absolute bottom-1/4 -right-48 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl animate-pulse"
-                            style={{ animationDelay: '2s' }}
-                        />
-                    </div>
-
                     <div className="relative container mx-auto px-4 py-8 max-w-7xl">
                         {/* Header */}
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="text-center mb-12"
+                            className="text-center mb-10 flex flex-col items-center"
                         >
-                            <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-                                <Zap className="w-4 h-4 text-primary" />
-                                <span className="text-sm font-medium text-primary truncate">
-                                    Peer-to-Peer File Sharing
-                                </span>
-                            </div>
-
-                            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 flex items-center justify-center gap-4">
-                                <Image
-                                    src="/icon.svg"
-                                    alt="Flick Icon"
-                                    width={64}
-                                    height={64}
-                                    className="w-12 h-12 md:w-16 md:h-16"
-                                    priority
-                                />
-                                <span className="gradient-primary bg-clip-text text-transparent">
-                                    Flick
-                                </span>
+                            <h1 className="text-4xl sm:text-5xl font-extrabold mb-3 tracking-tight flex items-center justify-center gap-3">
+                                <motion.div
+                                    className="relative flex items-center justify-center"
+                                    whileHover={{ scale: 1.05 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                                >
+                                    <Image
+                                        src="/icon.svg"
+                                        alt="Flick Icon"
+                                        width={48}
+                                        height={48}
+                                        className="w-9 h-9 md:w-11 md:h-11 relative z-10"
+                                        priority
+                                    />
+                                </motion.div>
+                                <span className="text-primary">Flick</span>
                             </h1>
-                            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                                Share files instantly between devices with zero backend. Fast,
-                                secure, and private.
-                            </p>
+
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.2 }}
+                                className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/30 border border-white/10 backdrop-blur-sm shadow-sm"
+                            >
+                                <Sparkles className="w-3.5 h-3.5 text-muted-foreground" />
+                                <span className="text-xs md:text-sm font-semibold tracking-tight text-foreground/80">
+                                    Share Files Between Devices in Seconds
+                                </span>
+                            </motion.div>
                         </motion.div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -144,14 +142,14 @@ export default function HomePage() {
                             >
                                 {/* Upload Zone */}
                                 <Card className="glass-dark border-primary/20">
-                                    <CardHeader>
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
                                         <CardTitle className="flex items-center gap-2">
-                                            <Send className="w-5 h-5" />
+                                            <Send className="w-5 h-5 text-sky-400" />
                                             Send Files
                                         </CardTitle>
-                                        <CardDescription>
+                                        <div className="hidden sm:block px-4 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-xs font-medium text-zinc-300 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] backdrop-blur-md">
                                             Drag and drop files or click to browse
-                                        </CardDescription>
+                                        </div>
                                     </CardHeader>
                                     <CardContent>
                                         <FileDropZone />
@@ -160,20 +158,30 @@ export default function HomePage() {
 
                                 {/* File Lists */}
                                 <Tabs defaultValue="received" className="w-full">
-                                    <TabsList className="grid w-full grid-cols-2 glass-dark p-1 rounded-xl border-primary/20">
+                                    <TabsList className="grid w-full grid-cols-2 glass-dark p-1 rounded-xl border-white/10">
                                         <TabsTrigger
                                             value="received"
-                                            className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300 font-semibold"
+                                            className="group gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold"
                                         >
-                                            <Download className="w-4 h-4" />
-                                            Received ({receivedFiles.length})
+                                            <div className="flex items-center gap-2">
+                                                <Download className="w-4 h-4 group-data-[state=active]:text-foreground transition-colors" />
+                                                <span>Received</span>
+                                                <span className="ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-white/5 border border-white/5 px-1.5 text-[11px] font-bold text-muted-foreground group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground group-data-[state=active]:border-white/20 transition-all">
+                                                    {receivedFiles.length}
+                                                </span>
+                                            </div>
                                         </TabsTrigger>
                                         <TabsTrigger
                                             value="sent"
-                                            className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300 font-semibold"
+                                            className="group gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold"
                                         >
-                                            <Send className="w-4 h-4" />
-                                            Sent ({outgoingFiles.length})
+                                            <div className="flex items-center gap-2">
+                                                <Send className="w-4 h-4 group-data-[state=active]:text-foreground transition-colors" />
+                                                <span>Sent</span>
+                                                <span className="ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-white/5 border border-white/5 px-1.5 text-[11px] font-bold text-muted-foreground group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground group-data-[state=active]:border-white/20 transition-all">
+                                                    {outgoingFiles.length}
+                                                </span>
+                                            </div>
                                         </TabsTrigger>
                                     </TabsList>
 
@@ -188,44 +196,43 @@ export default function HomePage() {
                             </motion.div>
                         </div>
 
-                        {/* Features */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3 }}
-                            className="mt-12 grid md:grid-cols-3 gap-6"
-                        >
-                            {[
-                                {
-                                    title: 'Zero Backend',
-                                    description:
-                                        'Direct peer-to-peer connection. No servers, no storage.',
-                                },
-                                {
-                                    title: 'Fast Transfer',
-                                    description:
-                                        'WebRTC technology for maximum speed and efficiency.',
-                                },
-                                {
-                                    title: 'Private & Secure',
-                                    description:
-                                        'End-to-end encrypted. Your files never touch our servers.',
-                                },
-                            ].map((feature, i) => (
-                                <Card
-                                    key={i}
-                                    className="glass-dark border-primary/10 hover:border-primary/30 transition-all"
-                                >
-                                    <CardContent className="p-6">
-                                        <h3 className="font-semibold mb-2">{feature.title}</h3>
-                                        <p className="text-sm text-muted-foreground">
-                                            {feature.description}
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </motion.div>
+                        {/* Footer */}
+                        <footer className="mt-16 pt-8 border-t border-primary/5">
+                            <div className="grid md:grid-cols-3 gap-8 mb-8 text-center md:text-left">
+                                <div className="space-y-2">
+                                    <h4 className="text-sm font-semibold text-foreground">
+                                        No Servers
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground leading-relaxed">
+                                        Files go directly between devices. We never see or store
+                                        your data.
+                                    </p>
+                                </div>
+                                <div className="space-y-2">
+                                    <h4 className="text-sm font-semibold text-foreground">
+                                        Direct & Fast
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground leading-relaxed">
+                                        Powered by WebRTC for the fastest possible transfer speeds.
+                                    </p>
+                                </div>
+                                <div className="space-y-2">
+                                    <h4 className="text-sm font-semibold text-foreground">
+                                        Always Private
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground leading-relaxed">
+                                        End-to-end encrypted and completely anonymous file sharing.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="pt-8 border-t border-primary/5 text-center">
+                                <p className="text-[10px] text-muted-foreground/40 uppercase tracking-[0.2em] font-medium">
+                                    Flick &bull; Simple &bull; Fast &bull; Private
+                                </p>
+                            </div>
+                        </footer>
                     </div>
+                    <LogPanel />
                 </motion.div>
             )}
         </AnimatePresence>
