@@ -167,10 +167,10 @@ export function FileList({ type }: FileListProps) {
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 className={cn(
-                                                                    'h-8 w-8 transition-colors hover:bg-white/10 hover:text-white md:h-9 md:w-9',
+                                                                    'h-8 w-8 transition-colors md:h-9 md:w-9',
                                                                     transfer.downloaded
-                                                                        ? 'text-emerald-500'
-                                                                        : 'text-zinc-400'
+                                                                        ? 'text-emerald-500 hover:bg-emerald-500/10 hover:text-emerald-500'
+                                                                        : 'text-zinc-400 hover:bg-primary/10 hover:text-primary'
                                                                 )}
                                                                 onClick={() =>
                                                                     handleDownload(transfer)
