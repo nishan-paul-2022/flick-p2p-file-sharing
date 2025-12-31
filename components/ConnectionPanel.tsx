@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 
 import { Copy, Check, Wifi, WifiOff, RefreshCw, Trash2, Zap, ZapOff } from 'lucide-react';
 import { copyToClipboard, generateRoomCode, isValidRoomCode, cn } from '@/lib/utils';
+import { ROOM_CODE_LENGTH } from '@/lib/constants';
 import { motion } from 'framer-motion';
 import { usePeerStore } from '@/lib/store';
 import { StorageModeIndicator } from './StorageModeIndicator';
@@ -160,18 +161,22 @@ export function ConnectionPanel() {
                     >
                         <button
                             onClick={handleCreateRoom}
+                            aria-label="Create a new room"
                             className="group relative w-full h-24 rounded-2xl bg-[#0a1a24]/40 border border-sky-500/10 hover:border-sky-500/30 transition-all duration-500 overflow-hidden"
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                             <div className="relative flex items-center justify-center gap-3">
-                                <RefreshCw className="w-4 h-4 text-sky-400 group-hover:rotate-180 transition-transform duration-700" />
+                                <RefreshCw
+                                    className="w-4 h-4 text-sky-400 group-hover:rotate-180 transition-transform duration-700"
+                                    aria-hidden="true"
+                                />
                                 <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-sky-400/70 group-hover:text-sky-400 transition-colors">
                                     Create New Room
                                 </span>
                             </div>
                         </button>
 
-                        <div className="flex items-center gap-4 py-4">
+                        <div className="flex items-center gap-4 py-4" aria-hidden="true">
                             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/[0.05] to-white/[0.05]" />
                             <span className="flex items-center justify-center px-4 py-1.5 rounded-full border border-white/5 bg-black/20 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/70 backdrop-blur-md">
                                 or
@@ -181,7 +186,10 @@ export function ConnectionPanel() {
 
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <Zap className="w-4 h-4 text-muted-foreground/20 group-focus-within:text-white/40 transition-colors" />
+                                <Zap
+                                    className="w-4 h-4 text-muted-foreground/20 group-focus-within:text-white/40 transition-colors"
+                                    aria-hidden="true"
+                                />
                             </div>
                             <Input
                                 placeholder="ROOM CODE"
@@ -189,15 +197,17 @@ export function ConnectionPanel() {
                                 onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                                 onKeyDown={(e) => e.key === 'Enter' && handleJoinRoom()}
                                 maxLength={6}
+                                aria-label="Enter 6-character room code"
                                 className="pl-12 pr-24 h-14 bg-white/[0.02] border-white/[0.05] focus:border-white/[0.12] focus:ring-0 text-base md:text-lg tracking-[0.3em] md:tracking-[0.4em] font-mono transition-all rounded-xl"
                             />
                             <div className="absolute inset-y-2 right-2">
                                 <Button
                                     onClick={handleJoinRoom}
-                                    disabled={joinCode.length !== 6 || isJoining}
+                                    disabled={joinCode.length !== ROOM_CODE_LENGTH || isJoining}
+                                    aria-label="Join room"
                                     className={cn(
                                         'h-full px-5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all duration-500',
-                                        joinCode.length === 6 && !isJoining
+                                        joinCode.length === ROOM_CODE_LENGTH && !isJoining
                                             ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10'
                                             : 'bg-white/5 text-white/40 border border-white/5'
                                     )}
@@ -218,12 +228,16 @@ export function ConnectionPanel() {
                         className="space-y-6"
                     >
                         <div className="flex items-center justify-between p-4 md:p-6 rounded-2xl bg-[#0a1a24]/60 border border-sky-500/20 overflow-hidden">
-                            <code className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-[0.15em] md:tracking-[0.2em] font-mono text-sky-400 truncate">
+                            <code
+                                className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-[0.15em] md:tracking-[0.2em] font-mono text-sky-400 truncate"
+                                aria-label={`Current room code is ${roomCode}`}
+                            >
                                 {roomCode}
                             </code>
 
                             <button
                                 onClick={handleCopyCode}
+                                aria-label="Copy room code to clipboard"
                                 className="p-2 md:p-3 rounded-xl bg-white/5 border border-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all ml-2 md:ml-4 flex-shrink-0"
                             >
                                 {copied ? (
@@ -236,9 +250,13 @@ export function ConnectionPanel() {
 
                         <button
                             onClick={disconnect}
+                            aria-label="Leave the current room"
                             className="w-full h-14 flex items-center justify-center gap-3 rounded-xl border border-red-500/10 bg-red-500/5 text-red-500/60 hover:bg-red-600 hover:text-white hover:border-red-600 text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 group"
                         >
-                            <ZapOff className="w-4 h-4 transition-transform group-hover:scale-110" />
+                            <ZapOff
+                                className="w-4 h-4 transition-transform group-hover:scale-110"
+                                aria-hidden="true"
+                            />
                             Leave Room
                         </button>
                     </motion.div>
@@ -247,9 +265,13 @@ export function ConnectionPanel() {
                 <div className="pt-2 flex justify-center">
                     <button
                         onClick={clearHistory}
+                        aria-label="Clear all transfer history"
                         className="flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80 border border-white/5 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-300 group"
                     >
-                        <Trash2 className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100" />
+                        <Trash2
+                            className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100"
+                            aria-hidden="true"
+                        />
                         Clear History
                     </button>
                 </div>

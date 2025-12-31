@@ -6,8 +6,13 @@ import Peer, { DataConnection } from 'peerjs';
 import { FileMetadata, FileTransfer, ConnectionQuality, P2PMessage, LogEntry } from './types';
 import { OPFSManager } from './opfs-manager';
 import { detectStorageCapabilities, StorageCapabilities } from './storage-mode';
+import { CHUNK_SIZE, MAX_BUFFERED_AMOUNT, MAX_LOGS, ICE_SERVERS } from './constants';
 
-interface PeerState {
+export interface ExtendedDataConnection extends DataConnection {
+    dataChannel: RTCDataChannel;
+}
+
+export interface PeerState {
     // State
     peer: Peer | null;
     connection: DataConnection | null;
@@ -40,9 +45,6 @@ interface PeerState {
     clearLogs: () => void;
     setLogsRead: () => void;
 }
-
-const CHUNK_SIZE = 64 * 1024; // 64KB chunks (more efficient for WebRTC)
-const MAX_BUFFERED_AMOUNT = 1 * 1024 * 1024; // 1MB buffer limit for backpressure
 
 // Cache for OPFS file handles and writables (can't be serialized)
 const opfsHandleCache = new Map<string, FileSystemFileHandle>();
@@ -202,7 +204,7 @@ export const usePeerStore = create<PeerState>()(
                     description,
                 };
                 set((state) => ({
-                    logs: [log, ...state.logs].slice(0, 100),
+                    logs: [log, ...state.logs].slice(0, MAX_LOGS),
                     hasUnreadLogs: true,
                 })); // Keep last 100 logs
             },
@@ -230,13 +232,7 @@ export const usePeerStore = create<PeerState>()(
 
                     const peerOptions = {
                         config: {
-                            iceServers: [
-                                { urls: 'stun:stun.l.google.com:19302' },
-                                { urls: 'stun:stun1.l.google.com:19302' },
-                                { urls: 'stun:stun2.l.google.com:19302' },
-                                { urls: 'stun:stun3.l.google.com:19302' },
-                                { urls: 'stun:stun4.l.google.com:19302' },
-                            ],
+                            iceServers: ICE_SERVERS,
                         },
                         debug: 2,
                     };
@@ -517,8 +513,7 @@ export const usePeerStore = create<PeerState>()(
                     }
 
                     // Backpressure: if buffer is too full, wait before sending next chunk
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const dc = (connection as any).dataChannel as RTCDataChannel;
+                    const dc = (connection as ExtendedDataConnection).dataChannel;
                     if (dc && dc.bufferedAmount > MAX_BUFFERED_AMOUNT) {
                         setTimeout(sendNextChunk, 50);
                         return;
