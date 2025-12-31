@@ -120,24 +120,26 @@ export function FileList({ type }: FileListProps) {
                             transition={{ duration: 0.2 }}
                         >
                             <Card className="glass-dark hover:bg-white/5 transition-all duration-200 relative overflow-hidden group">
-                                <CardContent className="p-4">
-                                    <div className="flex items-center gap-4">
+                                <CardContent className="p-3 md:p-4">
+                                    <div className="flex items-center gap-3 md:gap-4">
                                         <div className="flex-shrink-0">
-                                            <FileIcon className={cn('w-7 h-7', iconColor)} />
+                                            <FileIcon
+                                                className={cn('w-6 h-6 md:w-7 md:h-7', iconColor)}
+                                            />
                                         </div>
 
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between gap-2">
                                                 <div className="flex-1 min-w-0">
-                                                    <h4 className="font-medium truncate mb-0.5 max-w-[150px] sm:max-w-none transition-colors cursor-text">
+                                                    <h4 className="font-medium truncate mb-0.5 text-sm md:text-base transition-colors cursor-text">
                                                         {transfer.metadata.name}
                                                     </h4>
-                                                    <div className="flex items-center gap-2 text-xs text-muted-foreground/80">
+                                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] md:text-xs text-muted-foreground/80">
                                                         <span className="tabular-nums">
                                                             {formatBytes(transfer.metadata.size)}
                                                         </span>
-                                                        <span>•</span>
-                                                        <span>
+                                                        <span className="hidden xs:inline">•</span>
+                                                        <span className="hidden xs:inline">
                                                             {formatTimestamp(
                                                                 transfer.metadata.timestamp
                                                             )}
@@ -153,14 +155,14 @@ export function FileList({ type }: FileListProps) {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center gap-1.5">
+                                                <div className="flex items-center gap-1 md:gap-1.5 flex-shrink-0">
                                                     {transfer.status === 'completed' &&
                                                         type === 'received' && (
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 className={cn(
-                                                                    'h-9 w-9 hover:bg-white/10 transition-none hover:text-white',
+                                                                    'h-8 w-8 md:h-9 md:w-9 hover:bg-white/10 transition-none hover:text-white',
                                                                     transfer.downloaded
                                                                         ? 'text-emerald-500'
                                                                         : 'text-zinc-400'
@@ -174,13 +176,13 @@ export function FileList({ type }: FileListProps) {
                                                                         : 'Download'
                                                                 }
                                                             >
-                                                                <Download className="w-5 h-5" />
+                                                                <Download className="w-4 h-4 md:w-5 md:h-5" />
                                                             </Button>
                                                         )}
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        className="h-9 w-9 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10"
+                                                        className="h-8 w-8 md:h-9 md:w-9 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10"
                                                         onClick={() =>
                                                             removeFile(
                                                                 transfer.id,
@@ -191,9 +193,9 @@ export function FileList({ type }: FileListProps) {
                                                         }
                                                         title="Remove"
                                                     >
-                                                        <Trash2 className="w-4 h-4" />
+                                                        <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                                     </Button>
-                                                    <div className="shrink-0 h-9 w-9 flex items-center justify-center">
+                                                    <div className="shrink-0 h-8 w-8 md:h-9 md:w-9 flex items-center justify-center">
                                                         {getStatusIcon(transfer.status)}
                                                     </div>
                                                 </div>

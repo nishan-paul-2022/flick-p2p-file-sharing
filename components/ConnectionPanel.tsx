@@ -110,23 +110,26 @@ export function ConnectionPanel() {
         return (
             <div
                 className={cn(
-                    'flex items-center gap-3 px-3 py-1.5 rounded-full bg-black/40 border transition-all duration-500',
+                    'flex items-center gap-2 md:gap-3 px-2.5 md:px-3 py-1 md:py-1.5 rounded-full bg-black/40 border transition-all duration-500',
                     state.border
                 )}
             >
                 <div
                     className={cn(
-                        'flex items-center justify-center w-6 h-6 rounded-full transition-colors duration-500',
+                        'flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-full transition-colors duration-500',
                         state.bg
                     )}
                 >
                     <Icon
-                        className={cn('w-3.5 h-3.5 transition-colors duration-500', state.color)}
+                        className={cn(
+                            'w-3 md:w-3.5 h-3 md:h-3.5 transition-colors duration-500',
+                            state.color
+                        )}
                     />
                 </div>
                 <span
                     className={cn(
-                        'text-[10px] font-bold uppercase tracking-[0.15em] transition-colors duration-500',
+                        'text-[9px] md:text-[10px] font-bold uppercase tracking-[0.1em] md:tracking-[0.15em] transition-colors duration-500 whitespace-nowrap',
                         state.color
                     )}
                 >
@@ -186,7 +189,7 @@ export function ConnectionPanel() {
                                 onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                                 onKeyDown={(e) => e.key === 'Enter' && handleJoinRoom()}
                                 maxLength={6}
-                                className="pl-12 pr-24 h-14 bg-white/[0.02] border-white/[0.05] focus:border-white/[0.12] focus:ring-0 text-lg tracking-[0.4em] font-mono transition-all rounded-xl"
+                                className="pl-12 pr-24 h-14 bg-white/[0.02] border-white/[0.05] focus:border-white/[0.12] focus:ring-0 text-base md:text-lg tracking-[0.3em] md:tracking-[0.4em] font-mono transition-all rounded-xl"
                             />
                             <div className="absolute inset-y-2 right-2">
                                 <Button
@@ -214,19 +217,19 @@ export function ConnectionPanel() {
                         animate={{ opacity: 1 }}
                         className="space-y-6"
                     >
-                        <div className="flex items-center justify-between p-6 rounded-2xl bg-[#0a1a24]/60 border border-sky-500/20 overflow-hidden">
-                            <code className="text-4xl font-bold tracking-[0.2em] font-mono text-sky-400">
+                        <div className="flex items-center justify-between p-4 md:p-6 rounded-2xl bg-[#0a1a24]/60 border border-sky-500/20 overflow-hidden">
+                            <code className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-[0.15em] md:tracking-[0.2em] font-mono text-sky-400 truncate">
                                 {roomCode}
                             </code>
 
                             <button
                                 onClick={handleCopyCode}
-                                className="p-3 rounded-xl bg-white/5 border border-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all ml-4"
+                                className="p-2 md:p-3 rounded-xl bg-white/5 border border-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all ml-2 md:ml-4 flex-shrink-0"
                             >
                                 {copied ? (
-                                    <Check className="w-5 h-5 text-green-500" />
+                                    <Check className="w-4 h-4 md:w-5 md:h-5 text-green-500" />
                                 ) : (
-                                    <Copy className="w-5 h-5" />
+                                    <Copy className="w-4 h-4 md:w-5 md:h-5" />
                                 )}
                             </button>
                         </div>

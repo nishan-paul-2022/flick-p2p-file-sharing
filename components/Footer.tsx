@@ -9,20 +9,20 @@ export function Footer() {
         <footer className="relative mt-10 py-4 border-t border-white/[0.05] overflow-hidden">
             <div className="container mx-auto px-4 max-w-6xl relative">
                 {/* Single Line Features */}
-                <div className="flex flex-col md:flex-row items-center justify-center gap-x-6 gap-y-1 mb-2 text-[13px] font-medium text-white/90 text-center md:text-left">
-                    <div className="flex items-center gap-2 transition-all duration-300 hover:opacity-80 group cursor-default">
-                        <Shield className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
+                <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mb-6 text-[11px] md:text-[13px] font-medium text-white/90 text-center">
+                    <div className="flex items-center gap-2 transition-all duration-300 hover:opacity-80 group cursor-default bg-white/[0.03] px-3 py-1 rounded-full border border-white/5">
+                        <Shield className="w-3.5 h-3.5 md:w-4 md:h-4 text-sky-400 group-hover:scale-110 transition-transform" />
                         <span className="tracking-tight">
-                            Direct P2P <span className="text-white/40 mx-1">—</span> No Server
-                            Storage
+                            Direct P2P <span className="text-white/40 mx-0.5 md:mx-1">—</span> No
+                            Server Storage
                         </span>
                     </div>
-                    <div className="flex items-center gap-2 transition-all duration-300 hover:opacity-80 group cursor-default">
-                        <Zap className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+                    <div className="flex items-center gap-2 transition-all duration-300 hover:opacity-80 group cursor-default bg-white/[0.03] px-3 py-1 rounded-full border border-white/5">
+                        <Zap className="w-3.5 h-3.5 md:w-4 md:h-4 text-amber-400 group-hover:scale-110 transition-transform" />
                         <span className="tracking-tight">Blazing Fast WebRTC</span>
                     </div>
-                    <div className="flex items-center gap-2 transition-all duration-300 hover:opacity-80 group cursor-default">
-                        <Lock className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+                    <div className="flex items-center gap-2 transition-all duration-300 hover:opacity-80 group cursor-default bg-white/[0.03] px-3 py-1 rounded-full border border-white/5">
+                        <Lock className="w-3.5 h-3.5 md:w-4 md:h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
                         <span className="tracking-tight">100% Private & Anonymous</span>
                     </div>
                 </div>

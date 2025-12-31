@@ -122,17 +122,19 @@ export default function HomePage() {
                     className="min-h-screen flex flex-col gradient-secondary"
                 >
                     <div
-                        className={`flex-grow flex flex-col transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-                            isLogPanelOpen ? 'md:pl-96' : ''
+                        className={`flex-grow flex flex-col transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                            isLogPanelOpen
+                                ? 'lg:pl-96 md:pl-80 translate-x-[280px] xs:translate-x-[320px] md:translate-x-0'
+                                : 'translate-x-0'
                         }`}
                     >
-                        <main className="flex-grow relative container mx-auto px-4 py-8 max-w-7xl">
+                        <main className="flex-grow relative px-fluid py-fluid-y max-w-[1440px] mx-auto w-full">
                             {/* Glass Header */}
 
                             <motion.div
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="flex items-center justify-between mb-12 w-full bg-zinc-900/30 border border-white/[0.08] rounded-full px-8 py-5 backdrop-blur-3xl shadow-[0_8px_40px_-12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] relative overflow-hidden"
+                                className="flex items-center justify-between mb-8 md:mb-12 w-full bg-zinc-900/30 border border-white/[0.08] rounded-2xl md:rounded-full px-4 md:px-8 py-4 md:py-5 backdrop-blur-3xl shadow-[0_8px_40px_-12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] relative overflow-hidden"
                             >
                                 {/* Ambient Glow */}
                                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1/2 bg-primary/10 blur-[60px] rounded-full pointer-events-none opacity-50" />
@@ -140,15 +142,16 @@ export default function HomePage() {
                                 <div className="flex-1 flex justify-start relative z-10">
                                     <motion.div
                                         whileHover={{ scale: 1.05 }}
-                                        className={`w-10 h-10 rounded-xl flex items-center justify-center border backdrop-blur-md shadow-lg group cursor-pointer transition-all duration-300 relative ${
+                                        whileTap={{ scale: 0.95 }}
+                                        className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center border backdrop-blur-md shadow-lg group cursor-pointer transition-all duration-300 relative ${
                                             isLogPanelOpen
-                                                ? 'bg-white/10 border-white/20' // Active state style: Neutral glass
+                                                ? 'bg-white/10 border-white/20'
                                                 : 'bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08] hover:border-white/20'
                                         }`}
                                         onClick={toggleLogPanel}
                                     >
                                         <Fingerprint
-                                            className={`w-5 h-5 transition-colors duration-300 ${
+                                            className={`w-4 h-4 md:w-5 md:h-5 transition-colors duration-300 ${
                                                 isLogPanelOpen
                                                     ? 'text-white'
                                                     : 'text-white/40 group-hover:text-white/80'
@@ -156,14 +159,14 @@ export default function HomePage() {
                                         />
                                         {/* Notification Dot */}
                                         {hasUnreadLogs && (
-                                            <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)] animate-pulse" />
+                                            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)] animate-pulse" />
                                         )}
                                     </motion.div>
                                 </div>
 
                                 {/* Center: Flick Logo */}
-                                <div className="flex-1 flex justify-center relative z-10">
-                                    <div className="flex items-center gap-3">
+                                <div className="flex-[2] md:flex-1 flex justify-center relative z-10 mx-2">
+                                    <div className="flex items-center gap-2 md:gap-3">
                                         <motion.div
                                             whileHover={{ rotate: 360 }}
                                             transition={{ duration: 0.6, ease: 'easeInOut' }}
@@ -173,34 +176,34 @@ export default function HomePage() {
                                                 alt="Flick Icon"
                                                 width={40}
                                                 height={40}
-                                                className="w-9 h-9 md:w-10 md:h-10"
+                                                className="w-7 h-7 md:w-10 md:h-10"
                                                 priority
                                             />
                                         </motion.div>
-                                        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+                                        <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight">
                                             <span className="text-primary">Flick</span>
                                         </h1>
                                     </div>
                                 </div>
 
                                 {/* Right: Slogan */}
-                                <div className="flex-1 flex justify-end relative z-10">
-                                    <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm shadow-sm">
-                                        <Sparkles className="w-3.5 h-3.5 text-white" />
-                                        <span className="text-[11px] md:text-xs font-bold tracking-tight text-white/90">
-                                            Securely share files across devices in seconds
+                                <div className="flex-1 hidden md:flex justify-end relative z-10">
+                                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm shadow-sm">
+                                        <Sparkles className="w-3.5 h-3.5 text-white/70" />
+                                        <span className="text-[10px] lg:text-xs font-bold tracking-tight text-white/90 truncate max-w-[120px] lg:max-w-none">
+                                            Securely share files across devices
                                         </span>
                                     </div>
                                 </div>
                             </motion.div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-fluid">
                                 {/* Connection Panel */}
                                 <motion.div
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: 0.1 }}
-                                    className="lg:col-span-1"
+                                    className="lg:col-span-4 xl:col-span-4"
                                 >
                                     <ConnectionPanel />
                                 </motion.div>
@@ -210,7 +213,7 @@ export default function HomePage() {
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: 0.2 }}
-                                    className="lg:col-span-2 space-y-6"
+                                    className="lg:col-span-8 xl:col-span-8 flex flex-col gap-6"
                                 >
                                     {/* Upload Zone */}
                                     <Card className="glass-dark border-primary/20">
@@ -234,12 +237,12 @@ export default function HomePage() {
                                         onValueChange={setActiveTab}
                                         className="w-full"
                                     >
-                                        <TabsList className="grid w-full grid-cols-2 glass-dark p-1 rounded-xl border-white/10">
+                                        <TabsList className="grid w-full grid-cols-2 glass-dark p-1 rounded-xl border-white/10 h-auto">
                                             <TabsTrigger
                                                 value="received"
-                                                className="group gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold"
+                                                className="group gap-1 md:gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold py-2.5 md:py-3"
                                             >
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-1.5 md:gap-2">
                                                     <motion.div
                                                         animate={
                                                             isReceiving
@@ -256,7 +259,7 @@ export default function HomePage() {
                                                         }}
                                                     >
                                                         <Download
-                                                            className={`w-4 h-4 transition-colors ${
+                                                            className={`w-3.5 h-3.5 md:w-4 md:h-4 transition-colors ${
                                                                 isReceiving
                                                                     ? 'text-primary'
                                                                     : 'group-data-[state=active]:text-foreground'
@@ -264,7 +267,7 @@ export default function HomePage() {
                                                         />
                                                     </motion.div>
                                                     <span
-                                                        className={`transition-colors duration-300 ${
+                                                        className={`text-xs md:text-sm transition-colors duration-300 ${
                                                             isReceiving
                                                                 ? 'text-primary font-medium'
                                                                 : ''
@@ -273,7 +276,7 @@ export default function HomePage() {
                                                         Received
                                                     </span>
                                                     <span
-                                                        className={`ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[11px] font-bold transition-all duration-300 ${
+                                                        className={`ml-0.5 md:ml-1 flex h-4 md:h-5 min-w-[16px] md:min-w-[20px] items-center justify-center rounded-full px-1 md:px-1.5 text-[9px] md:text-[11px] font-bold transition-all duration-300 ${
                                                             isReceiving
                                                                 ? 'bg-primary text-primary-foreground shadow-[0_0_12px_-4px_rgba(var(--primary-rgb),0.8)]'
                                                                 : 'bg-white/5 border border-white/5 text-muted-foreground group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground group-data-[state=active]:border-white/20'
@@ -285,9 +288,9 @@ export default function HomePage() {
                                             </TabsTrigger>
                                             <TabsTrigger
                                                 value="sent"
-                                                className="group gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold"
+                                                className="group gap-1 md:gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold py-2.5 md:py-3"
                                             >
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-1.5 md:gap-2">
                                                     <motion.div
                                                         animate={
                                                             isSending
@@ -305,7 +308,7 @@ export default function HomePage() {
                                                         }}
                                                     >
                                                         <Send
-                                                            className={`w-4 h-4 transition-colors ${
+                                                            className={`w-3.5 h-3.5 md:w-4 md:h-4 transition-colors ${
                                                                 isSending
                                                                     ? 'text-primary'
                                                                     : 'group-data-[state=active]:text-foreground'
@@ -313,7 +316,7 @@ export default function HomePage() {
                                                         />
                                                     </motion.div>
                                                     <span
-                                                        className={`transition-colors duration-300 ${
+                                                        className={`text-xs md:text-sm transition-colors duration-300 ${
                                                             isSending
                                                                 ? 'text-primary font-medium'
                                                                 : ''
@@ -322,7 +325,7 @@ export default function HomePage() {
                                                         Sent
                                                     </span>
                                                     <span
-                                                        className={`ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[11px] font-bold transition-all duration-300 ${
+                                                        className={`ml-0.5 md:ml-1 flex h-4 md:h-5 min-w-[16px] md:min-w-[20px] items-center justify-center rounded-full px-1 md:px-1.5 text-[9px] md:text-[11px] font-bold transition-all duration-300 ${
                                                             isSending
                                                                 ? 'bg-primary text-primary-foreground shadow-[0_0_12px_-4px_rgba(var(--primary-rgb),0.8)]'
                                                                 : 'bg-white/5 border border-white/5 text-muted-foreground group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground group-data-[state=active]:border-white/20'

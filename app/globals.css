@@ -157,4 +157,46 @@
     .gradient-secondary {
         @apply bg-background;
     }
+
+    /* Fluid Typography Utilities */
+    .text-fluid-xs {
+        font-size: clamp(0.7rem, 0.65rem + 0.25vw, 0.875rem);
+    }
+    .text-fluid-sm {
+        font-size: clamp(0.8rem, 0.75rem + 0.25vw, 1rem);
+    }
+    .text-fluid-base {
+        font-size: clamp(0.9rem, 0.85rem + 0.25vw, 1.125rem);
+    }
+    .text-fluid-lg {
+        font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+    }
+    .text-fluid-xl {
+        font-size: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+    }
+    .text-fluid-2xl {
+        font-size: clamp(1.5rem, 1.25rem + 1vw, 2.25rem);
+    }
+    .text-fluid-3xl {
+        font-size: clamp(1.875rem, 1.5rem + 1.5vw, 3rem);
+    }
+    .text-fluid-4xl {
+        font-size: clamp(2.25rem, 1.75rem + 2.5vw, 4.5rem);
+    }
+
+    /* Responsive Padding/Margin Utilities */
+    .p-fluid {
+        padding: clamp(1rem, 0.5rem + 2vw, 3rem);
+    }
+    .px-fluid {
+        padding-left: clamp(1rem, 0.5rem + 2vw, 3rem);
+        padding-right: clamp(1rem, 0.5rem + 2vw, 3rem);
+    }
+    .py-fluid {
+        padding-top: clamp(1rem, 0.5rem + 2vw, 3rem);
+        padding-bottom: clamp(1rem, 0.5rem + 2vw, 3rem);
+    }
+    .gap-fluid {
+        gap: clamp(1rem, 0.5rem + 1.5vw, 2.5rem);
+    }
 }

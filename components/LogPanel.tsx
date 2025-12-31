@@ -48,12 +48,12 @@ export const LogPanel: React.FC = () => {
                         But we need to close it somehow if clicking outside? 
                         For now, let's just have the sidebar. */}
 
-                    {/* Invisible backdrop to handle click-outside closing */}
+                    {/* Invisible backdrop to handle click-outside closing on mobile only */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[59] bg-transparent"
+                        className="fixed inset-0 z-[59] bg-transparent md:hidden"
                         onClick={toggleLogPanel}
                     />
 
@@ -62,7 +62,7 @@ export const LogPanel: React.FC = () => {
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: '-100%', opacity: 0 }}
                         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                        className="fixed inset-y-0 left-0 z-[60] w-80 sm:w-96 bg-zinc-950/90 backdrop-blur-2xl border-r border-white/10 shadow-2xl flex flex-col"
+                        className="fixed inset-y-0 left-0 z-[60] w-[280px] xs:w-80 lg:w-96 bg-zinc-950/95 backdrop-blur-3xl border-r border-white/10 shadow-2xl flex flex-col"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}
