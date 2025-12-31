@@ -50,8 +50,17 @@ export class OPFSManager {
         chunkData: ArrayBuffer,
         offset: number
     ): Promise<void> {
-        await writable.seek(offset);
-        await writable.write(chunkData);
+        try {
+            await writable.seek(offset);
+            await writable.write(chunkData);
+        } catch (error) {
+            // If the stream is closing/closed, we can't do much, but we shouldn't crash
+            if (error instanceof Error && error.message.includes('closing')) {
+                console.warn('Attempted to write to a closing OPFS stream, skipping chunk');
+                return;
+            }
+            throw error;
+        }
     }
 
     /**

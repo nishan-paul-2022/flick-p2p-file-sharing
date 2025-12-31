@@ -46,7 +46,9 @@ export interface LogSlice {
 
 export interface UISlice {
     isLogPanelOpen: boolean;
+    hasHydrated: boolean;
     toggleLogPanel: () => void;
+    setHasHydrated: (val: boolean) => void;
 }
 
 export interface StorageSlice {

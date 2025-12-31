@@ -38,13 +38,14 @@ export default function HomePage() {
         return () => clearTimeout(timer);
     }, []);
 
-    const showLoading = showLoadingParam || isAppLoading;
-
     const receivedFiles = usePeerStore((state) => state.receivedFiles);
     const outgoingFiles = usePeerStore((state) => state.outgoingFiles);
     const isLogPanelOpen = usePeerStore((state) => state.isLogPanelOpen);
     const toggleLogPanel = usePeerStore((state) => state.toggleLogPanel);
     const logs = usePeerStore((state) => state.logs);
+    const hasHydrated = usePeerStore((state) => state.hasHydrated);
+
+    const showLoading = showLoadingParam || isAppLoading || !hasHydrated;
 
     // UX Updates State
     const [activeTab, setActiveTab] = useState('received');

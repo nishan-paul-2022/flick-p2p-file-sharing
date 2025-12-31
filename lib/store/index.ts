@@ -37,19 +37,29 @@ export const usePeerStore = create<StoreState>()(
                 name: 'flick-peer-storage',
                 storage: idbStorage,
                 partialize: (state) => ({
-                    roomCode: state.isHost ? state.roomCode : null,
+                    roomCode: state.roomCode,
                     peerId: state.isHost ? state.peerId : null,
                     isHost: state.isHost,
                     receivedFiles: state.receivedFiles.map((f) => ({
                         ...f,
                         // Don't persist chunks (too large for IndexedDB)
                         chunks: undefined,
+                        // Mark in-progress transfers as failed since they can't resume automatically
+                        status: f.status === 'transferring' ? ('failed' as const) : f.status,
                     })),
-                    outgoingFiles: state.outgoingFiles,
+                    outgoingFiles: state.outgoingFiles.map((f) => ({
+                        ...f,
+                        status: f.status === 'transferring' ? ('failed' as const) : f.status,
+                    })),
                     storageCapabilities: state.storageCapabilities,
                     logs: state.logs,
                     hasUnreadLogs: state.hasUnreadLogs,
                 }),
+                onRehydrateStorage: (state) => {
+                    return () => {
+                        state.setHasHydrated(true);
+                    };
+                },
             }
         ),
         { name: 'PeerStore' }
