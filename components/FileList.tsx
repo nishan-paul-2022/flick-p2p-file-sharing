@@ -132,7 +132,7 @@ export function FileList({ type }: FileListProps) {
                                                     <h4 className="font-medium truncate mb-0.5 max-w-[150px] sm:max-w-none transition-colors cursor-text">
                                                         {transfer.metadata.name}
                                                     </h4>
-                                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                    <div className="flex items-center gap-2 text-xs text-muted-foreground/80">
                                                         <span className="tabular-nums">
                                                             {formatBytes(transfer.metadata.size)}
                                                         </span>
@@ -159,18 +159,24 @@ export function FileList({ type }: FileListProps) {
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="h-9 w-9 text-sky-400 hover:text-sky-300 hover:bg-sky-400/10"
+                                                                className={cn(
+                                                                    'h-9 w-9 hover:bg-white/10 transition-none hover:text-white',
+                                                                    transfer.downloaded
+                                                                        ? 'text-emerald-500'
+                                                                        : 'text-zinc-400'
+                                                                )}
                                                                 onClick={() =>
                                                                     handleDownload(transfer)
                                                                 }
-                                                                title="Download"
+                                                                title={
+                                                                    transfer.downloaded
+                                                                        ? 'Downloaded (Click to download again)'
+                                                                        : 'Download'
+                                                                }
                                                             >
-                                                                <Download className="w-4 h-4" />
+                                                                <Download className="w-5 h-5" />
                                                             </Button>
                                                         )}
-                                                    <div className="shrink-0">
-                                                        {getStatusIcon(transfer.status)}
-                                                    </div>
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
@@ -187,6 +193,9 @@ export function FileList({ type }: FileListProps) {
                                                     >
                                                         <Trash2 className="w-4 h-4" />
                                                     </Button>
+                                                    <div className="shrink-0 h-9 w-9 flex items-center justify-center">
+                                                        {getStatusIcon(transfer.status)}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

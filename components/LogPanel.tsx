@@ -1,102 +1,97 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { usePeerStore } from '@/lib/store';
 import { Fingerprint, X, CheckCircle2, AlertTriangle, XCircle, Trash2, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
+
 import { Button } from '@/components/ui/button';
 
 export const LogPanel: React.FC = () => {
-    const { logs, clearLogs, hasUnreadLogs, setLogsRead } = usePeerStore();
-    const [isOpen, setIsOpen] = useState(false);
+    const { logs, clearLogs, isLogPanelOpen, toggleLogPanel } = usePeerStore();
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll to bottom when new logs arrive
     useEffect(() => {
-        if (scrollRef.current && isOpen) {
+        if (scrollRef.current && isLogPanelOpen) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [logs, isOpen]);
-
-    // Set logs as read when opened
-    useEffect(() => {
-        if (isOpen) {
-            setLogsRead();
-        }
-    }, [isOpen, setLogsRead]);
+    }, [logs, isLogPanelOpen]);
 
     const getIcon = (type: string) => {
         switch (type) {
             case 'success':
-                return <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500/80" />;
+                return <CheckCircle2 className="w-4 h-4 text-emerald-500/80" />;
             case 'warning':
-                return <AlertTriangle className="w-3.5 h-3.5 text-amber-500/80" />;
+                return <AlertTriangle className="w-4 h-4 text-amber-500/80" />;
             case 'error':
-                return <XCircle className="w-3.5 h-3.5 text-rose-500/80" />;
+                return <XCircle className="w-4 h-4 text-rose-500/80" />;
             default:
-                return <Info className="w-3.5 h-3.5 text-white/40" />;
+                return <Info className="w-4 h-4 text-sky-500/80" />;
         }
     };
 
     const formatTime = (ts: number) => {
-        return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return new Date(ts).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        });
     };
 
     return (
-        <div className="fixed top-6 left-6 z-50 flex flex-col items-start">
-            {/* Minimal Toggle Button */}
-            <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsOpen(!isOpen)}
-                className={cn(
-                    'w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 border shadow-md backdrop-blur-xl relative',
-                    isOpen
-                        ? 'bg-white/10 border-white/20 text-white'
-                        : 'bg-white/[0.02] border-white/5 text-white/30 hover:text-white/50 hover:bg-white/[0.05]'
-                )}
-                title="Activity Timeline"
-            >
-                <Fingerprint className="w-5 h-5" />
-                {!isOpen && hasUnreadLogs && (
-                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-primary border border-background rounded-full" />
-                )}
-            </motion.button>
+        <AnimatePresence>
+            {isLogPanelOpen && (
+                <>
+                    {/* Backdrop - optional, keeping it subtle or removing for "non-modal" feel. 
+                        User said "not modal", so maybe no backdrop blocking interactions? 
+                        But we need to close it somehow if clicking outside? 
+                        For now, let's just have the sidebar. */}
 
-            <AnimatePresence>
-                {isOpen && (
+                    {/* Invisible backdrop to handle click-outside closing */}
                     <motion.div
-                        initial={{ opacity: 0, x: -10, scale: 0.98 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        exit={{ opacity: 0, x: -10, scale: 0.98 }}
-                        className="mt-3 w-72 sm:w-80 glass-dark border border-white/5 rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[60vh]"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[59] bg-transparent"
+                        onClick={toggleLogPanel}
+                    />
+
+                    <motion.div
+                        initial={{ x: '-100%', opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: '-100%', opacity: 0 }}
+                        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                        className="fixed inset-y-0 left-0 z-[60] w-80 sm:w-96 bg-zinc-950/90 backdrop-blur-2xl border-r border-white/10 shadow-2xl flex flex-col"
+                        onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}
-                        <div className="px-3 py-2 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
-                            <div className="flex items-center gap-2">
-                                <Fingerprint className="w-3.5 h-3.5 text-white/30" />
-                                <h3 className="text-[10px] font-bold uppercase tracking-[0.1em] text-white/40">
-                                    History
-                                </h3>
+                        <div className="flex-shrink-0 px-6 py-5 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-white/15 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                                    <Fingerprint className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-bold text-white/90">System Logs</h3>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-0.5">
+                            <div className="flex items-center gap-1">
                                 <Button
                                     variant="ghost"
                                     size="icon"
                                     onClick={clearLogs}
-                                    className="h-7 w-7 hover:bg-white/5 text-white/10 hover:text-white/30 transition-colors"
-                                    title="Wipe"
+                                    className="h-8 w-8 hover:bg-red-500/10 text-white/20 hover:text-red-400 transition-colors"
+                                    title="Clear Logs"
                                 >
-                                    <Trash2 className="w-3 h-3" />
+                                    <Trash2 className="w-4 h-4" />
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    onClick={() => setIsOpen(false)}
-                                    className="h-7 w-7 hover:bg-white/5 text-white/30"
+                                    onClick={toggleLogPanel}
+                                    className="h-8 w-8 hover:bg-white/5 text-white/40 hover:text-white transition-colors"
                                 >
-                                    <X className="w-3 h-3" />
+                                    <X className="w-4 h-4" />
                                 </Button>
                             </div>
                         </div>
@@ -104,40 +99,62 @@ export const LogPanel: React.FC = () => {
                         {/* Logs List */}
                         <div
                             ref={scrollRef}
-                            className="flex-1 overflow-y-auto p-3 space-y-4 scrollbar-none"
+                            className="flex-1 overflow-y-auto p-4 space-y-3 font-mono"
                         >
                             {logs.length === 0 ? (
-                                <div className="h-20 flex items-center justify-center text-white/10 text-[10px] uppercase tracking-wider">
-                                    No records
+                                <div className="h-full flex flex-col items-center justify-center text-white/20 gap-3">
+                                    <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center">
+                                        <Fingerprint className="w-6 h-6 opacity-30" />
+                                    </div>
+                                    <p className="text-xs uppercase tracking-wider font-medium">
+                                        No logs recorded
+                                    </p>
                                 </div>
                             ) : (
                                 logs.map((log) => (
-                                    <div key={log.id} className="flex gap-3 group">
-                                        <div className="mt-0.5 flex-shrink-0 opacity-60 group-hover:opacity-100 transition-opacity">
-                                            {getIcon(log.type)}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between gap-2">
-                                                <p className="text-[11px] font-medium text-white/50 group-hover:text-white/80 transition-colors truncate">
-                                                    {log.message}
-                                                </p>
-                                                <span className="text-[9px] text-white/10 font-mono">
-                                                    {formatTime(log.timestamp)}
-                                                </span>
+                                    <motion.div
+                                        key={log.id}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="relative pl-4 pb-1 group"
+                                    >
+                                        {/* Timeline line */}
+                                        <div className="absolute left-0 top-2 bottom-0 w-px bg-white/5 group-last:bottom-auto group-last:h-full" />
+                                        <div className="absolute left-[-2px] top-2.5 w-1 h-1 rounded-full bg-white/20 group-hover:bg-primary/50 transition-colors shadow-[0_0_10px_rgba(255,255,255,0.1)]" />
+
+                                        <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] hover:border-white/10 transition-all">
+                                            <div className="flex items-start justify-between gap-3 mb-1">
+                                                <div className="flex items-center gap-2">
+                                                    {getIcon(log.type)}
+                                                    <span className="text-[10px] text-white/30">
+                                                        {formatTime(log.timestamp)}
+                                                    </span>
+                                                </div>
                                             </div>
+
+                                            <p className="text-xs font-medium text-white/80 leading-snug mb-0.5">
+                                                {log.message}
+                                            </p>
+
                                             {log.description && (
-                                                <p className="text-[10px] text-white/20 mt-1 leading-tight line-clamp-2 group-hover:text-white/40 transition-colors font-light">
+                                                <p className="text-[11px] text-white/40 leading-relaxed break-words">
                                                     {log.description}
                                                 </p>
                                             )}
                                         </div>
-                                    </div>
+                                    </motion.div>
                                 ))
                             )}
                         </div>
+
+                        {/* Footer Status */}
+                        <div className="flex-shrink-0 px-6 py-3 bg-white/[0.02] border-t border-white/5 text-[10px] text-white/20 flex justify-between items-center">
+                            <span>Flick - P2P File Sharing</span>
+                            <span>v0.0.1</span>
+                        </div>
                     </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
+                </>
+            )}
+        </AnimatePresence>
     );
 };

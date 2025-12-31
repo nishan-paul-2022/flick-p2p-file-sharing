@@ -22,9 +22,11 @@ interface PeerState {
     storageCapabilities: StorageCapabilities | null;
     logs: LogEntry[];
     hasUnreadLogs: boolean;
+    isLogPanelOpen: boolean;
 
     // Actions
     setRoomCode: (code: string | null) => void;
+    toggleLogPanel: () => void;
     initializePeer: (code?: string) => Promise<string>;
     connectToPeer: (targetCode: string) => Promise<void>;
     disconnect: () => void;
@@ -178,8 +180,18 @@ export const usePeerStore = create<PeerState>()(
             storageCapabilities: null,
             logs: [],
             hasUnreadLogs: false,
+            isLogPanelOpen: false,
 
             setRoomCode: (code) => set({ roomCode: code }),
+
+            toggleLogPanel: () =>
+                set((state) => {
+                    const willOpen = !state.isLogPanelOpen;
+                    if (willOpen) {
+                        return { isLogPanelOpen: true, hasUnreadLogs: false };
+                    }
+                    return { isLogPanelOpen: false };
+                }),
 
             addLog: (type, message, description) => {
                 const log: LogEntry = {
@@ -505,6 +517,7 @@ export const usePeerStore = create<PeerState>()(
                     }
 
                     // Backpressure: if buffer is too full, wait before sending next chunk
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const dc = (connection as any).dataChannel as RTCDataChannel;
                     if (dc && dc.bufferedAmount > MAX_BUFFERED_AMOUNT) {
                         setTimeout(sendNextChunk, 50);
@@ -645,6 +658,12 @@ export const usePeerStore = create<PeerState>()(
 
                     const { addLog } = get();
                     addLog('success', 'Download started', transfer.metadata.name);
+
+                    set((state) => ({
+                        receivedFiles: state.receivedFiles.map((f) =>
+                            f.id === transfer.id ? { ...f, downloaded: true } : f
+                        ),
+                    }));
                 } catch (error) {
                     console.error('Download failed:', error);
                     const { addLog } = get();

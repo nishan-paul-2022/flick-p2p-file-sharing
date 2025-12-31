@@ -12,8 +12,8 @@ const inter = Inter({
 export const metadata: Metadata = {
     title: 'Flick - P2P File Sharing',
     description:
-        'Share files instantly between devices with zero backend. Fast, secure, and private peer-to-peer file transfer.',
-    keywords: ['file sharing', 'P2P', 'peer-to-peer', 'WebRTC', 'file transfer', 'secure sharing'],
+        'Share files instantly between devices with zero backend. Fast, direct, and private peer-to-peer file transfer.',
+    keywords: ['file sharing', 'P2P', 'peer-to-peer', 'WebRTC', 'file transfer', 'private sharing'],
     authors: [{ name: 'Flick' }],
     creator: 'Flick',
     publisher: 'Flick',
