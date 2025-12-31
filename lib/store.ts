@@ -22,9 +22,11 @@ interface PeerState {
     storageCapabilities: StorageCapabilities | null;
     logs: LogEntry[];
     hasUnreadLogs: boolean;
+    isLogPanelOpen: boolean;
 
     // Actions
     setRoomCode: (code: string | null) => void;
+    toggleLogPanel: () => void;
     initializePeer: (code?: string) => Promise<string>;
     connectToPeer: (targetCode: string) => Promise<void>;
     disconnect: () => void;
@@ -178,8 +180,18 @@ export const usePeerStore = create<PeerState>()(
             storageCapabilities: null,
             logs: [],
             hasUnreadLogs: false,
+            isLogPanelOpen: false,
 
             setRoomCode: (code) => set({ roomCode: code }),
+
+            toggleLogPanel: () =>
+                set((state) => {
+                    const willOpen = !state.isLogPanelOpen;
+                    if (willOpen) {
+                        return { isLogPanelOpen: true, hasUnreadLogs: false };
+                    }
+                    return { isLogPanelOpen: false };
+                }),
 
             addLog: (type, message, description) => {
                 const log: LogEntry = {

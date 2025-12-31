@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { usePeerStore } from '@/lib/store';
 import { Fingerprint, X, CheckCircle2, AlertTriangle, XCircle, Trash2, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,33 +8,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 
 export const LogPanel: React.FC = () => {
-    const { logs, clearLogs, setLogsRead } = usePeerStore();
-    const [isOpen, setIsOpen] = useState(false);
+    const { logs, clearLogs, isLogPanelOpen, toggleLogPanel } = usePeerStore();
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll to bottom when new logs arrive
     useEffect(() => {
-        if (scrollRef.current && isOpen) {
+        if (scrollRef.current && isLogPanelOpen) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [logs, isOpen]);
-
-    // Set logs as read when opened
-    useEffect(() => {
-        if (isOpen) {
-            setLogsRead();
-        }
-    }, [isOpen, setLogsRead]);
-
-    // Listen for custom toggle event from header
-    useEffect(() => {
-        const handleToggle = () => setIsOpen((prev) => !prev);
-        window.dispatchEvent(
-            new CustomEvent('log-panel-state-change', { detail: { isOpen: !isOpen } })
-        );
-        window.addEventListener('toggle-logs', handleToggle);
-        return () => window.removeEventListener('toggle-logs', handleToggle);
-    }, [isOpen]); // Added dependency on isOpen to emit state changes if needed, but primarily for toggle
+    }, [logs, isLogPanelOpen]);
 
     const getIcon = (type: string) => {
         switch (type) {
@@ -59,7 +41,7 @@ export const LogPanel: React.FC = () => {
 
     return (
         <AnimatePresence>
-            {isOpen && (
+            {isLogPanelOpen && (
                 <>
                     {/* Backdrop - optional, keeping it subtle or removing for "non-modal" feel. 
                         User said "not modal", so maybe no backdrop blocking interactions? 
@@ -99,7 +81,7 @@ export const LogPanel: React.FC = () => {
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={toggleLogPanel}
                                     className="h-8 w-8 hover:bg-white/5 text-white/40 hover:text-white transition-colors"
                                 >
                                     <X className="w-4 h-4" />
