@@ -59,7 +59,7 @@ const handleIncomingData = async (
                     opfsPath,
                 };
 
-                set({ receivedFiles: [...receivedFiles, transfer] });
+                set((state) => ({ receivedFiles: [...state.receivedFiles, transfer] }));
                 addLog('info', 'Receiving file', msg.metadata.name);
             } else if (msg.type === 'chunk') {
                 const transfer = receivedFiles.find((t) => t.id === msg.transferId);
