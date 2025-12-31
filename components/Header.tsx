@@ -71,9 +71,9 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
 
             {/* Right: Slogan (Always flex-1 to maintain center balance) */}
             <div className="relative z-10 flex flex-1 justify-end">
-                <div className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 shadow-sm backdrop-blur-sm md:flex">
+                <div className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 shadow-sm backdrop-blur-sm lg:flex">
                     <Sparkles className="h-3.5 w-3.5 text-white/70" />
-                    <span className="max-w-[120px] truncate text-[10px] font-bold tracking-tight text-white/90 lg:max-w-none lg:text-xs">
+                    <span className="whitespace-nowrap text-xs font-bold tracking-tight text-white/90">
                         Securely share files across devices
                     </span>
                 </div>
