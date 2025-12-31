@@ -5,7 +5,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Check, Wifi, WifiOff, LogOut, RefreshCw, Trash2, Zap, Shield } from 'lucide-react';
+import {
+    Copy,
+    Check,
+    Wifi,
+    WifiOff,
+    LogOut,
+    RefreshCw,
+    Trash2,
+    Zap,
+    Shield,
+    ZapOff,
+} from 'lucide-react';
 import { copyToClipboard, generateRoomCode, isValidRoomCode, cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { usePeerStore } from '@/lib/store';
@@ -128,39 +139,46 @@ export function ConnectionPanel() {
                             </Button>
                         </div>
 
-                        <div className="relative">
+                        <div className="relative py-2 flex items-center justify-center">
                             <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-muted" />
+                                <div className="w-full border-t border-white/[0.05]" />
                             </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-card px-2 text-muted-foreground">
-                                    Or join existing
-                                </span>
-                            </div>
+                            <span className="relative flex items-center justify-center w-8 h-8 rounded-full border border-white/[0.05] bg-background text-[9px] uppercase tracking-widest text-muted-foreground/40 font-bold backdrop-blur-sm">
+                                or
+                            </span>
                         </div>
 
-                        <div className="flex gap-2">
+                        <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Zap className="w-4 h-4 text-muted-foreground/30 group-focus-within:text-white/40 transition-colors" />
+                            </div>
                             <Input
-                                placeholder="Enter room code"
+                                placeholder="ROOM CODE"
                                 value={joinCode}
                                 onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                                 onKeyDown={(e) => e.key === 'Enter' && handleJoinRoom()}
                                 maxLength={6}
-                                className="flex-1 min-w-0 uppercase font-mono text-lg tracking-wider focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:border-white/50 focus-visible:ring-offset-0 bg-secondary/50"
+                                className="pl-10 pr-20 h-12 bg-white/[0.03] border-white/[0.08] focus:border-white/[0.15] focus:ring-0 text-lg tracking-[0.3em] font-mono transition-all"
                             />
-                            <Button
-                                onClick={handleJoinRoom}
-                                disabled={joinCode.length !== 6 || isJoining}
-                                variant="secondary"
-                                className={cn(
-                                    'transition-all duration-300',
-                                    joinCode.length === 6 && !isJoining
-                                        ? 'bg-secondary text-secondary-foreground border border-white/10'
-                                        : 'opacity-50'
-                                )}
-                            >
-                                {isJoining ? 'Joining...' : 'Join'}
-                            </Button>
+                            <div className="absolute inset-y-1.5 right-1.5">
+                                <Button
+                                    onClick={handleJoinRoom}
+                                    disabled={joinCode.length !== 6 || isJoining}
+                                    size="sm"
+                                    className={cn(
+                                        'h-full px-4 rounded-md transition-all duration-300',
+                                        joinCode.length === 6 && !isJoining
+                                            ? 'bg-white/10 hover:bg-white/20 text-white border-white/10'
+                                            : 'bg-transparent text-muted-foreground/30 border-transparent'
+                                    )}
+                                >
+                                    {isJoining ? (
+                                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                    ) : (
+                                        'Join'
+                                    )}
+                                </Button>
+                            </div>
                         </div>
                     </motion.div>
                 ) : (
@@ -190,23 +208,24 @@ export function ConnectionPanel() {
                             </div>
                         </div>
 
-                        <Button onClick={disconnect} variant="destructive" className="w-full">
-                            <LogOut className="w-4 h-4 mr-2" />
+                        <button
+                            onClick={disconnect}
+                            className="w-full h-12 flex items-center justify-center gap-3 rounded-xl border border-red-500/10 bg-red-500/5 text-red-500/70 hover:bg-red-600 hover:text-white hover:border-red-600 text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 group"
+                        >
+                            <ZapOff className="w-4 h-4 transition-transform group-hover:scale-110" />
                             Leave Room
-                        </Button>
+                        </button>
                     </motion.div>
                 )}
 
-                <div className="pt-4 border-t border-primary/10">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full text-muted-foreground hover:text-destructive transition-colors"
+                <div className="pt-2 flex justify-center">
+                    <button
                         onClick={clearHistory}
+                        className="flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 border border-white/5 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-300 group"
                     >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Clear Transfer History
-                    </Button>
+                        <Trash2 className="w-3.5 h-3.5" />
+                        Clear History
+                    </button>
                 </div>
             </CardContent>
         </Card>
