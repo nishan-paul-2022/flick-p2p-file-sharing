@@ -48,7 +48,7 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
             </div>
 
             {/* Center: Flick Logo */}
-            <div className="flex-[2] md:flex-1 flex justify-center relative z-10 mx-2">
+            <div className="flex-1 flex justify-center relative z-10 mx-2">
                 <div className="flex items-center gap-2 md:gap-3">
                     <motion.div
                         whileHover={{ rotate: 360 }}
@@ -69,9 +69,9 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
                 </div>
             </div>
 
-            {/* Right: Slogan */}
-            <div className="flex-1 hidden md:flex justify-end relative z-10">
-                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm shadow-sm">
+            {/* Right: Slogan (Always flex-1 to maintain center balance) */}
+            <div className="flex-1 flex justify-end relative z-10">
+                <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm shadow-sm">
                     <Sparkles className="w-3.5 h-3.5 text-white/70" />
                     <span className="text-[10px] lg:text-xs font-bold tracking-tight text-white/90 truncate max-w-[120px] lg:max-w-none">
                         Securely share files across devices

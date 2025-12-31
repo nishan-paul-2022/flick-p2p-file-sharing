@@ -81,6 +81,7 @@ export function FileDropZone() {
                 disabled={disabled}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
                 aria-label="File upload input"
+                title=""
             />
 
             <div className="flex flex-col items-center justify-center gap-4 text-center pointer-events-none">
