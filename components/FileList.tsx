@@ -168,9 +168,6 @@ export function FileList({ type }: FileListProps) {
                                                                 <Download className="w-4 h-4" />
                                                             </Button>
                                                         )}
-                                                    <div className="shrink-0">
-                                                        {getStatusIcon(transfer.status)}
-                                                    </div>
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
@@ -187,6 +184,9 @@ export function FileList({ type }: FileListProps) {
                                                     >
                                                         <Trash2 className="w-4 h-4" />
                                                     </Button>
+                                                    <div className="shrink-0 h-9 w-9 flex items-center justify-center">
+                                                        {getStatusIcon(transfer.status)}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
