@@ -221,7 +221,7 @@ export default function HomePage() {
                                         Always Private
                                     </h4>
                                     <p className="text-xs text-muted-foreground leading-relaxed">
-                                        End-to-end encrypted and completely anonymous file sharing.
+                                        Direct peer-to-peer and completely anonymous file sharing.
                                     </p>
                                 </div>
                             </div>

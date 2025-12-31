@@ -77,8 +77,7 @@ This will force the app to stay on the loading screen for testing and refinement
 
 ## 🔒 Security & Privacy
 
-- **No backend storage** - files are transferred directly between peers
-- **End-to-end encrypted** - WebRTC provides built-in encryption
+- **Direct P2P** - files are transferred directly between peers via WebRTC
 - **No tracking** - zero analytics or tracking scripts
 - **Client-side only** - all logic runs in the browser
 - **Secure headers** - CSP and security headers configured
