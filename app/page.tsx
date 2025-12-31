@@ -53,16 +53,11 @@ export default function HomePage() {
     // UX Updates State
     const [activeTab, setActiveTab] = useState('received');
     const [hasUnreadLogs, setHasUnreadLogs] = useState(false);
-    const prevOutgoingFilesLength = useRef(outgoingFiles.length);
+
     const prevLogsLength = useRef(logs.length);
 
-    // Auto-switch to "sent" tab when a new file is sent
-    useEffect(() => {
-        if (outgoingFiles.length > prevOutgoingFilesLength.current) {
-            setActiveTab('sent');
-        }
-        prevOutgoingFilesLength.current = outgoingFiles.length;
-    }, [outgoingFiles.length]);
+    const isReceiving = receivedFiles.some((f) => f.status === 'transferring');
+    const isSending = outgoingFiles.some((f) => f.status === 'transferring');
 
     // Show notification dot when a new log arrives
     useEffect(() => {
@@ -245,9 +240,45 @@ export default function HomePage() {
                                                 className="group gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold"
                                             >
                                                 <div className="flex items-center gap-2">
-                                                    <Download className="w-4 h-4 group-data-[state=active]:text-foreground transition-colors" />
-                                                    <span>Received</span>
-                                                    <span className="ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-white/5 border border-white/5 px-1.5 text-[11px] font-bold text-muted-foreground group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground group-data-[state=active]:border-white/20 transition-all">
+                                                    <motion.div
+                                                        animate={
+                                                            isReceiving
+                                                                ? {
+                                                                      y: [0, -3, 0],
+                                                                      scale: [1, 1.1, 1],
+                                                                  }
+                                                                : {}
+                                                        }
+                                                        transition={{
+                                                            duration: 1.5,
+                                                            repeat: Infinity,
+                                                            ease: 'easeInOut',
+                                                        }}
+                                                    >
+                                                        <Download
+                                                            className={`w-4 h-4 transition-colors ${
+                                                                isReceiving
+                                                                    ? 'text-primary'
+                                                                    : 'group-data-[state=active]:text-foreground'
+                                                            }`}
+                                                        />
+                                                    </motion.div>
+                                                    <span
+                                                        className={`transition-colors duration-300 ${
+                                                            isReceiving
+                                                                ? 'text-primary font-medium'
+                                                                : ''
+                                                        }`}
+                                                    >
+                                                        Received
+                                                    </span>
+                                                    <span
+                                                        className={`ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[11px] font-bold transition-all duration-300 ${
+                                                            isReceiving
+                                                                ? 'bg-primary text-primary-foreground shadow-[0_0_12px_-4px_rgba(var(--primary-rgb),0.8)]'
+                                                                : 'bg-white/5 border border-white/5 text-muted-foreground group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground group-data-[state=active]:border-white/20'
+                                                        }`}
+                                                    >
                                                         {receivedFiles.length}
                                                     </span>
                                                 </div>
@@ -257,9 +288,46 @@ export default function HomePage() {
                                                 className="group gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold"
                                             >
                                                 <div className="flex items-center gap-2">
-                                                    <Send className="w-4 h-4 group-data-[state=active]:text-foreground transition-colors" />
-                                                    <span>Sent</span>
-                                                    <span className="ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-white/5 border border-white/5 px-1.5 text-[11px] font-bold text-muted-foreground group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground group-data-[state=active]:border-white/20 transition-all">
+                                                    <motion.div
+                                                        animate={
+                                                            isSending
+                                                                ? {
+                                                                      x: [0, 2, 0],
+                                                                      y: [0, -2, 0],
+                                                                      scale: [1, 1.1, 1],
+                                                                  }
+                                                                : {}
+                                                        }
+                                                        transition={{
+                                                            duration: 1.5,
+                                                            repeat: Infinity,
+                                                            ease: 'easeInOut',
+                                                        }}
+                                                    >
+                                                        <Send
+                                                            className={`w-4 h-4 transition-colors ${
+                                                                isSending
+                                                                    ? 'text-primary'
+                                                                    : 'group-data-[state=active]:text-foreground'
+                                                            }`}
+                                                        />
+                                                    </motion.div>
+                                                    <span
+                                                        className={`transition-colors duration-300 ${
+                                                            isSending
+                                                                ? 'text-primary font-medium'
+                                                                : ''
+                                                        }`}
+                                                    >
+                                                        Sent
+                                                    </span>
+                                                    <span
+                                                        className={`ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[11px] font-bold transition-all duration-300 ${
+                                                            isSending
+                                                                ? 'bg-primary text-primary-foreground shadow-[0_0_12px_-4px_rgba(var(--primary-rgb),0.8)]'
+                                                                : 'bg-white/5 border border-white/5 text-muted-foreground group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground group-data-[state=active]:border-white/20'
+                                                        }`}
+                                                    >
                                                         {outgoingFiles.length}
                                                     </span>
                                                 </div>
