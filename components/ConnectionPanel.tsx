@@ -78,24 +78,28 @@ export function ConnectionPanel() {
                 icon: Wifi,
                 text: 'Live',
                 color: 'text-green-500',
+                bg: 'bg-green-500/20',
                 border: 'border-green-500/30',
             },
             good: {
                 icon: Wifi,
                 text: 'Stable',
                 color: 'text-cyan-500',
+                bg: 'bg-cyan-500/20',
                 border: 'border-cyan-500/30',
             },
             poor: {
                 icon: Wifi,
                 text: 'Weak',
                 color: 'text-amber-500',
+                bg: 'bg-amber-500/20',
                 border: 'border-amber-500/30',
             },
             disconnected: {
                 icon: WifiOff,
                 text: 'Offline',
-                color: 'text-white/30',
+                color: 'text-white/40',
+                bg: 'bg-white/5',
                 border: 'border-white/5',
             },
         };
@@ -106,11 +110,16 @@ export function ConnectionPanel() {
         return (
             <div
                 className={cn(
-                    'flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-black/40 border transition-all duration-500',
+                    'flex items-center gap-3 px-3 py-1.5 rounded-full bg-black/40 border transition-all duration-500',
                     state.border
                 )}
             >
-                <div className="flex items-center justify-center">
+                <div
+                    className={cn(
+                        'flex items-center justify-center w-6 h-6 rounded-full transition-colors duration-500',
+                        state.bg
+                    )}
+                >
                     <Icon
                         className={cn('w-3.5 h-3.5 transition-colors duration-500', state.color)}
                     />
