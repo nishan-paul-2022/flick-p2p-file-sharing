@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { usePeerStore } from '@/lib/store';
@@ -47,7 +47,39 @@ export default function HomePage() {
         connectToPeer,
         isLogPanelOpen,
         toggleLogPanel,
+        logs,
     } = store;
+
+    // UX Updates State
+    const [activeTab, setActiveTab] = useState('received');
+    const [hasUnreadLogs, setHasUnreadLogs] = useState(false);
+    const prevOutgoingFilesLength = useRef(outgoingFiles.length);
+    const prevLogsLength = useRef(logs.length);
+
+    // Auto-switch to "sent" tab when a new file is sent
+    useEffect(() => {
+        if (outgoingFiles.length > prevOutgoingFilesLength.current) {
+            setActiveTab('sent');
+        }
+        prevOutgoingFilesLength.current = outgoingFiles.length;
+    }, [outgoingFiles.length]);
+
+    // Show notification dot when a new log arrives
+    useEffect(() => {
+        if (logs.length > prevLogsLength.current) {
+            if (!isLogPanelOpen) {
+                setHasUnreadLogs(true);
+            }
+        }
+        prevLogsLength.current = logs.length;
+    }, [logs.length, isLogPanelOpen]);
+
+    // Clear notification when log panel is opened
+    useEffect(() => {
+        if (isLogPanelOpen) {
+            setHasUnreadLogs(false);
+        }
+    }, [isLogPanelOpen]);
 
     // Expose store for testing
     useEffect(() => {
@@ -113,7 +145,7 @@ export default function HomePage() {
                                 <div className="flex-1 flex justify-start relative z-10">
                                     <motion.div
                                         whileHover={{ scale: 1.05 }}
-                                        className={`w-10 h-10 rounded-xl flex items-center justify-center border backdrop-blur-md shadow-lg group cursor-pointer transition-all duration-300 ${
+                                        className={`w-10 h-10 rounded-xl flex items-center justify-center border backdrop-blur-md shadow-lg group cursor-pointer transition-all duration-300 relative ${
                                             isLogPanelOpen
                                                 ? 'bg-white/10 border-white/20' // Active state style: Neutral glass
                                                 : 'bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08] hover:border-white/20'
@@ -127,6 +159,10 @@ export default function HomePage() {
                                                     : 'text-white/40 group-hover:text-white/80'
                                             }`}
                                         />
+                                        {/* Notification Dot */}
+                                        {hasUnreadLogs && (
+                                            <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)] animate-pulse" />
+                                        )}
                                     </motion.div>
                                 </div>
 
@@ -198,7 +234,11 @@ export default function HomePage() {
                                     </Card>
 
                                     {/* File Lists */}
-                                    <Tabs defaultValue="received" className="w-full">
+                                    <Tabs
+                                        value={activeTab}
+                                        onValueChange={setActiveTab}
+                                        className="w-full"
+                                    >
                                         <TabsList className="grid w-full grid-cols-2 glass-dark p-1 rounded-xl border-white/10">
                                             <TabsTrigger
                                                 value="received"
