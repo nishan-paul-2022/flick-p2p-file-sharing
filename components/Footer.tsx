@@ -30,7 +30,7 @@ export function Footer() {
                 {/* Minimal Bottom Bar */}
                 <div className="pt-0 flex flex-wrap items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em]">
                     <a
-                        href="https://kai-king.vercel.app"
+                        href="https://kaiverse.vercel.app"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-3 py-1.5 px-4 rounded-full bg-white/[0.02] border border-white/[0.05] text-white/40 hover:text-white hover:bg-white/[0.04] hover:border-white/[0.08] transition-all duration-300 group"

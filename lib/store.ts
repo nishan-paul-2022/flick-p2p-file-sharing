@@ -658,6 +658,12 @@ export const usePeerStore = create<PeerState>()(
 
                     const { addLog } = get();
                     addLog('success', 'Download started', transfer.metadata.name);
+
+                    set((state) => ({
+                        receivedFiles: state.receivedFiles.map((f) =>
+                            f.id === transfer.id ? { ...f, downloaded: true } : f
+                        ),
+                    }));
                 } catch (error) {
                     console.error('Download failed:', error);
                     const { addLog } = get();

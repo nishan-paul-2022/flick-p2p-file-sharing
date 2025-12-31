@@ -159,13 +159,22 @@ export function FileList({ type }: FileListProps) {
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="h-9 w-9 text-white/50 hover:text-white hover:bg-white/10"
+                                                                className={cn(
+                                                                    'h-9 w-9 hover:bg-white/10 transition-none hover:text-white',
+                                                                    transfer.downloaded
+                                                                        ? 'text-emerald-500'
+                                                                        : 'text-zinc-400'
+                                                                )}
                                                                 onClick={() =>
                                                                     handleDownload(transfer)
                                                                 }
-                                                                title="Download"
+                                                                title={
+                                                                    transfer.downloaded
+                                                                        ? 'Downloaded (Click to download again)'
+                                                                        : 'Download'
+                                                                }
                                                             >
-                                                                <Download className="w-4 h-4" />
+                                                                <Download className="w-5 h-5" />
                                                             </Button>
                                                         )}
                                                     <Button

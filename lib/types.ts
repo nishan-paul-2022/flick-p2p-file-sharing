@@ -20,6 +20,9 @@ export interface FileTransfer {
 
     // Power mode: OPFS-based storage
     opfsPath?: string; // Path to file in OPFS (handle can't be serialized)
+
+    // UI state
+    downloaded?: boolean;
 }
 
 export type ConnectionQuality = 'excellent' | 'good' | 'poor' | 'disconnected';
