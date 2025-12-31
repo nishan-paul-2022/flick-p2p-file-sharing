@@ -115,7 +115,7 @@ export default function HomePage() {
                                         whileHover={{ scale: 1.05 }}
                                         className={`w-10 h-10 rounded-xl flex items-center justify-center border backdrop-blur-md shadow-lg group cursor-pointer transition-all duration-300 ${
                                             isLogPanelOpen
-                                                ? 'bg-primary/20 border-primary/40' // Active state style
+                                                ? 'bg-white/10 border-white/20' // Active state style: Neutral glass
                                                 : 'bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08] hover:border-white/20'
                                         }`}
                                         onClick={toggleLogPanel}
@@ -123,7 +123,7 @@ export default function HomePage() {
                                         <Fingerprint
                                             className={`w-5 h-5 transition-colors duration-300 ${
                                                 isLogPanelOpen
-                                                    ? 'text-primary'
+                                                    ? 'text-white'
                                                     : 'text-white/40 group-hover:text-white/80'
                                             }`}
                                         />
@@ -188,7 +188,7 @@ export default function HomePage() {
                                     <Card className="glass-dark border-primary/20">
                                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
                                             <CardTitle className="flex items-center gap-2">
-                                                <Send className="w-5 h-5 text-sky-400" />
+                                                <Send className="w-5 h-5 text-white/70" />
                                                 Send Files
                                             </CardTitle>
                                             <div className="hidden sm:block px-4 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-xs font-medium text-zinc-300 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] backdrop-blur-md">

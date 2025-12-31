@@ -159,7 +159,7 @@ export function FileList({ type }: FileListProps) {
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="h-9 w-9 text-sky-400 hover:text-sky-300 hover:bg-sky-400/10"
+                                                                className="h-9 w-9 text-white/50 hover:text-white hover:bg-white/10"
                                                                 onClick={() =>
                                                                     handleDownload(transfer)
                                                                 }
