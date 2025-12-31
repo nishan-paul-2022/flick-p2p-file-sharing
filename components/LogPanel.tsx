@@ -68,7 +68,7 @@ export const LogPanel: React.FC = () => {
                         {/* Header */}
                         <div className="flex flex-shrink-0 items-center justify-between border-b border-white/10 bg-white/[0.02] px-6 pb-4 pt-[calc(var(--py-fluid)+0.25rem+0.5rem)] md:pb-6 md:pt-[calc(var(--py-fluid)+0.5rem+0.75rem)]">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.05)] backdrop-blur-md md:h-10 md:w-10">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 bg-white/10 shadow-log-glow backdrop-blur-md md:h-10 md:w-10">
                                     <Fingerprint className="h-4 w-4 text-white md:h-5 md:w-5" />
                                 </div>
                                 <div>
@@ -119,14 +119,14 @@ export const LogPanel: React.FC = () => {
                                         className="group relative pb-1 pl-4"
                                     >
                                         {/* Timeline line */}
-                                        <div className="absolute bottom-0 left-0 top-2 w-px bg-white/5 group-last:bottom-auto group-last:h-full" />
-                                        <div className="absolute left-[-2px] top-2.5 h-1 w-1 rounded-full bg-white/20 shadow-[0_0_10px_rgba(255,255,255,0.1)] transition-colors group-hover:bg-primary/50" />
+                                        <div className="absolute bottom-0 left-0 top-2 w-px bg-white/5 group-last:bottom-auto group-last:h-0.5" />
+                                        <div className="absolute -left-0.5 top-2.5 h-1 w-1 rounded-full bg-white/20 shadow-log-dot-glow transition-colors group-hover:bg-primary/50" />
 
                                         <div className="rounded-lg border border-white/[0.05] bg-white/[0.02] p-3 transition-all hover:border-white/10 hover:bg-white/[0.04]">
                                             <div className="mb-1 flex items-start justify-between gap-3">
                                                 <div className="flex items-center gap-2">
                                                     {getIcon(log.type)}
-                                                    <span className="text-[10px] text-white/30">
+                                                    <span className="text-2xs text-white/30">
                                                         {formatTime(log.timestamp)}
                                                     </span>
                                                 </div>
@@ -137,7 +137,7 @@ export const LogPanel: React.FC = () => {
                                             </p>
 
                                             {log.description && (
-                                                <p className="break-words text-[11px] leading-relaxed text-white/40">
+                                                <p className="break-words text-tiny-plus leading-relaxed text-white/40">
                                                     {log.description}
                                                 </p>
                                             )}
@@ -148,7 +148,7 @@ export const LogPanel: React.FC = () => {
                         </div>
 
                         {/* Footer Status */}
-                        <div className="flex flex-shrink-0 items-center justify-between border-t border-white/5 bg-white/[0.02] px-6 py-3 text-[10px] text-white/20">
+                        <div className="flex flex-shrink-0 items-center justify-between border-t border-white/5 bg-white/[0.02] px-6 py-3 text-2xs text-white/20">
                             <span>Flick - P2P File Sharing</span>
                             <span>v0.0.1</span>
                         </div>

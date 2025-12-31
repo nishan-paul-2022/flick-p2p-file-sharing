@@ -11,6 +11,7 @@
         --popover: 0 0% 12%;
         --popover-foreground: 210 40% 98%;
         --primary: 199 89% 48%;
+        --primary-rgb: 14, 165, 233;
         --primary-foreground: 222 47% 4%;
         --secondary: 0 0% 15%;
         --secondary-foreground: 210 40% 98%;
@@ -34,6 +35,7 @@
         --popover: 0 0% 100%;
         --popover-foreground: 222.2 84% 4.9%;
         --primary: 199 89% 48%;
+        --primary-rgb: 14, 165, 233;
         --primary-foreground: 210 40% 98%;
         --secondary: 210 40% 96.1%;
         --secondary-foreground: 222.2 47.4% 11.2%;
@@ -75,7 +77,7 @@
     }
 
     ::-webkit-scrollbar-thumb {
-        @apply rounded-full border-[3px] border-transparent bg-white/10 bg-clip-content transition-colors hover:bg-white/20;
+        @apply rounded-full border-3 border-transparent bg-white/10 bg-clip-content transition-colors hover:bg-white/20;
     }
 
     /* Scrollbar Buttons */
@@ -106,7 +108,7 @@
     }
 
     .input-otp {
-        @apply h-14 rounded-xl border-white/[0.05] bg-white/[0.02] font-mono text-base tracking-[0.3em] transition-all focus-visible:border-brand-500/50 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-lg;
+        @apply h-14 rounded-xl border-white/[0.05] bg-white/[0.02] font-mono text-base tracking-widest-3xl transition-all focus-visible:border-brand-500/50 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-lg;
     }
 
     .connection-status {
@@ -130,7 +132,7 @@
     @keyframes fadeInUp {
         from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(1.25rem);
         }
         to {
             opacity: 1;

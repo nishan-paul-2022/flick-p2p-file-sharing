@@ -240,7 +240,7 @@ export const usePeerStore = create<PeerState>()(
                     const peer = isHost ? new Peer(code, peerOptions) : new Peer(peerOptions);
 
                     peer.on('open', (id) => {
-                        console.log('Peer Open:', id);
+                        console.warn('Peer Open:', id);
                         set({ peerId: id, error: null });
                         const { addLog } = get();
                         addLog('success', 'Peer initialized', `Your ID: ${id}`);
@@ -248,7 +248,7 @@ export const usePeerStore = create<PeerState>()(
                     });
 
                     peer.on('connection', (conn) => {
-                        console.log('Incoming Connection:', conn.peer);
+                        console.warn('Incoming Connection:', conn.peer);
 
                         const { connection: activeConnection } = get();
                         if (activeConnection) {
@@ -258,7 +258,7 @@ export const usePeerStore = create<PeerState>()(
                         set({ connection: conn });
 
                         conn.on('open', () => {
-                            console.log('Connection Open (Host Side)');
+                            console.warn('Connection Open (Host Side)');
                             set({ isConnected: true, connectionQuality: 'excellent' });
                             const { addLog } = get();
                             addLog('success', 'Connected to peer', 'You can now share files');
@@ -267,7 +267,7 @@ export const usePeerStore = create<PeerState>()(
                         conn.on('data', (data) => handleIncomingData(data, get, set));
 
                         conn.on('close', async () => {
-                            console.log('Connection Closed');
+                            console.warn('Connection Closed');
 
                             // Clean up any active OPFS writables
                             for (const [id, writable] of opfsWritableCache.entries()) {
@@ -321,14 +321,14 @@ export const usePeerStore = create<PeerState>()(
                     });
 
                     peer.on('disconnected', () => {
-                        console.log('Peer disconnected from signaling server');
+                        console.warn('Peer disconnected from signaling server');
                         const { addLog } = get();
                         addLog('warning', 'Connection lost. Reconnecting...');
                         peer.reconnect();
                     });
 
                     peer.on('close', () => {
-                        console.log('Peer destroyed');
+                        console.warn('Peer destroyed');
                         set({
                             peer: null,
                             peerId: null,
@@ -352,7 +352,7 @@ export const usePeerStore = create<PeerState>()(
                 set({ roomCode: targetCode });
 
                 try {
-                    console.log('Connecting to:', targetCode);
+                    console.warn('Connecting to:', targetCode);
                     const conn = peer.connect(targetCode, {
                         reliable: true,
                     });
@@ -382,7 +382,7 @@ export const usePeerStore = create<PeerState>()(
 
                     Promise.race([openPromise, timeoutPromise])
                         .then(() => {
-                            console.log('Connection Open (Guest Side)');
+                            console.warn('Connection Open (Guest Side)');
                             set({ isConnected: true, connectionQuality: 'excellent' });
                             const { addLog } = get();
                             addLog('success', 'Connected to peer', 'You can now share files');

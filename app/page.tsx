@@ -87,13 +87,13 @@ export default function HomePage() {
                 >
                     <div
                         className={cn(
-                            'ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-grow flex-col transition-all duration-500',
+                            'ease-[transition-timing-function:cubic-bezier(0.4,0,0.2,1)] flex flex-grow flex-col transition-all duration-500',
                             isLogPanelOpen
                                 ? 'translate-x-72 xs:translate-x-80 md:translate-x-0 md:pl-80 lg:pl-96'
                                 : 'translate-x-0'
                         )}
                     >
-                        <main className="px-fluid py-fluid relative mx-auto w-full max-w-[1440px] flex-grow">
+                        <main className="px-fluid py-fluid relative mx-auto w-full max-w-layout flex-grow">
                             <Header
                                 isLogPanelOpen={isLogPanelOpen}
                                 toggleLogPanel={toggleLogPanel}
@@ -125,7 +125,7 @@ export default function HomePage() {
                                                 <Send className="h-5 w-5 text-white/70" />
                                                 Send Files
                                             </CardTitle>
-                                            <div className="hidden rounded-full border border-white/[0.08] bg-white/[0.05] px-4 py-1.5 text-xs font-medium text-zinc-300 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] backdrop-blur-md sm:block">
+                                            <div className="hidden rounded-full border border-white/[0.08] bg-white/[0.05] px-4 py-1.5 text-xs font-medium text-zinc-300 shadow-glass-inset backdrop-blur-md sm:block">
                                                 Drag and drop files or click to browse
                                             </div>
                                         </CardHeader>
@@ -179,9 +179,9 @@ export default function HomePage() {
                                                         Received
                                                     </span>
                                                     <span
-                                                        className={`ml-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-bold transition-all duration-300 md:ml-1 md:h-5 md:min-w-[20px] md:px-1.5 md:text-[11px] ${
+                                                        className={`ml-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-3xs font-bold transition-all duration-300 md:ml-1 md:h-5 md:min-w-5 md:px-1.5 md:text-tiny-plus ${
                                                             isReceiving
-                                                                ? 'bg-primary text-primary-foreground shadow-[0_0_12px_-4px_rgba(var(--primary-rgb),0.8)]'
+                                                                ? 'bg-primary text-primary-foreground shadow-primary-glow-lg'
                                                                 : 'border border-white/5 bg-white/5 text-muted-foreground group-data-[state=active]:border-white/20 group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground'
                                                         }`}
                                                     >
@@ -228,9 +228,9 @@ export default function HomePage() {
                                                         Sent
                                                     </span>
                                                     <span
-                                                        className={`ml-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-bold transition-all duration-300 md:ml-1 md:h-5 md:min-w-[20px] md:px-1.5 md:text-[11px] ${
+                                                        className={`ml-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-3xs font-bold transition-all duration-300 md:ml-1 md:h-5 md:min-w-5 md:px-1.5 md:text-tiny-plus ${
                                                             isSending
-                                                                ? 'bg-primary text-primary-foreground shadow-[0_0_12px_-4px_rgba(var(--primary-rgb),0.8)]'
+                                                                ? 'bg-primary text-primary-foreground shadow-primary-glow-lg'
                                                                 : 'border border-white/5 bg-white/5 text-muted-foreground group-data-[state=active]:border-white/20 group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground'
                                                         }`}
                                                     >

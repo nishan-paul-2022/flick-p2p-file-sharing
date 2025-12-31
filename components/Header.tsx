@@ -15,20 +15,20 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
         <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative mb-8 mt-1 flex w-full items-center justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-900/30 px-4 py-2 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-3xl md:mb-12 md:mt-2 md:rounded-full md:px-8 md:py-3"
+            className="relative mb-8 mt-1 flex w-full items-center justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-900/30 px-4 py-2 shadow-header-glass backdrop-blur-3xl md:mb-12 md:mt-2 md:rounded-full md:px-8 md:py-3"
         >
             {/* Ambient Glow */}
-            <div className="pointer-events-none absolute left-1/2 top-0 h-1/2 w-3/4 -translate-x-1/2 rounded-full bg-primary/10 opacity-50 blur-[60px]" />
+            <div className="pointer-events-none absolute left-1/2 top-0 h-1/2 w-3/4 -translate-x-1/2 rounded-full bg-primary/10 opacity-50 blur-huge" />
 
             {/* Left: Fingerprint Icon (Event Logs) */}
             <div className="relative z-10 flex flex-1 justify-start">
                 <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className={`group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border shadow-lg backdrop-blur-md transition-all duration-300 md:h-10 md:w-10 ${
+                    className={`group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border backdrop-blur-md transition-all duration-300 md:h-10 md:w-10 ${
                         isLogPanelOpen
-                            ? 'border-white/20 bg-white/10'
-                            : 'border-white/[0.08] bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.08]'
+                            ? 'border-white/20 bg-white/10 shadow-log-glow'
+                            : 'border-white/[0.08] bg-white/[0.03] shadow-lg hover:border-white/20 hover:bg-white/[0.08]'
                     }`}
                     onClick={toggleLogPanel}
                     aria-label="Toggle Event Logs"
@@ -42,7 +42,7 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
                     />
                     {/* Notification Dot */}
                     {hasUnreadLogs && (
-                        <span className="absolute right-1.5 top-1.5 h-2 w-2 animate-pulse rounded-full bg-primary shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)]" />
+                        <span className="absolute right-1.5 top-1.5 h-2 w-2 animate-pulse rounded-full bg-primary shadow-primary-glow-sm" />
                     )}
                 </motion.div>
             </div>

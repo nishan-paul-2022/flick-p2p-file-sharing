@@ -139,6 +139,22 @@ const config: Config = {
                 'glass-md': '0 4px 16px 0 rgba(0, 0, 0, 0.15)',
                 'glass-lg': '0 8px 32px 0 rgba(0, 0, 0, 0.2)',
                 'brand-glow': '0 0 15px -3px var(--primary)',
+                'header-glass':
+                    '0 8px 40px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
+                'primary-glow-sm': '0 0 8px rgba(var(--primary-rgb), 0.8)',
+                'primary-glow-lg': '0 0 12px -4px rgba(var(--primary-rgb), 0.8)',
+                'log-glow': '0 0 15px rgba(255,255,255,0.05)',
+                'log-dot-glow': '0 0 10px rgba(255,255,255,0.1)',
+                'glass-inset': 'inset 0 1px 0 0 rgba(255,255,255,0.02)',
+            },
+            maxWidth: {
+                layout: '1440px',
+            },
+            borderWidth: {
+                '3': '3px',
+            },
+            blur: {
+                huge: '60px',
             },
         },
     },
