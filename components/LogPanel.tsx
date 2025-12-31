@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { usePeerStore } from '@/lib/store';
 import { Fingerprint, X, CheckCircle2, AlertTriangle, XCircle, Trash2, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
+
 import { Button } from '@/components/ui/button';
 
 export const LogPanel: React.FC = () => {

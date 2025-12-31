@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { usePeerStore } from '@/lib/store';
 
 export function FileDropZone() {
-    const { isConnected, sendFile, roomCode, storageCapabilities, addLog } = usePeerStore();
+    const { isConnected, sendFile, roomCode, addLog } = usePeerStore();
 
     const disabled = !isConnected;
 
@@ -22,7 +22,7 @@ export function FileDropZone() {
                 }
             }
         },
-        [sendFile]
+        [sendFile, addLog]
     );
 
     const handleDrop = useCallback(

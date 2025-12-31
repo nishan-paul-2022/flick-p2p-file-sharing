@@ -1,22 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-    Copy,
-    Check,
-    Wifi,
-    WifiOff,
-    LogOut,
-    RefreshCw,
-    Trash2,
-    Zap,
-    Shield,
-    ZapOff,
-} from 'lucide-react';
+
+import { Copy, Check, Wifi, WifiOff, RefreshCw, Trash2, Zap, ZapOff } from 'lucide-react';
 import { copyToClipboard, generateRoomCode, isValidRoomCode, cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { usePeerStore } from '@/lib/store';

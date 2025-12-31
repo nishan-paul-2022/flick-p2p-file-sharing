@@ -505,6 +505,7 @@ export const usePeerStore = create<PeerState>()(
                     }
 
                     // Backpressure: if buffer is too full, wait before sending next chunk
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const dc = (connection as any).dataChannel as RTCDataChannel;
                     if (dc && dc.bufferedAmount > MAX_BUFFERED_AMOUNT) {
                         setTimeout(sendNextChunk, 50);

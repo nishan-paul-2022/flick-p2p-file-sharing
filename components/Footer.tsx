@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { Github, Shield, Zap, Lock } from 'lucide-react';
 
 export function Footer() {
@@ -36,9 +37,11 @@ export function Footer() {
                     >
                         <span>PRODUCED by</span>
                         <div className="flex items-center gap-2">
-                            <img
+                            <Image
                                 src="/author-logo.svg"
                                 alt="KAI"
+                                width={16}
+                                height={16}
                                 className="w-4 h-4 transition-all duration-700 group-hover:rotate-[360deg] group-hover:scale-125"
                             />
                             <span className="font-extrabold tracking-[0.25em] text-[#00F07C] transition-all duration-700 group-hover:rotate-[360deg]">

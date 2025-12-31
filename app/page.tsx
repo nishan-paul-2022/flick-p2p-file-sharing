@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Download, Sparkles, Fingerprint } from 'lucide-react';
-import { StorageModeIndicator } from '@/components/StorageModeIndicator';
+
 import Loading from './loading';
 import { LogPanel } from '@/components/LogPanel';
 import { Footer } from '@/components/Footer';
