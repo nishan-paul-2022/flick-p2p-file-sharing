@@ -38,16 +38,6 @@ export default function Loading() {
                     </div>
                 </motion.div>
             </div>
-
-            {/* Bottom Indicator */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="absolute bottom-12 text-xs text-muted-foreground/50 font-mono tracking-widest"
-            >
-                FLICK - P2P FILE SHARING
-            </motion.div>
         </div>
     );
 }

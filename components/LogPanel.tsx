@@ -152,8 +152,8 @@ export const LogPanel: React.FC = () => {
 
                         {/* Footer Status */}
                         <div className="flex-shrink-0 px-6 py-3 bg-white/[0.02] border-t border-white/5 text-[10px] text-white/20 flex justify-between items-center">
-                            <span>System Status: Online</span>
-                            <span>v1.0.0</span>
+                            <span>Flick - P2P File Sharing</span>
+                            <span>v0.0.1</span>
                         </div>
                     </motion.div>
                 </>

@@ -132,27 +132,24 @@ export default function HomePage() {
 
                                 {/* Center: Flick Logo */}
                                 <div className="flex-1 flex justify-center relative z-10">
-                                    <motion.div
-                                        className="flex items-center gap-3"
-                                        whileHover={{ scale: 1.02 }}
-                                        transition={{
-                                            type: 'spring',
-                                            stiffness: 400,
-                                            damping: 10,
-                                        }}
-                                    >
-                                        <Image
-                                            src="/icon.svg"
-                                            alt="Flick Icon"
-                                            width={40}
-                                            height={40}
-                                            className="w-9 h-9 md:w-10 md:h-10"
-                                            priority
-                                        />
+                                    <div className="flex items-center gap-3">
+                                        <motion.div
+                                            whileHover={{ rotate: 360 }}
+                                            transition={{ duration: 0.6, ease: 'easeInOut' }}
+                                        >
+                                            <Image
+                                                src="/icon.svg"
+                                                alt="Flick Icon"
+                                                width={40}
+                                                height={40}
+                                                className="w-9 h-9 md:w-10 md:h-10"
+                                                priority
+                                            />
+                                        </motion.div>
                                         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
                                             <span className="text-primary">Flick</span>
                                         </h1>
-                                    </motion.div>
+                                    </div>
                                 </div>
 
                                 {/* Right: Slogan */}
