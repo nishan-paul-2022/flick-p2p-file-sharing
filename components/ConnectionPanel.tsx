@@ -216,27 +216,21 @@ export function ConnectionPanel() {
                         animate={{ opacity: 1 }}
                         className="space-y-6"
                     >
-                        <div className="relative p-6 rounded-2xl bg-[#0a1a24]/60 border border-sky-500/20 overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4">
-                                <button
-                                    onClick={handleCopyCode}
-                                    className="p-2 rounded-lg bg-white/5 border border-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all"
-                                >
-                                    {copied ? (
-                                        <Check className="w-4 h-4 text-green-500" />
-                                    ) : (
-                                        <Copy className="w-4 h-4" />
-                                    )}
-                                </button>
-                            </div>
-
-                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-sky-400/50 mb-4">
-                                Your Room Code
-                            </p>
-
+                        <div className="flex items-center justify-between p-6 rounded-2xl bg-[#0a1a24]/60 border border-sky-500/20 overflow-hidden">
                             <code className="text-4xl font-bold tracking-[0.2em] font-mono text-sky-400">
                                 {roomCode}
                             </code>
+
+                            <button
+                                onClick={handleCopyCode}
+                                className="p-3 rounded-xl bg-white/5 border border-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all ml-4"
+                            >
+                                {copied ? (
+                                    <Check className="w-5 h-5 text-green-500" />
+                                ) : (
+                                    <Copy className="w-5 h-5" />
+                                )}
+                            </button>
                         </div>
 
                         <button
