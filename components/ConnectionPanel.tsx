@@ -78,28 +78,28 @@ export function ConnectionPanel() {
             excellent: {
                 icon: Wifi,
                 text: 'Live',
-                color: 'text-green-500',
-                bg: 'bg-green-500/20',
-                border: 'border-green-500/30',
+                color: 'text-green-400',
+                bg: 'bg-green-400/10',
+                border: 'border-green-400/20',
             },
             good: {
                 icon: Wifi,
                 text: 'Stable',
-                color: 'text-cyan-500',
-                bg: 'bg-cyan-500/20',
-                border: 'border-cyan-500/30',
+                color: 'text-brand-400',
+                bg: 'bg-brand-400/10',
+                border: 'border-brand-400/20',
             },
             poor: {
                 icon: Wifi,
                 text: 'Weak',
-                color: 'text-amber-500',
-                bg: 'bg-amber-500/20',
-                border: 'border-amber-500/30',
+                color: 'text-amber-400',
+                bg: 'bg-amber-400/10',
+                border: 'border-amber-400/20',
             },
             disconnected: {
                 icon: WifiOff,
                 text: 'Offline',
-                color: 'text-white/40',
+                color: 'text-white/20',
                 bg: 'bg-white/5',
                 border: 'border-white/5',
             },
@@ -109,12 +109,7 @@ export function ConnectionPanel() {
         const Icon = state.icon;
 
         return (
-            <div
-                className={cn(
-                    'flex items-center gap-2 md:gap-3 px-2.5 md:px-3 py-1 md:py-1.5 rounded-full bg-black/40 border transition-all duration-500',
-                    state.border
-                )}
-            >
+            <div className={cn('connection-status', state.border)}>
                 <div
                     className={cn(
                         'flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-full transition-colors duration-500',
@@ -130,7 +125,7 @@ export function ConnectionPanel() {
                 </div>
                 <span
                     className={cn(
-                        'text-[9px] md:text-[10px] font-bold uppercase tracking-[0.1em] md:tracking-[0.15em] transition-colors duration-500 whitespace-nowrap',
+                        'text-[9px] md:text-[10px] font-bold uppercase tracking-wider transition-colors duration-500 whitespace-nowrap',
                         state.color
                     )}
                 >
@@ -141,36 +136,36 @@ export function ConnectionPanel() {
     };
 
     return (
-        <Card className="glass-dark border-primary/20 overflow-hidden">
-            <div className="w-full py-3 bg-gradient-to-r from-transparent via-primary/5 to-transparent border-b border-white/5 text-center text-xs font-semibold tracking-widest text-muted-foreground transition-colors uppercase backdrop-blur-sm">
-                Create or join a room to share files
+        <Card className="glass-dark border-primary/10 overflow-hidden shadow-glass-lg rounded-3xl">
+            <div className="w-full py-3 bg-gradient-to-r from-transparent via-primary/5 to-transparent border-b border-white/5 text-center text-[10px] font-bold tracking-[0.2em] text-muted-foreground transition-colors uppercase backdrop-blur-sm">
+                Room Connection
             </div>
-            <CardHeader className="pb-4">
+            <CardHeader className="pb-4 pt-6">
                 <div className="flex items-center justify-between">
                     <StorageModeIndicator />
                     {getStatusIndicator()}
                 </div>
             </CardHeader>
 
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 pb-8">
                 {!roomCode ? (
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
                         className="space-y-4"
                     >
                         <button
                             onClick={handleCreateRoom}
                             aria-label="Create a new room"
-                            className="group relative w-full h-24 rounded-2xl bg-[#0a1a24]/40 border border-sky-500/10 hover:border-sky-500/30 transition-all duration-500 overflow-hidden"
+                            className="group btn-card"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <div className="relative flex items-center justify-center gap-3">
+                            <div className="absolute inset-0 bg-gradient-to-br from-brand-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className="btn-card-content">
                                 <RefreshCw
-                                    className="w-4 h-4 text-sky-400 group-hover:rotate-180 transition-transform duration-700"
+                                    className="w-4 h-4 text-brand-400 group-hover:rotate-180 transition-transform duration-700"
                                     aria-hidden="true"
                                 />
-                                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-sky-400/70 group-hover:text-sky-400 transition-colors">
+                                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-brand-400/70 group-hover:text-brand-400 transition-colors">
                                     Create New Room
                                 </span>
                             </div>
@@ -178,7 +173,7 @@ export function ConnectionPanel() {
 
                         <div className="flex items-center gap-4 py-4" aria-hidden="true">
                             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/[0.05] to-white/[0.05]" />
-                            <span className="flex items-center justify-center px-4 py-1.5 rounded-full border border-white/5 bg-black/20 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/70 backdrop-blur-md">
+                            <span className="flex items-center justify-center px-4 py-1.5 rounded-full border border-white/5 bg-black/20 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 backdrop-blur-md">
                                 or
                             </span>
                             <div className="h-px flex-1 bg-gradient-to-l from-transparent via-white/[0.05] to-white/[0.05]" />
@@ -187,7 +182,7 @@ export function ConnectionPanel() {
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <Zap
-                                    className="w-4 h-4 text-muted-foreground/20 group-focus-within:text-white/40 transition-colors"
+                                    className="w-4 h-4 text-muted-foreground/20 group-focus-within:text-brand-400/50 transition-colors"
                                     aria-hidden="true"
                                 />
                             </div>
@@ -198,7 +193,7 @@ export function ConnectionPanel() {
                                 onKeyDown={(e) => e.key === 'Enter' && handleJoinRoom()}
                                 maxLength={6}
                                 aria-label="Enter 6-character room code"
-                                className="pl-12 pr-24 h-14 bg-white/[0.02] border-white/[0.05] focus:border-white/[0.12] focus:ring-0 text-base md:text-lg tracking-[0.3em] md:tracking-[0.4em] font-mono transition-all rounded-xl"
+                                className="input-otp pl-12 pr-24"
                             />
                             <div className="absolute inset-y-2 right-2">
                                 <Button
@@ -208,12 +203,12 @@ export function ConnectionPanel() {
                                     className={cn(
                                         'h-full px-5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all duration-500',
                                         joinCode.length === ROOM_CODE_LENGTH && !isJoining
-                                            ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10'
-                                            : 'bg-white/5 text-white/40 border border-white/5'
+                                            ? 'bg-brand-500/20 hover:bg-brand-500/30 text-brand-400 border border-brand-500/20 shadow-brand-glow'
+                                            : 'bg-white/5 text-white/20 border border-white/5'
                                     )}
                                 >
                                     {isJoining ? (
-                                        <RefreshCw className="w-4 h-4 animate-spin" />
+                                        <RefreshCw className="w-4 h-4 animate-spin text-brand-400" />
                                     ) : (
                                         'Join'
                                     )}
@@ -223,13 +218,14 @@ export function ConnectionPanel() {
                     </motion.div>
                 ) : (
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         className="space-y-6"
                     >
-                        <div className="flex items-center justify-between p-4 md:p-6 rounded-2xl bg-[#0a1a24]/60 border border-sky-500/20 overflow-hidden">
+                        <div className="flex items-center justify-between p-5 md:p-7 rounded-2xl bg-surface-dark-60 border border-brand-500/20 shadow-inner overflow-hidden relative">
+                            <div className="absolute -top-12 -right-12 w-24 h-24 bg-brand-500/5 blur-3xl rounded-full" />
                             <code
-                                className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-[0.15em] md:tracking-[0.2em] font-mono text-sky-400 truncate"
+                                className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[0.2em] font-mono text-brand-400 truncate relative z-10"
                                 aria-label={`Current room code is ${roomCode}`}
                             >
                                 {roomCode}
@@ -237,11 +233,12 @@ export function ConnectionPanel() {
 
                             <button
                                 onClick={handleCopyCode}
+                                title="Copy code"
                                 aria-label="Copy room code to clipboard"
-                                className="p-2 md:p-3 rounded-xl bg-white/5 border border-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all ml-2 md:ml-4 flex-shrink-0"
+                                className="p-3 md:p-4 rounded-xl bg-white/5 border border-white/5 text-white/30 hover:text-white hover:bg-white/10 transition-all hover:scale-110 active:scale-95 ml-2 md:ml-4 flex-shrink-0 relative z-10"
                             >
                                 {copied ? (
-                                    <Check className="w-4 h-4 md:w-5 md:h-5 text-green-500" />
+                                    <Check className="w-4 h-4 md:w-5 md:h-5 text-green-400" />
                                 ) : (
                                     <Copy className="w-4 h-4 md:w-5 md:h-5" />
                                 )}
@@ -251,7 +248,7 @@ export function ConnectionPanel() {
                         <button
                             onClick={disconnect}
                             aria-label="Leave the current room"
-                            className="w-full h-14 flex items-center justify-center gap-3 rounded-xl border border-red-500/10 bg-red-500/5 text-red-500/60 hover:bg-red-600 hover:text-white hover:border-red-600 text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 group"
+                            className="w-full h-14 flex items-center justify-center gap-3 rounded-xl border border-red-500/10 bg-red-500/5 text-red-500/60 hover:bg-red-500 hover:text-white hover:border-red-500 text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 group active:scale-[0.98]"
                         >
                             <ZapOff
                                 className="w-4 h-4 transition-transform group-hover:scale-110"
@@ -266,10 +263,10 @@ export function ConnectionPanel() {
                     <button
                         onClick={clearHistory}
                         aria-label="Clear all transfer history"
-                        className="flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80 border border-white/5 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-300 group"
+                        className="flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-muted-foreground/40 border border-white/5 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 transition-all duration-300 group"
                     >
                         <Trash2
-                            className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100"
+                            className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100"
                             aria-hidden="true"
                         />
                         Clear History

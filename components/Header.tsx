@@ -15,7 +15,7 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
         <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-between mb-8 md:mb-12 w-full bg-zinc-900/30 border border-white/[0.08] rounded-2xl md:rounded-full px-4 md:px-8 py-4 md:py-5 backdrop-blur-3xl shadow-[0_8px_40px_-12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] relative overflow-hidden"
+            className="flex items-center justify-between mt-1 md:mt-2 mb-8 md:mb-12 w-full bg-zinc-900/30 border border-white/[0.08] rounded-2xl md:rounded-full px-4 md:px-8 py-2 md:py-3 backdrop-blur-3xl shadow-[0_8px_40px_-12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] relative overflow-hidden"
         >
             {/* Ambient Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1/2 bg-primary/10 blur-[60px] rounded-full pointer-events-none opacity-50" />

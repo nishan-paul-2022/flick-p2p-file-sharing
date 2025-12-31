@@ -90,7 +90,7 @@ export default function HomePage() {
                                 : 'translate-x-0'
                         }`}
                     >
-                        <main className="flex-grow relative px-fluid py-fluid-y max-w-[1440px] mx-auto w-full">
+                        <main className="flex-grow relative px-fluid py-fluid max-w-[1440px] mx-auto w-full">
                             <Header
                                 isLogPanelOpen={isLogPanelOpen}
                                 toggleLogPanel={toggleLogPanel}
