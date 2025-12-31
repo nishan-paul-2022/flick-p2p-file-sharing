@@ -13,6 +13,7 @@ import { Header } from '@/components/Header';
 import { LogPanel } from '@/components/LogPanel';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLogNotification } from '@/lib/hooks/useLogNotification';
 import { usePeerRestoration } from '@/lib/hooks/usePeerRestoration';
 import { usePeerStore } from '@/lib/store';
@@ -44,6 +45,9 @@ export default function HomePage() {
     const toggleLogPanel = usePeerStore((state) => state.toggleLogPanel);
     const logs = usePeerStore((state) => state.logs);
     const hasHydrated = usePeerStore((state) => state.hasHydrated);
+    const downloadAllReceivedFiles = usePeerStore((state) => state.downloadAllReceivedFiles);
+
+    const completedCount = receivedFiles.filter((f) => f.status === 'completed').length;
 
     const showLoading = showLoadingParam || isAppLoading || !hasHydrated;
 
@@ -147,29 +151,58 @@ export default function HomePage() {
                                                 className="group gap-1 rounded-lg py-2.5 font-semibold transition-all duration-300 hover:bg-white/5 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground md:gap-2 md:py-3"
                                             >
                                                 <div className="flex items-center gap-1.5 md:gap-2">
-                                                    <motion.div
-                                                        animate={
-                                                            isReceiving
-                                                                ? {
-                                                                      y: [0, -3, 0],
-                                                                      scale: [1, 1.1, 1],
-                                                                  }
-                                                                : {}
-                                                        }
-                                                        transition={{
-                                                            duration: 1.5,
-                                                            repeat: Infinity,
-                                                            ease: 'easeInOut',
-                                                        }}
-                                                    >
-                                                        <Download
-                                                            className={`h-3.5 w-3.5 transition-colors md:h-4 md:w-4 ${
-                                                                isReceiving
-                                                                    ? 'text-primary'
-                                                                    : 'group-data-[state=active]:text-foreground'
-                                                            }`}
-                                                        />
-                                                    </motion.div>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <motion.div
+                                                                className="relative"
+                                                                whileHover={
+                                                                    completedCount > 0
+                                                                        ? { scale: 1.2 }
+                                                                        : {}
+                                                                }
+                                                                whileTap={
+                                                                    completedCount > 0
+                                                                        ? { scale: 0.9 }
+                                                                        : {}
+                                                                }
+                                                                onClick={(e) => {
+                                                                    if (completedCount > 0) {
+                                                                        e.stopPropagation();
+                                                                        downloadAllReceivedFiles();
+                                                                    }
+                                                                }}
+                                                                animate={
+                                                                    isReceiving
+                                                                        ? {
+                                                                              y: [0, -3, 0],
+                                                                              scale: [1, 1.1, 1],
+                                                                          }
+                                                                        : {}
+                                                                }
+                                                                transition={{
+                                                                    duration: 1.5,
+                                                                    repeat: Infinity,
+                                                                    ease: 'easeInOut',
+                                                                }}
+                                                            >
+                                                                <Download
+                                                                    className={`h-3.5 w-3.5 transition-colors md:h-4 md:w-4 ${
+                                                                        isReceiving
+                                                                            ? 'text-primary'
+                                                                            : 'group-data-[state=active]:text-foreground'
+                                                                    } ${completedCount > 0 ? 'cursor-pointer hover:text-sky-400' : ''}`}
+                                                                />
+                                                            </motion.div>
+                                                        </TooltipTrigger>
+                                                        {completedCount > 0 && (
+                                                            <TooltipContent
+                                                                side="top"
+                                                                className="shadow-sky-500/20"
+                                                            >
+                                                                Download all files as ZIP
+                                                            </TooltipContent>
+                                                        )}
+                                                    </Tooltip>
                                                     <span
                                                         className={`text-xs transition-colors duration-300 md:text-sm ${
                                                             isReceiving
@@ -180,7 +213,7 @@ export default function HomePage() {
                                                         Received
                                                     </span>
                                                     <span
-                                                        className={`ml-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-3xs font-bold transition-all duration-300 md:ml-1 md:h-5 md:min-w-5 md:px-1.5 md:text-tiny-plus ${
+                                                        className={`ml-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-3xs font-bold transition-all duration-300 md:h-5 md:min-w-5 md:px-1.5 md:text-tiny-plus ${
                                                             isReceiving
                                                                 ? 'bg-primary text-primary-foreground shadow-primary-glow-lg'
                                                                 : 'border border-white/5 bg-white/5 text-muted-foreground group-data-[state=active]:border-white/20 group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground'

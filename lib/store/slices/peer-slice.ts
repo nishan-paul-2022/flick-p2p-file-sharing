@@ -1,9 +1,9 @@
 import Peer from 'peerjs';
 import { StateCreator } from 'zustand';
 
-import { CHUNK_SIZE, ICE_SERVERS } from '../../constants';
+import { CHUNK_SIZE, ICE_SERVERS, MAX_LOGS } from '../../constants';
 import { OPFSManager } from '../../opfs-manager';
-import { P2PMessage } from '../../types';
+import { LogEntry, P2PMessage } from '../../types';
 import {
     incomingMessageSequenceCache,
     opfsHandleCache,
@@ -59,8 +59,20 @@ const handleIncomingData = async (
                     opfsPath,
                 };
 
-                set((state) => ({ receivedFiles: [...state.receivedFiles, transfer] }));
-                addLog('info', 'Receiving file', msg.metadata.name);
+                set((state) => ({
+                    receivedFiles: [...state.receivedFiles, transfer],
+                    logs: [
+                        {
+                            id: Math.random().toString(36).substring(7),
+                            timestamp: Date.now(),
+                            type: 'info',
+                            message: 'Receiving file',
+                            description: msg.metadata.name,
+                        } as LogEntry,
+                        ...state.logs,
+                    ].slice(0, MAX_LOGS),
+                    hasUnreadLogs: !state.isLogPanelOpen,
+                }));
             } else if (msg.type === 'chunk') {
                 const transfer = receivedFiles.find((t) => t.id === msg.transferId);
                 if (!transfer) {
@@ -91,30 +103,52 @@ const handleIncomingData = async (
                             await currentWrite;
 
                             const progress = ((msg.chunkIndex + 1) / transfer.totalChunks) * 100;
-                            set((state) => ({
-                                receivedFiles: state.receivedFiles.map((t) =>
-                                    t.id === msg.transferId ? { ...t, progress } : t
-                                ),
-                            }));
+
+                            // Throttle progress updates to at most 1% increments or completion
+                            set((state) => {
+                                const t = state.receivedFiles.find((f) => f.id === msg.transferId);
+                                if (
+                                    !t ||
+                                    (progress - t.progress < 1 &&
+                                        msg.chunkIndex < t.totalChunks - 1)
+                                ) {
+                                    return state;
+                                }
+                                return {
+                                    receivedFiles: state.receivedFiles.map((f) =>
+                                        f.id === msg.transferId ? { ...f, progress } : f
+                                    ),
+                                };
+                            });
                         }
                     } catch (error) {
                         console.error('OPFS write failed:', error);
                         addLog('error', 'Storage error', 'Failed to write chunk to disk');
                     }
                 } else if (transfer.chunks) {
-                    set((state) => ({
-                        receivedFiles: state.receivedFiles.map((t) => {
-                            if (t.id === msg.transferId && t.chunks) {
-                                t.chunks[msg.chunkIndex] = msg.data;
-                                const receivedChunks = t.chunks.filter(
-                                    (c) => c !== undefined
-                                ).length;
-                                const progress = (receivedChunks / t.totalChunks) * 100;
-                                return { ...t, progress };
-                            }
-                            return t;
-                        }),
-                    }));
+                    transfer.chunks[msg.chunkIndex] = msg.data;
+                    const progress =
+                        (transfer.chunks.filter((c) => c !== undefined).length /
+                            transfer.totalChunks) *
+                        100;
+
+                    // Throttle RAM progress updates too
+                    set((state) => {
+                        const t = state.receivedFiles.find((f) => f.id === msg.transferId);
+                        if (
+                            !t ||
+                            (progress - t.progress < 1 &&
+                                progress < 100 &&
+                                msg.chunkIndex < t.totalChunks - 1)
+                        ) {
+                            return state;
+                        }
+                        return {
+                            receivedFiles: state.receivedFiles.map((f) =>
+                                f.id === msg.transferId ? { ...f, progress } : f
+                            ),
+                        };
+                    });
                 }
             } else if (msg.type === 'complete') {
                 const writable = opfsWritableCache.get(msg.transferId);
@@ -136,15 +170,29 @@ const handleIncomingData = async (
                     }
                 }
 
-                set((state) => ({
-                    receivedFiles: state.receivedFiles.map((t) => {
-                        if (t.id === msg.transferId) {
-                            addLog('success', 'File received', t.metadata.name);
-                            return { ...t, status: 'completed' as const, progress: 100 };
-                        }
-                        return t;
-                    }),
-                }));
+                set((state) => {
+                    const targetFile = state.receivedFiles.find((f) => f.id === msg.transferId);
+                    if (!targetFile) return state;
+
+                    return {
+                        receivedFiles: state.receivedFiles.map((t) =>
+                            t.id === msg.transferId
+                                ? { ...t, status: 'completed' as const, progress: 100 }
+                                : t
+                        ),
+                        logs: [
+                            {
+                                id: Math.random().toString(36).substring(7),
+                                timestamp: Date.now(),
+                                type: 'success',
+                                message: 'File received',
+                                description: targetFile.metadata.name,
+                            } as LogEntry,
+                            ...state.logs,
+                        ].slice(0, MAX_LOGS),
+                        hasUnreadLogs: !state.isLogPanelOpen,
+                    };
+                });
 
                 incomingMessageSequenceCache.delete(transferId);
             }

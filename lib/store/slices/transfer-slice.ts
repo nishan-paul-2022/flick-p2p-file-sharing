@@ -1,3 +1,4 @@
+import JSZip from 'jszip';
 import { StateCreator } from 'zustand';
 
 import { CHUNK_SIZE, MAX_BUFFERED_AMOUNT } from '../../constants';
@@ -155,8 +156,7 @@ export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice
                     get().addLog('error', 'File not found in storage');
                     return;
                 }
-                const file = await OPFSManager.getFileAsBlob(handle);
-                blob = file;
+                blob = await OPFSManager.getFileAsBlob(handle);
             } else if (transfer.chunks) {
                 blob = new Blob(transfer.chunks, { type: transfer.metadata.type });
             } else {
@@ -187,6 +187,66 @@ export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice
                 'Download failed',
                 error instanceof Error ? error.message : 'Unknown error'
             );
+        }
+    },
+
+    downloadAllReceivedFiles: async () => {
+        const { receivedFiles, addLog } = get();
+        const completedFiles = receivedFiles.filter((f) => f.status === 'completed');
+
+        if (completedFiles.length === 0) {
+            addLog('error', 'No completed files to download');
+            return;
+        }
+
+        get().addLog('info', `Archiving ${completedFiles.length} files...`);
+
+        try {
+            const zip = new JSZip();
+
+            for (const transfer of completedFiles) {
+                let data: Blob | ArrayBuffer;
+
+                if (transfer.storageMode === 'power' && transfer.opfsPath) {
+                    const handle =
+                        opfsHandleCache.get(transfer.id) ||
+                        (await OPFSManager.getTransferFile(transfer.id));
+                    if (!handle) continue;
+                    data = await OPFSManager.getFileAsBlob(handle);
+                } else if (transfer.chunks) {
+                    data = new Blob(transfer.chunks, { type: transfer.metadata.type });
+                } else {
+                    continue;
+                }
+
+                zip.file(transfer.metadata.name, data);
+            }
+
+            const content = await zip.generateAsync({
+                type: 'blob',
+                compression: 'STORE',
+            });
+
+            const url = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = url;
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            a.download = `flick-shared-files-${timestamp}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            get().addLog('success', 'ZIP archive downloaded', `${completedFiles.length} files`);
+
+            set((state) => ({
+                receivedFiles: state.receivedFiles.map((f) =>
+                    completedFiles.find((cf) => cf.id === f.id) ? { ...f, downloaded: true } : f
+                ),
+            }));
+        } catch (error) {
+            console.error('ZIP creation failed:', error);
+            get().addLog('error', 'Failed to create ZIP archive');
         }
     },
 });

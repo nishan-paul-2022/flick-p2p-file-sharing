@@ -106,9 +106,6 @@ export const LogPanel: React.FC = () => {
                         >
                             {logs.length === 0 ? (
                                 <div className="flex h-full flex-col items-center justify-center gap-3 text-white/20">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
-                                        <Fingerprint className="h-6 w-6 opacity-30" />
-                                    </div>
                                     <p className="text-xs font-medium uppercase tracking-wider">
                                         No logs recorded
                                     </p>

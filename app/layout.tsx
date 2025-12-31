@@ -4,6 +4,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 const inter = Inter({
     subsets: ['latin'],
@@ -100,7 +101,7 @@ export default function RootLayout({
                     forcedTheme="dark"
                     disableTransitionOnChange
                 >
-                    {children}
+                    <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
                 </ThemeProvider>
             </body>
         </html>
