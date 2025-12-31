@@ -146,6 +146,11 @@
         text-wrap: balance;
     }
 
+    :root {
+        --px-fluid: clamp(1rem, 0.5rem + 2vw, 3rem);
+        --py-fluid: clamp(1rem, 0.5rem + 2vw, 3rem);
+    }
+
     /* Fluid Typography Utilities */
     .text-fluid-xs {
         font-size: clamp(0.7rem, 0.65rem + 0.25vw, 0.875rem);
@@ -174,15 +179,15 @@
 
     /* Fluid Layout Utilities */
     .p-fluid {
-        padding: clamp(1rem, 0.5rem + 2vw, 3rem);
+        padding: var(--py-fluid) var(--px-fluid);
     }
     .px-fluid {
-        padding-left: clamp(1rem, 0.5rem + 2vw, 3rem);
-        padding-right: clamp(1rem, 0.5rem + 2vw, 3rem);
+        padding-left: var(--px-fluid);
+        padding-right: var(--px-fluid);
     }
     .py-fluid {
-        padding-top: clamp(1rem, 0.5rem + 2vw, 3rem);
-        padding-bottom: clamp(1rem, 0.5rem + 2vw, 3rem);
+        padding-top: var(--py-fluid);
+        padding-bottom: var(--py-fluid);
     }
     .gap-fluid {
         gap: clamp(1rem, 0.5rem + 1.5vw, 2.5rem);

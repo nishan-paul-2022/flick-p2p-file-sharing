@@ -66,10 +66,10 @@ export const LogPanel: React.FC = () => {
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}
-                        <div className="flex-shrink-0 px-6 py-5 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+                        <div className="flex-shrink-0 px-6 pt-[calc(var(--py-fluid)+0.25rem+0.5rem)] md:pt-[calc(var(--py-fluid)+0.5rem+0.75rem)] pb-4 md:pb-6 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-lg bg-white/15 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
-                                    <Fingerprint className="w-5 h-5 text-white" />
+                                <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center bg-white/10 border border-white/20 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                                    <Fingerprint className="w-4 h-4 md:w-5 md:h-5 text-white" />
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-bold text-white/90">System Logs</h3>
