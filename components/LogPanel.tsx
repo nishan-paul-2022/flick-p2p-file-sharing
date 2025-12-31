@@ -73,9 +73,6 @@ export const LogPanel: React.FC = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-bold text-white/90">System Logs</h3>
-                                    <p className="text-[10px] text-white/40 uppercase tracking-wider font-medium">
-                                        Event History
-                                    </p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-1">
