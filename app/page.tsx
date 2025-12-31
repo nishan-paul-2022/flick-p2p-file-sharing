@@ -10,7 +10,7 @@ import { FileList } from '@/components/FileList';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Download, Sparkles } from 'lucide-react';
+import { Send, Download, Sparkles, Fingerprint } from 'lucide-react';
 import { StorageModeIndicator } from '@/components/StorageModeIndicator';
 import Loading from './loading';
 import { LogPanel } from '@/components/LogPanel';
@@ -86,41 +86,60 @@ export default function HomePage() {
                     className="min-h-screen flex flex-col gradient-secondary"
                 >
                     <main className="flex-grow relative container mx-auto px-4 py-8 max-w-7xl">
-                        {/* Header */}
+                        {/* Glass Header */}
+
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="text-center mb-10 flex flex-col items-center"
+                            className="flex items-center justify-between mb-12 w-full glass-dark border border-white/10 rounded-2xl px-6 py-4 backdrop-blur-xl shadow-2xl relative overflow-hidden"
                         >
-                            <h1 className="text-4xl sm:text-5xl font-extrabold mb-3 tracking-tight flex items-center justify-center gap-3">
+                            {/* Left: Fingerprint Icon (Event Logs) */}
+                            <div className="flex-1 flex justify-start relative z-10">
                                 <motion.div
-                                    className="relative flex items-center justify-center"
                                     whileHover={{ scale: 1.05 }}
+                                    className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/[0.03] border border-white/[0.08] backdrop-blur-md shadow-lg group cursor-pointer hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300"
+                                    onClick={() => {
+                                        // Trigger log panel
+                                        const event = new CustomEvent('toggle-logs');
+                                        window.dispatchEvent(event);
+                                    }}
+                                >
+                                    <Fingerprint className="w-5 h-5 text-white/40 group-hover:text-white/80 transition-colors duration-300" />
+                                </motion.div>
+                            </div>
+
+                            {/* Center: Flick Logo */}
+                            <div className="flex-1 flex justify-center relative z-10">
+                                <motion.div
+                                    className="flex items-center gap-3"
+                                    whileHover={{ scale: 1.02 }}
                                     transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                                 >
                                     <Image
                                         src="/icon.svg"
                                         alt="Flick Icon"
-                                        width={48}
-                                        height={48}
-                                        className="w-9 h-9 md:w-11 md:h-11 relative z-10"
+                                        width={40}
+                                        height={40}
+                                        className="w-9 h-9 md:w-10 md:h-10"
                                         priority
                                     />
+                                    <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+                                        <span className="text-primary">Flick</span>
+                                    </h1>
                                 </motion.div>
-                                <span className="text-primary">Flick</span>
-                            </h1>
+                            </div>
 
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.98 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.2 }}
-                                className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/30 border border-white/10 backdrop-blur-sm shadow-sm"
-                            >
-                                <Sparkles className="w-3.5 h-3.5 text-muted-foreground" />
-                                <span className="text-xs md:text-sm font-semibold tracking-tight text-foreground/80">
-                                    Share Files Between Devices in Seconds
-                                </span>
-                            </motion.div>
+                            {/* Right: Slogan */}
+                            <div className="flex-1 flex justify-end relative z-10">
+                                <div className="hidden sm:flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-sm shadow-inner group/slogan transition-all duration-300 hover:bg-white/[0.05]">
+                                    <Sparkles className="w-3.5 h-3.5 text-muted-foreground" />
+                                    <span className="text-[11px] md:text-xs font-bold tracking-tight text-white/60 group-hover/slogan:text-white/90 transition-colors">
+                                        P2P SHARING{' '}
+                                        <span className="text-white/20 px-1 font-light">|</span>{' '}
+                                        SECONDS
+                                    </span>
+                                </div>
+                            </div>
                         </motion.div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
