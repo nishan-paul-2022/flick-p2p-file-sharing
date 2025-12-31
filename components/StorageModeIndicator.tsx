@@ -1,9 +1,10 @@
 'use client';
 
-import { usePeerStore } from '@/lib/store';
-import { Zap, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Shield, Zap } from 'lucide-react';
 import { useEffect } from 'react';
+
+import { usePeerStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
 export function StorageModeIndicator() {

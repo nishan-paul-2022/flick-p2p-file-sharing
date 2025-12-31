@@ -23,17 +23,20 @@ A modern, industry-standard Progressive Web App for peer-to-peer file sharing be
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd flick-P2P-file-sharing-between-devices
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -58,7 +61,9 @@ npm start
 ## 🛠️ Development Tips
 
 ### Previewing the Loading Screen
+
 Since the application loads extremely fast, the custom animated splash screen might only flash briefly. To preview the full animation during development, use the following bypass:
+
 - **URL**: [http://localhost:3000/?loading=true](http://localhost:3000/?loading=true)
 
 This will force the app to stay on the loading screen for testing and refinement purposes.
@@ -85,6 +90,7 @@ This will force the app to stay on the loading screen for testing and refinement
 ## 🎨 Features in Detail
 
 ### File Transfer
+
 - Optimized chunked transfer (64KB) with backpressure for high-speed P2P communication
 - Support for unlimited file sizes using OPFS (Origin Private File System)
 - Hybrid storage strategy (Power Mode vs Compatibility Mode) for maximum device support
@@ -93,12 +99,14 @@ This will force the app to stay on the loading screen for testing and refinement
 - Automatic retry logic for failed chunks
 
 ### Connection Management
+
 - Automatic room code generation
 - Connection quality indicators
 - Reconnection logic if connection drops
 - NAT traversal with STUN servers
 
 ### UI/UX
+
 - Dark mode with system preference detection
 - Glassmorphism effects with backdrop blur
 - Micro-interactions and hover states
@@ -109,6 +117,7 @@ This will force the app to stay on the loading screen for testing and refinement
 ## 📱 PWA Support
 
 The app is fully installable as a Progressive Web App:
+
 - Offline support with service workers
 - Add to home screen on mobile devices
 - Standalone display mode
@@ -118,10 +127,12 @@ The app is fully installable as a Progressive Web App:
 
 ### The Best Free Approach: Vercel + GitHub
 
-The most robust and free CI/CD setup for this project is using the native **Vercel Git Integration**. 
+The most robust and free CI/CD setup for this project is using the native **Vercel Git Integration**.
 
 #### 1. Push to GitHub
+
 If you haven't already, push your code to a GitHub repository:
+
 ```bash
 git remote add origin <your-repo-url>
 git branch -M main
@@ -129,6 +140,7 @@ git push -u origin main
 ```
 
 #### 2. Connect to Vercel
+
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard).
 2. Click **"Add New"** > **"Project"**.
 3. Import your GitHub repository.
@@ -136,19 +148,22 @@ git push -u origin main
 5. Click **"Deploy"**.
 
 ### CI/CD Features (Automated)
+
 Once connected, the following CI/CD pipeline is active for **FREE**:
+
 - **Production Deployments**: Every push to `main` triggers an automatic production build.
 - **Preview Deployments**: Every push to a non-main branch (or Pull Request) generates a unique "Preview URL" to test changes.
 - **Instant Rollbacks**: Easily revert to any previous deployment from the dashboard.
 - **Edge Network**: Your app is automatically deployed to global edge locations for maximum speed.
 
 ### Manual Deployment (CLI)
+
 You can also deploy directly from your terminal using the Vercel CLI:
+
 ```bash
 npm i -g vercel
 vercel
 ```
-
 
 ## 📄 License
 

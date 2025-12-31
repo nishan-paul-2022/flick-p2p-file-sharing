@@ -23,7 +23,7 @@ async function detectOPFSSupport(): Promise<boolean> {
 
         // Test actual OPFS access (some browsers report support but fail in practice)
         const root = await navigator.storage.getDirectory();
-        const _testHandle = await root.getFileHandle('__flick_test__', { create: true });
+        await root.getFileHandle('__flick_test__', { create: true });
         await root.removeEntry('__flick_test__');
 
         return true;

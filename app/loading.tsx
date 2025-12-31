@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 export default function Loading() {
     return (
-        <div className="min-h-screen w-full flex flex-col items-center justify-center gradient-secondary overflow-hidden relative">
+        <div className="gradient-secondary relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden">
             <div className="relative z-10 flex flex-col items-center">
                 {/* Logo Animation */}
                 <motion.div
@@ -14,7 +14,7 @@ export default function Loading() {
                     transition={{ duration: 0.2, ease: 'easeOut' }}
                     className="relative"
                 >
-                    <div className="relative w-24 h-24 md:w-32 md:h-32">
+                    <div className="relative h-24 w-24 md:h-32 md:w-32">
                         {/* Pulse Ring */}
                         <motion.div
                             animate={{

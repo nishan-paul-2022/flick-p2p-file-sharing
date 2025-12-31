@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
-import { usePeerStore } from '@/lib/store';
-import { Fingerprint, X, CheckCircle2, AlertTriangle, XCircle, Trash2, Info } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { AlertTriangle, CheckCircle2, Fingerprint, Info, Trash2, X, XCircle } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { usePeerStore } from '@/lib/store';
 
 export const LogPanel: React.FC = () => {
     const { logs, clearLogs, isLogPanelOpen, toggleLogPanel } = usePeerStore();
@@ -21,13 +21,13 @@ export const LogPanel: React.FC = () => {
     const getIcon = (type: string) => {
         switch (type) {
             case 'success':
-                return <CheckCircle2 className="w-4 h-4 text-emerald-500/80" />;
+                return <CheckCircle2 className="h-4 w-4 text-emerald-500/80" />;
             case 'warning':
-                return <AlertTriangle className="w-4 h-4 text-amber-500/80" />;
+                return <AlertTriangle className="h-4 w-4 text-amber-500/80" />;
             case 'error':
-                return <XCircle className="w-4 h-4 text-rose-500/80" />;
+                return <XCircle className="h-4 w-4 text-rose-500/80" />;
             default:
-                return <Info className="w-4 h-4 text-sky-500/80" />;
+                return <Info className="h-4 w-4 text-sky-500/80" />;
         }
     };
 
@@ -66,10 +66,10 @@ export const LogPanel: React.FC = () => {
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}
-                        <div className="flex-shrink-0 px-6 pt-[calc(var(--py-fluid)+0.25rem+0.5rem)] md:pt-[calc(var(--py-fluid)+0.5rem+0.75rem)] pb-4 md:pb-6 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+                        <div className="flex flex-shrink-0 items-center justify-between border-b border-white/10 bg-white/[0.02] px-6 pb-4 pt-[calc(var(--py-fluid)+0.25rem+0.5rem)] md:pb-6 md:pt-[calc(var(--py-fluid)+0.5rem+0.75rem)]">
                             <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center bg-white/10 border border-white/20 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)]">
-                                    <Fingerprint className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.05)] backdrop-blur-md md:h-10 md:w-10">
+                                    <Fingerprint className="h-4 w-4 text-white md:h-5 md:w-5" />
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-bold text-white/90">System Logs</h3>
@@ -80,18 +80,18 @@ export const LogPanel: React.FC = () => {
                                     variant="ghost"
                                     size="icon"
                                     onClick={clearLogs}
-                                    className="h-8 w-8 hover:bg-red-500/10 text-white/20 hover:text-red-400 transition-colors"
+                                    className="h-8 w-8 text-white/20 transition-colors hover:bg-red-500/10 hover:text-red-400"
                                     title="Clear Logs"
                                 >
-                                    <Trash2 className="w-4 h-4" />
+                                    <Trash2 className="h-4 w-4" />
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     size="icon"
                                     onClick={toggleLogPanel}
-                                    className="h-8 w-8 hover:bg-white/5 text-white/40 hover:text-white transition-colors"
+                                    className="h-8 w-8 text-white/40 transition-colors hover:bg-white/5 hover:text-white"
                                 >
-                                    <X className="w-4 h-4" />
+                                    <X className="h-4 w-4" />
                                 </Button>
                             </div>
                         </div>
@@ -99,14 +99,14 @@ export const LogPanel: React.FC = () => {
                         {/* Logs List */}
                         <div
                             ref={scrollRef}
-                            className="flex-1 overflow-y-auto p-4 space-y-3 font-mono"
+                            className="flex-1 space-y-3 overflow-y-auto p-4 font-mono"
                         >
                             {logs.length === 0 ? (
-                                <div className="h-full flex flex-col items-center justify-center text-white/20 gap-3">
-                                    <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center">
-                                        <Fingerprint className="w-6 h-6 opacity-30" />
+                                <div className="flex h-full flex-col items-center justify-center gap-3 text-white/20">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
+                                        <Fingerprint className="h-6 w-6 opacity-30" />
                                     </div>
-                                    <p className="text-xs uppercase tracking-wider font-medium">
+                                    <p className="text-xs font-medium uppercase tracking-wider">
                                         No logs recorded
                                     </p>
                                 </div>
@@ -116,14 +116,14 @@ export const LogPanel: React.FC = () => {
                                         key={log.id}
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="relative pl-4 pb-1 group"
+                                        className="group relative pb-1 pl-4"
                                     >
                                         {/* Timeline line */}
-                                        <div className="absolute left-0 top-2 bottom-0 w-px bg-white/5 group-last:bottom-auto group-last:h-full" />
-                                        <div className="absolute left-[-2px] top-2.5 w-1 h-1 rounded-full bg-white/20 group-hover:bg-primary/50 transition-colors shadow-[0_0_10px_rgba(255,255,255,0.1)]" />
+                                        <div className="absolute bottom-0 left-0 top-2 w-px bg-white/5 group-last:bottom-auto group-last:h-full" />
+                                        <div className="absolute left-[-2px] top-2.5 h-1 w-1 rounded-full bg-white/20 shadow-[0_0_10px_rgba(255,255,255,0.1)] transition-colors group-hover:bg-primary/50" />
 
-                                        <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] hover:border-white/10 transition-all">
-                                            <div className="flex items-start justify-between gap-3 mb-1">
+                                        <div className="rounded-lg border border-white/[0.05] bg-white/[0.02] p-3 transition-all hover:border-white/10 hover:bg-white/[0.04]">
+                                            <div className="mb-1 flex items-start justify-between gap-3">
                                                 <div className="flex items-center gap-2">
                                                     {getIcon(log.type)}
                                                     <span className="text-[10px] text-white/30">
@@ -132,12 +132,12 @@ export const LogPanel: React.FC = () => {
                                                 </div>
                                             </div>
 
-                                            <p className="text-xs font-medium text-white/80 leading-snug mb-0.5">
+                                            <p className="mb-0.5 text-xs font-medium leading-snug text-white/80">
                                                 {log.message}
                                             </p>
 
                                             {log.description && (
-                                                <p className="text-[11px] text-white/40 leading-relaxed break-words">
+                                                <p className="break-words text-[11px] leading-relaxed text-white/40">
                                                     {log.description}
                                                 </p>
                                             )}
@@ -148,7 +148,7 @@ export const LogPanel: React.FC = () => {
                         </div>
 
                         {/* Footer Status */}
-                        <div className="flex-shrink-0 px-6 py-3 bg-white/[0.02] border-t border-white/5 text-[10px] text-white/20 flex justify-between items-center">
+                        <div className="flex flex-shrink-0 items-center justify-between border-t border-white/5 bg-white/[0.02] px-6 py-3 text-[10px] text-white/20">
                             <span>Flick - P2P File Sharing</span>
                             <span>v0.0.1</span>
                         </div>

@@ -1,23 +1,24 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Download, Send } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { usePeerStore } from '@/lib/store';
+import { useEffect, useState } from 'react';
+
 import { ConnectionPanel } from '@/components/ConnectionPanel';
 import { FileDropZone } from '@/components/FileDropZone';
 import { FileList } from '@/components/FileList';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Download, Menu } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
-
-import Loading from './loading';
-import { LogPanel } from '@/components/LogPanel';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
+import { LogPanel } from '@/components/LogPanel';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLogNotification } from '@/lib/hooks/useLogNotification';
 import { usePeerRestoration } from '@/lib/hooks/usePeerRestoration';
+import { usePeerStore } from '@/lib/store';
+import { cn } from '@/lib/utils';
+
+import Loading from './loading';
 
 export default function HomePage() {
     const searchParams = useSearchParams();
@@ -82,24 +83,24 @@ export default function HomePage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
-                    className="min-h-screen flex flex-col gradient-secondary"
+                    className="gradient-secondary flex min-h-screen flex-col"
                 >
                     <div
                         className={cn(
-                            'flex-grow flex flex-col transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]',
+                            'ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-grow flex-col transition-all duration-500',
                             isLogPanelOpen
-                                ? 'lg:pl-96 md:pl-80 translate-x-72 xs:translate-x-80 md:translate-x-0'
+                                ? 'translate-x-72 xs:translate-x-80 md:translate-x-0 md:pl-80 lg:pl-96'
                                 : 'translate-x-0'
                         )}
                     >
-                        <main className="flex-grow relative px-fluid py-fluid max-w-[1440px] mx-auto w-full">
+                        <main className="px-fluid py-fluid relative mx-auto w-full max-w-[1440px] flex-grow">
                             <Header
                                 isLogPanelOpen={isLogPanelOpen}
                                 toggleLogPanel={toggleLogPanel}
                                 hasUnreadLogs={hasUnreadLogs}
                             />
 
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-fluid">
+                            <div className="gap-fluid grid grid-cols-1 lg:grid-cols-12">
                                 {/* Connection Panel */}
                                 <motion.div
                                     initial={{ opacity: 0, x: -20 }}
@@ -121,10 +122,10 @@ export default function HomePage() {
                                     <Card className="glass-dark border-primary/20">
                                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
                                             <CardTitle className="flex items-center gap-2">
-                                                <Send className="w-5 h-5 text-white/70" />
+                                                <Send className="h-5 w-5 text-white/70" />
                                                 Send Files
                                             </CardTitle>
-                                            <div className="hidden sm:block px-4 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-xs font-medium text-zinc-300 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] backdrop-blur-md">
+                                            <div className="hidden rounded-full border border-white/[0.08] bg-white/[0.05] px-4 py-1.5 text-xs font-medium text-zinc-300 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] backdrop-blur-md sm:block">
                                                 Drag and drop files or click to browse
                                             </div>
                                         </CardHeader>
@@ -139,10 +140,10 @@ export default function HomePage() {
                                         onValueChange={setActiveTab}
                                         className="w-full"
                                     >
-                                        <TabsList className="grid w-full grid-cols-2 glass-dark p-1 rounded-xl border-white/10 h-auto">
+                                        <TabsList className="glass-dark grid h-auto w-full grid-cols-2 rounded-xl border-white/10 p-1">
                                             <TabsTrigger
                                                 value="received"
-                                                className="group gap-1 md:gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold py-2.5 md:py-3"
+                                                className="group gap-1 rounded-lg py-2.5 font-semibold transition-all duration-300 hover:bg-white/5 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground md:gap-2 md:py-3"
                                             >
                                                 <div className="flex items-center gap-1.5 md:gap-2">
                                                     <motion.div
@@ -161,7 +162,7 @@ export default function HomePage() {
                                                         }}
                                                     >
                                                         <Download
-                                                            className={`w-3.5 h-3.5 md:w-4 md:h-4 transition-colors ${
+                                                            className={`h-3.5 w-3.5 transition-colors md:h-4 md:w-4 ${
                                                                 isReceiving
                                                                     ? 'text-primary'
                                                                     : 'group-data-[state=active]:text-foreground'
@@ -169,19 +170,19 @@ export default function HomePage() {
                                                         />
                                                     </motion.div>
                                                     <span
-                                                        className={`text-xs md:text-sm transition-colors duration-300 ${
+                                                        className={`text-xs transition-colors duration-300 md:text-sm ${
                                                             isReceiving
-                                                                ? 'text-primary font-medium'
+                                                                ? 'font-medium text-primary'
                                                                 : ''
                                                         }`}
                                                     >
                                                         Received
                                                     </span>
                                                     <span
-                                                        className={`ml-0.5 md:ml-1 flex h-4 md:h-5 min-w-[16px] md:min-w-[20px] items-center justify-center rounded-full px-1 md:px-1.5 text-[9px] md:text-[11px] font-bold transition-all duration-300 ${
+                                                        className={`ml-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-bold transition-all duration-300 md:ml-1 md:h-5 md:min-w-[20px] md:px-1.5 md:text-[11px] ${
                                                             isReceiving
                                                                 ? 'bg-primary text-primary-foreground shadow-[0_0_12px_-4px_rgba(var(--primary-rgb),0.8)]'
-                                                                : 'bg-white/5 border border-white/5 text-muted-foreground group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground group-data-[state=active]:border-white/20'
+                                                                : 'border border-white/5 bg-white/5 text-muted-foreground group-data-[state=active]:border-white/20 group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground'
                                                         }`}
                                                     >
                                                         {receivedFiles.length}
@@ -190,7 +191,7 @@ export default function HomePage() {
                                             </TabsTrigger>
                                             <TabsTrigger
                                                 value="sent"
-                                                className="group gap-1 md:gap-2 rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-white/5 transition-all duration-300 font-semibold py-2.5 md:py-3"
+                                                className="group gap-1 rounded-lg py-2.5 font-semibold transition-all duration-300 hover:bg-white/5 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground md:gap-2 md:py-3"
                                             >
                                                 <div className="flex items-center gap-1.5 md:gap-2">
                                                     <motion.div
@@ -210,7 +211,7 @@ export default function HomePage() {
                                                         }}
                                                     >
                                                         <Send
-                                                            className={`w-3.5 h-3.5 md:w-4 md:h-4 transition-colors ${
+                                                            className={`h-3.5 w-3.5 transition-colors md:h-4 md:w-4 ${
                                                                 isSending
                                                                     ? 'text-primary'
                                                                     : 'group-data-[state=active]:text-foreground'
@@ -218,19 +219,19 @@ export default function HomePage() {
                                                         />
                                                     </motion.div>
                                                     <span
-                                                        className={`text-xs md:text-sm transition-colors duration-300 ${
+                                                        className={`text-xs transition-colors duration-300 md:text-sm ${
                                                             isSending
-                                                                ? 'text-primary font-medium'
+                                                                ? 'font-medium text-primary'
                                                                 : ''
                                                         }`}
                                                     >
                                                         Sent
                                                     </span>
                                                     <span
-                                                        className={`ml-0.5 md:ml-1 flex h-4 md:h-5 min-w-[16px] md:min-w-[20px] items-center justify-center rounded-full px-1 md:px-1.5 text-[9px] md:text-[11px] font-bold transition-all duration-300 ${
+                                                        className={`ml-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-bold transition-all duration-300 md:ml-1 md:h-5 md:min-w-[20px] md:px-1.5 md:text-[11px] ${
                                                             isSending
                                                                 ? 'bg-primary text-primary-foreground shadow-[0_0_12px_-4px_rgba(var(--primary-rgb),0.8)]'
-                                                                : 'bg-white/5 border border-white/5 text-muted-foreground group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground group-data-[state=active]:border-white/20'
+                                                                : 'border border-white/5 bg-white/5 text-muted-foreground group-data-[state=active]:border-white/20 group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground'
                                                         }`}
                                                     >
                                                         {outgoingFiles.length}

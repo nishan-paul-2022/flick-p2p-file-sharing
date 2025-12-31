@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
 import { LogEntry } from '@/lib/types';
 
 export function useLogNotification(logs: LogEntry[], isLogPanelOpen: boolean) {

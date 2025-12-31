@@ -1,15 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Check, Copy, RefreshCw, Trash2, Wifi, WifiOff, Zap, ZapOff } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-
-import { Copy, Check, Wifi, WifiOff, RefreshCw, Trash2, Zap, ZapOff } from 'lucide-react';
-import { copyToClipboard, generateRoomCode, isValidRoomCode, cn } from '@/lib/utils';
 import { ROOM_CODE_LENGTH } from '@/lib/constants';
-import { motion } from 'framer-motion';
 import { usePeerStore } from '@/lib/store';
+import { cn, copyToClipboard, generateRoomCode, isValidRoomCode } from '@/lib/utils';
+
 import { StorageModeIndicator } from './StorageModeIndicator';
 
 export function ConnectionPanel() {
@@ -112,15 +113,15 @@ export function ConnectionPanel() {
             <div className={cn('connection-status', state.border)}>
                 <div
                     className={cn(
-                        'flex items-center justify-center w-6 h-6 rounded-full transition-colors duration-500',
+                        'flex h-6 w-6 items-center justify-center rounded-full transition-colors duration-500',
                         state.bg
                     )}
                 >
-                    <Icon className={cn('w-3 h-3 transition-colors duration-500', state.color)} />
+                    <Icon className={cn('h-3 w-3 transition-colors duration-500', state.color)} />
                 </div>
                 <span
                     className={cn(
-                        'text-3xs font-black uppercase leading-none tracking-widest-lg transition-colors duration-500 whitespace-nowrap',
+                        'whitespace-nowrap text-3xs font-black uppercase leading-none tracking-widest-lg transition-colors duration-500',
                         state.color
                     )}
                 >
@@ -152,12 +153,12 @@ export function ConnectionPanel() {
                         <button
                             onClick={handleCreateRoom}
                             aria-label="Create a new room"
-                            className="group btn-card"
+                            className="btn-card group"
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-brand-500/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                             <div className="btn-card-content">
                                 <RefreshCw
-                                    className="w-4 h-4 text-brand-400 transition-transform duration-700 group-hover:rotate-180"
+                                    className="h-4 w-4 text-brand-400 transition-transform duration-700 group-hover:rotate-180"
                                     aria-hidden="true"
                                 />
                                 <span className="text-tiny-plus font-bold uppercase tracking-widest-xl text-brand-400/70 transition-colors group-hover:text-brand-400">
@@ -168,16 +169,16 @@ export function ConnectionPanel() {
 
                         <div className="flex items-center gap-4 py-4" aria-hidden="true">
                             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/[0.05] to-white/[0.05]" />
-                            <span className="flex items-center justify-center px-4 py-1.5 rounded-full border border-white/5 bg-black/20 text-2xs font-bold uppercase tracking-widest-xl text-muted-foreground/50 backdrop-blur-md">
+                            <span className="flex items-center justify-center rounded-full border border-white/5 bg-black/20 px-4 py-1.5 text-2xs font-bold uppercase tracking-widest-xl text-muted-foreground/50 backdrop-blur-md">
                                 or
                             </span>
                             <div className="h-px flex-1 bg-gradient-to-l from-transparent via-white/[0.05] to-white/[0.05]" />
                         </div>
 
-                        <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <div className="group relative">
+                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                                 <Zap
-                                    className="w-4 h-4 text-muted-foreground/20 group-focus-within:text-brand-400/50 transition-colors"
+                                    className="h-4 w-4 text-muted-foreground/20 transition-colors group-focus-within:text-brand-400/50"
                                     aria-hidden="true"
                                 />
                             </div>
@@ -196,7 +197,7 @@ export function ConnectionPanel() {
                                     disabled={joinCode.length !== ROOM_CODE_LENGTH || isJoining}
                                     aria-label="Join room"
                                     className={cn(
-                                        'h-full px-5 rounded-lg text-2xs font-bold uppercase tracking-widest transition-all duration-500',
+                                        'h-full rounded-lg px-5 text-2xs font-bold uppercase tracking-widest transition-all duration-500',
                                         joinCode.length === ROOM_CODE_LENGTH && !isJoining
                                             ? 'border border-brand-500/20 bg-brand-500/20 text-brand-400 shadow-brand-glow hover:bg-brand-500/30'
                                             : 'border border-white/5 bg-white/5 text-white/20'
@@ -217,10 +218,10 @@ export function ConnectionPanel() {
                         animate={{ opacity: 1, scale: 1 }}
                         className="space-y-6"
                     >
-                        <div className="flex items-center justify-between p-5 md:p-7 rounded-2xl bg-surface-dark-60 border border-brand-500/20 shadow-inner overflow-hidden relative">
-                            <div className="absolute -top-12 -right-12 w-24 h-24 bg-brand-500/5 blur-3xl rounded-full" />
+                        <div className="relative flex items-center justify-between overflow-hidden rounded-2xl border border-brand-500/20 bg-surface-dark-60 p-5 shadow-inner md:p-7">
+                            <div className="absolute -right-12 -top-12 h-24 w-24 rounded-full bg-brand-500/5 blur-3xl" />
                             <code
-                                className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-widest-xl font-mono text-brand-400 truncate relative z-10"
+                                className="relative z-10 truncate font-mono text-3xl font-bold tracking-widest-xl text-brand-400 sm:text-4xl md:text-5xl"
                                 aria-label={`Current room code is ${roomCode}`}
                             >
                                 {roomCode}
@@ -230,12 +231,12 @@ export function ConnectionPanel() {
                                 onClick={handleCopyCode}
                                 title="Copy code"
                                 aria-label="Copy room code to clipboard"
-                                className="p-3 md:p-4 rounded-xl bg-white/5 border border-white/5 text-white/30 hover:text-white hover:bg-white/10 transition-all hover:scale-110 active:scale-95 ml-2 md:ml-4 flex-shrink-0 relative z-10"
+                                className="relative z-10 ml-2 flex-shrink-0 rounded-xl border border-white/5 bg-white/5 p-3 text-white/30 transition-all hover:scale-110 hover:bg-white/10 hover:text-white active:scale-95 md:ml-4 md:p-4"
                             >
                                 {copied ? (
-                                    <Check className="w-4 h-4 md:w-5 md:h-5 text-green-400" />
+                                    <Check className="h-4 w-4 text-green-400 md:h-5 md:w-5" />
                                 ) : (
-                                    <Copy className="w-4 h-4 md:w-5 md:h-5" />
+                                    <Copy className="h-4 w-4 md:h-5 md:w-5" />
                                 )}
                             </button>
                         </div>
@@ -243,10 +244,10 @@ export function ConnectionPanel() {
                         <button
                             onClick={disconnect}
                             aria-label="Leave the current room"
-                            className="w-full h-14 flex items-center justify-center gap-3 rounded-xl border border-red-500/10 bg-red-500/5 text-red-500/60 hover:bg-red-500 hover:text-white hover:border-red-500 text-tiny-plus font-bold uppercase tracking-widest-xl transition-all duration-300 group active:scale-[0.98]"
+                            className="group flex h-14 w-full items-center justify-center gap-3 rounded-xl border border-red-500/10 bg-red-500/5 text-tiny-plus font-bold uppercase tracking-widest-xl text-red-500/60 transition-all duration-300 hover:border-red-500 hover:bg-red-500 hover:text-white active:scale-[0.98]"
                         >
                             <ZapOff
-                                className="w-4 h-4 transition-transform group-hover:scale-110"
+                                className="h-4 w-4 transition-transform group-hover:scale-110"
                                 aria-hidden="true"
                             />
                             Leave Room
@@ -254,14 +255,14 @@ export function ConnectionPanel() {
                     </motion.div>
                 )}
 
-                <div className="pt-2 flex justify-center">
+                <div className="flex justify-center pt-2">
                     <button
                         onClick={clearHistory}
                         aria-label="Clear all transfer history"
-                        className="flex items-center gap-2 px-4 py-2 rounded-full text-2xs font-bold uppercase tracking-wider text-muted-foreground/40 border border-white/5 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 transition-all duration-300 group"
+                        className="group flex items-center gap-2 rounded-full border border-white/5 px-4 py-2 text-2xs font-bold uppercase tracking-wider text-muted-foreground/40 transition-all duration-300 hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-400"
                     >
                         <Trash2
-                            className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100"
+                            className="h-3.5 w-3.5 opacity-40 group-hover:opacity-100"
                             aria-hidden="true"
                         />
                         Clear History

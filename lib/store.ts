@@ -1,12 +1,12 @@
+import { del, get, set } from 'idb-keyval';
+import Peer, { DataConnection } from 'peerjs';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { get, set, del } from 'idb-keyval';
-import Peer, { DataConnection } from 'peerjs';
 
-import { FileMetadata, FileTransfer, ConnectionQuality, P2PMessage, LogEntry } from './types';
+import { CHUNK_SIZE, ICE_SERVERS, MAX_BUFFERED_AMOUNT, MAX_LOGS } from './constants';
 import { OPFSManager } from './opfs-manager';
 import { detectStorageCapabilities, StorageCapabilities } from './storage-mode';
-import { CHUNK_SIZE, MAX_BUFFERED_AMOUNT, MAX_LOGS, ICE_SERVERS } from './constants';
+import { ConnectionQuality, FileMetadata, FileTransfer, LogEntry, P2PMessage } from './types';
 
 export interface ExtendedDataConnection extends DataConnection {
     dataChannel: RTCDataChannel;

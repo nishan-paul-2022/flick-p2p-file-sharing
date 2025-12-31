@@ -1,16 +1,17 @@
+import { FileQuestion, Home } from 'lucide-react';
 import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileQuestion, Home } from 'lucide-react';
 
 export default function NotFound() {
     return (
-        <div className="min-h-screen gradient-secondary flex items-center justify-center p-4">
-            <Card className="glass-dark max-w-md w-full">
+        <div className="gradient-secondary flex min-h-screen items-center justify-center p-4">
+            <Card className="glass-dark w-full max-w-md">
                 <CardHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="p-3 rounded-full bg-primary/10">
-                            <FileQuestion className="w-6 h-6 text-primary" />
+                    <div className="mb-2 flex items-center gap-3">
+                        <div className="rounded-full bg-primary/10 p-3">
+                            <FileQuestion className="h-6 w-6 text-primary" />
                         </div>
                         <CardTitle>Page Not Found</CardTitle>
                     </div>
@@ -21,7 +22,7 @@ export default function NotFound() {
                 <CardContent>
                     <Link href="/">
                         <Button className="w-full" size="lg">
-                            <Home className="w-4 h-4 mr-2" />
+                            <Home className="mr-2 h-4 w-4" />
                             Back to Home
                         </Button>
                     </Link>
