@@ -5,23 +5,23 @@ import { Github, Shield, Zap, Lock } from 'lucide-react';
 
 export function Footer() {
     return (
-        <footer className="relative mt-20 py-8 border-t border-white/[0.05] overflow-hidden">
+        <footer className="relative mt-10 py-4 border-t border-white/[0.05] overflow-hidden">
             <div className="container mx-auto px-4 max-w-6xl relative">
                 {/* Single Line Features */}
-                <div className="flex flex-col md:flex-row items-center justify-center gap-x-8 gap-y-3 mb-4 text-[14px] font-medium text-white/90 text-center md:text-left">
-                    <div className="flex items-center gap-3 py-2 px-4 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.05] hover:border-white/[0.1] transition-all duration-300 group cursor-default">
-                        <Shield className="w-4.5 h-4.5 text-sky-400 group-hover:scale-110 transition-transform" />
+                <div className="flex flex-col md:flex-row items-center justify-center gap-x-6 gap-y-1 mb-2 text-[13px] font-medium text-white/90 text-center md:text-left">
+                    <div className="flex items-center gap-2 transition-all duration-300 hover:opacity-80 group cursor-default">
+                        <Shield className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
                         <span className="tracking-tight">
                             Direct P2P <span className="text-white/40 mx-1">—</span> No Server
                             Storage
                         </span>
                     </div>
-                    <div className="flex items-center gap-3 py-2 px-4 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.05] hover:border-white/[0.1] transition-all duration-300 group cursor-default">
-                        <Zap className="w-4.5 h-4.5 text-amber-400 group-hover:scale-110 transition-transform" />
+                    <div className="flex items-center gap-2 transition-all duration-300 hover:opacity-80 group cursor-default">
+                        <Zap className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
                         <span className="tracking-tight">Blazing Fast WebRTC</span>
                     </div>
-                    <div className="flex items-center gap-3 py-2 px-4 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.05] hover:border-white/[0.1] transition-all duration-300 group cursor-default">
-                        <Lock className="w-4.5 h-4.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                    <div className="flex items-center gap-2 transition-all duration-300 hover:opacity-80 group cursor-default">
+                        <Lock className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
                         <span className="tracking-tight">100% Private & Anonymous</span>
                     </div>
                 </div>
