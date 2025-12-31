@@ -224,7 +224,7 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
             const isHost = !!code;
             const peerOptions = {
                 config: { iceServers: ICE_SERVERS },
-                debug: 2,
+                debug: 0, // Suppress all PeerJS internal logs to avoid "ID taken" console noise
             };
 
             const peer = isHost ? new Peer(code, peerOptions) : new Peer(peerOptions);
@@ -275,21 +275,18 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
             peer.on('error', (err: { type: string; message: string }) => {
                 if (err.type === 'unavailable-id') {
                     set({
-                        error: 'ID taken. Please try again.',
-                        roomCode: null,
+                        error: null, // Don't show this as a hard error UI
                         peerId: null,
                         peer: null,
-                        isHost: false,
+                        isHost: false, // Revert to guest status
                     });
-                    get().addLog(
-                        'error',
-                        'Session expired or ID taken. Please join or create a new room.'
-                    );
+                    get().addLog('info', 'Room already active. Joining as guest...');
+                    resolve('ID_TAKEN'); // Resolve with specific code instead of rejecting
                 } else {
                     set({ error: err.message });
                     get().addLog('error', 'Connection error', err.message);
+                    reject(err);
                 }
-                reject(err);
             });
 
             peer.on('disconnected', () => {
@@ -305,7 +302,7 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                 });
             });
 
-            set({ peer, isHost, ...(code && { roomCode: code }) });
+            set({ peer, isHost, error: null, ...(code && { roomCode: code }) });
         });
     },
 
