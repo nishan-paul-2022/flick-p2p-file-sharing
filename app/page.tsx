@@ -85,11 +85,6 @@ export default function HomePage() {
                     className="min-h-screen gradient-secondary"
                 >
                     <div className="relative container mx-auto px-4 py-8 max-w-7xl">
-                        {/* Top Right Actions / Info */}
-                        <div className="absolute top-4 right-4 md:top-8 md:right-4 z-40">
-                            <StorageModeIndicator />
-                        </div>
-
                         {/* Header */}
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}

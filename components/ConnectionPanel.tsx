@@ -20,6 +20,7 @@ import {
 import { copyToClipboard, generateRoomCode, isValidRoomCode, cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { usePeerStore } from '@/lib/store';
+import { StorageModeIndicator } from './StorageModeIndicator';
 
 export function ConnectionPanel() {
     const {
@@ -82,33 +83,59 @@ export function ConnectionPanel() {
         }
     };
 
-    const getQualityBadge = () => {
-        switch (connectionQuality) {
-            case 'excellent':
-                return (
-                    <Badge variant="success" className="gap-1">
-                        <Wifi className="w-3 h-3" /> Excellent
-                    </Badge>
-                );
-            case 'good':
-                return (
-                    <Badge variant="default" className="gap-1">
-                        <Wifi className="w-3 h-3" /> Good
-                    </Badge>
-                );
-            case 'poor':
-                return (
-                    <Badge variant="warning" className="gap-1">
-                        <Wifi className="w-3 h-3" /> Poor
-                    </Badge>
-                );
-            default:
-                return (
-                    <Badge variant="outline" className="gap-1">
-                        <WifiOff className="w-3 h-3" /> Disconnected
-                    </Badge>
-                );
-        }
+    const getStatusIndicator = () => {
+        const config = {
+            excellent: {
+                icon: Wifi,
+                text: 'Live',
+                color: 'text-green-500',
+                border: 'border-green-500/30',
+            },
+            good: {
+                icon: Wifi,
+                text: 'Stable',
+                color: 'text-cyan-500',
+                border: 'border-cyan-500/30',
+            },
+            poor: {
+                icon: Wifi,
+                text: 'Weak',
+                color: 'text-amber-500',
+                border: 'border-amber-500/30',
+            },
+            disconnected: {
+                icon: WifiOff,
+                text: 'Offline',
+                color: 'text-white/30',
+                border: 'border-white/5',
+            },
+        };
+
+        const state = config[connectionQuality as keyof typeof config] || config.disconnected;
+        const Icon = state.icon;
+
+        return (
+            <div
+                className={cn(
+                    'flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-black/40 border transition-all duration-500',
+                    state.border
+                )}
+            >
+                <div className="flex items-center justify-center">
+                    <Icon
+                        className={cn('w-3.5 h-3.5 transition-colors duration-500', state.color)}
+                    />
+                </div>
+                <span
+                    className={cn(
+                        'text-[10px] font-bold uppercase tracking-[0.15em] transition-colors duration-500',
+                        state.color
+                    )}
+                >
+                    {state.text}
+                </span>
+            </div>
+        );
     };
 
     return (
@@ -116,12 +143,10 @@ export function ConnectionPanel() {
             <div className="w-full py-3 bg-gradient-to-r from-transparent via-primary/5 to-transparent border-b border-white/5 text-center text-xs font-medium tracking-widest text-muted-foreground/80 uppercase backdrop-blur-sm">
                 Create or join a room to share files
             </div>
-            <CardHeader>
+            <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
-                    <div>
-                        <CardTitle className="text-2xl">Connection</CardTitle>
-                    </div>
-                    {getQualityBadge()}
+                    <StorageModeIndicator />
+                    {getStatusIndicator()}
                 </div>
             </CardHeader>
 
@@ -132,25 +157,30 @@ export function ConnectionPanel() {
                         animate={{ opacity: 1 }}
                         className="space-y-4"
                     >
-                        <div>
-                            <Button onClick={handleCreateRoom} className="w-full" size="lg">
-                                <RefreshCw className="w-4 h-4 mr-2" />
-                                Create New Room
-                            </Button>
-                        </div>
-
-                        <div className="relative py-2 flex items-center justify-center">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-white/[0.05]" />
+                        <button
+                            onClick={handleCreateRoom}
+                            className="group relative w-full h-24 rounded-2xl bg-[#0a1a24]/40 border border-sky-500/10 hover:border-sky-500/30 transition-all duration-500 overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="relative flex items-center justify-center gap-3">
+                                <RefreshCw className="w-4 h-4 text-sky-400 group-hover:rotate-180 transition-transform duration-700" />
+                                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-sky-400/70 group-hover:text-sky-400 transition-colors">
+                                    Create New Room
+                                </span>
                             </div>
-                            <span className="relative flex items-center justify-center w-8 h-8 rounded-full border border-white/[0.05] bg-background text-[9px] uppercase tracking-widest text-muted-foreground/40 font-bold backdrop-blur-sm">
+                        </button>
+
+                        <div className="flex items-center gap-4 py-4">
+                            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/[0.05] to-white/[0.05]" />
+                            <span className="flex items-center justify-center px-4 py-1.5 rounded-full border border-white/5 bg-black/20 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 backdrop-blur-md">
                                 or
                             </span>
+                            <div className="h-px flex-1 bg-gradient-to-l from-transparent via-white/[0.05] to-white/[0.05]" />
                         </div>
 
                         <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Zap className="w-4 h-4 text-muted-foreground/30 group-focus-within:text-white/40 transition-colors" />
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <Zap className="w-4 h-4 text-muted-foreground/20 group-focus-within:text-white/40 transition-colors" />
                             </div>
                             <Input
                                 placeholder="ROOM CODE"
@@ -158,22 +188,21 @@ export function ConnectionPanel() {
                                 onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                                 onKeyDown={(e) => e.key === 'Enter' && handleJoinRoom()}
                                 maxLength={6}
-                                className="pl-10 pr-20 h-12 bg-white/[0.03] border-white/[0.08] focus:border-white/[0.15] focus:ring-0 text-lg tracking-[0.3em] font-mono transition-all"
+                                className="pl-12 pr-24 h-14 bg-white/[0.02] border-white/[0.05] focus:border-white/[0.12] focus:ring-0 text-lg tracking-[0.4em] font-mono transition-all rounded-xl"
                             />
-                            <div className="absolute inset-y-1.5 right-1.5">
+                            <div className="absolute inset-y-2 right-2">
                                 <Button
                                     onClick={handleJoinRoom}
                                     disabled={joinCode.length !== 6 || isJoining}
-                                    size="sm"
                                     className={cn(
-                                        'h-full px-4 rounded-md transition-all duration-300',
+                                        'h-full px-5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all duration-500',
                                         joinCode.length === 6 && !isJoining
-                                            ? 'bg-white/10 hover:bg-white/20 text-white border-white/10'
-                                            : 'bg-transparent text-muted-foreground/30 border-transparent'
+                                            ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10'
+                                            : 'bg-white/5 text-white/40 border border-white/5'
                                     )}
                                 >
                                     {isJoining ? (
-                                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                        <RefreshCw className="w-4 h-4 animate-spin" />
                                     ) : (
                                         'Join'
                                     )}
@@ -185,32 +214,34 @@ export function ConnectionPanel() {
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="space-y-4"
+                        className="space-y-6"
                     >
-                        <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
-                            <p className="text-sm text-muted-foreground mb-2">Your Room Code</p>
-                            <div className="flex items-center justify-between gap-2">
-                                <code className="text-3xl font-bold tracking-wider font-mono text-primary">
-                                    {roomCode}
-                                </code>
-                                <Button
+                        <div className="relative p-6 rounded-2xl bg-[#0a1a24]/60 border border-sky-500/20 overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4">
+                                <button
                                     onClick={handleCopyCode}
-                                    variant="ghost"
-                                    size="icon"
-                                    className="shrink-0"
+                                    className="p-2 rounded-lg bg-white/5 border border-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all"
                                 >
                                     {copied ? (
-                                        <Check className="w-5 h-5 text-green-500" />
+                                        <Check className="w-4 h-4 text-green-500" />
                                     ) : (
-                                        <Copy className="w-5 h-5" />
+                                        <Copy className="w-4 h-4" />
                                     )}
-                                </Button>
+                                </button>
                             </div>
+
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-sky-400/50 mb-4">
+                                Your Room Code
+                            </p>
+
+                            <code className="text-4xl font-bold tracking-[0.2em] font-mono text-sky-400">
+                                {roomCode}
+                            </code>
                         </div>
 
                         <button
                             onClick={disconnect}
-                            className="w-full h-12 flex items-center justify-center gap-3 rounded-xl border border-red-500/10 bg-red-500/5 text-red-500/70 hover:bg-red-600 hover:text-white hover:border-red-600 text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 group"
+                            className="w-full h-14 flex items-center justify-center gap-3 rounded-xl border border-red-500/10 bg-red-500/5 text-red-500/60 hover:bg-red-600 hover:text-white hover:border-red-600 text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 group"
                         >
                             <ZapOff className="w-4 h-4 transition-transform group-hover:scale-110" />
                             Leave Room
