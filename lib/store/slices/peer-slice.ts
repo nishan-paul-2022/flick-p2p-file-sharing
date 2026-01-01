@@ -1,7 +1,7 @@
 import Peer from 'peerjs';
 import { StateCreator } from 'zustand';
 
-import { CHUNK_SIZE, ICE_SERVERS, MAX_LOGS } from '../../constants';
+import { CHUNK_SIZE, CONNECTION_TIMEOUT, MAX_LOGS } from '../../constants';
 import { OPFSManager } from '../../opfs-manager';
 import { LogEntry, P2PMessage } from '../../types';
 import {
@@ -214,17 +214,32 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
 
     setRoomCode: (code) => set({ roomCode: code }),
 
-    initializePeer: (code) => {
-        return new Promise((resolve, reject) => {
+    initializePeer: async (code) => {
+        return new Promise(async (resolve, reject) => {
             const { peer: existingPeer } = get();
             if (existingPeer) {
                 existingPeer.destroy();
             }
 
             const isHost = !!code;
+
+            // Fetch fresh TURN credentials dynamically
+            const { getIceServers } = await import('../../ice-servers');
+            const iceServers = await getIceServers();
+
             const peerOptions = {
-                config: { iceServers: ICE_SERVERS },
-                debug: 0, // Suppress all PeerJS internal logs to avoid "ID taken" console noise
+                config: {
+                    iceServers,
+                    // Optimize ICE gathering for faster connections
+                    iceCandidatePoolSize: 15, // Increased for more aggressive gathering
+                    // Use all available transport methods (UDP, TCP, TLS)
+                    iceTransportPolicy: 'all' as RTCIceTransportPolicy,
+                    // Bundle all media on single transport for efficiency
+                    bundlePolicy: 'max-bundle' as RTCBundlePolicy,
+                    // Require RTCP multiplexing for better firewall traversal
+                    rtcpMuxPolicy: 'require' as RTCRtcpMuxPolicy,
+                },
+                debug: 2, // Enable debug logs to diagnose connection issues
             };
 
             const peer = isHost ? new Peer(code, peerOptions) : new Peer(peerOptions);
@@ -246,6 +261,70 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                 conn.on('open', () => {
                     set({ isConnected: true, connectionQuality: 'excellent' });
                     get().addLog('success', 'Connected to peer', 'You can now share files');
+
+                    // Monitor ICE connection state for diagnostics
+                    const peerConnection = (conn as any).peerConnection;
+                    if (peerConnection) {
+                        peerConnection.oniceconnectionstatechange = () => {
+                            const iceState = peerConnection.iceConnectionState;
+                            console.log('[ICE] Connection state:', iceState);
+
+                            switch (iceState) {
+                                case 'checking':
+                                    get().addLog(
+                                        'info',
+                                        'Establishing connection...',
+                                        'NAT traversal in progress'
+                                    );
+                                    break;
+                                case 'connected':
+                                case 'completed':
+                                    get().addLog(
+                                        'success',
+                                        'Connection established',
+                                        'Using optimal route'
+                                    );
+                                    set({ connectionQuality: 'excellent' });
+                                    break;
+                                case 'disconnected':
+                                    get().addLog(
+                                        'warning',
+                                        'Connection unstable',
+                                        'Attempting to reconnect...'
+                                    );
+                                    set({ connectionQuality: 'poor' });
+                                    break;
+                                case 'failed':
+                                    get().addLog(
+                                        'error',
+                                        'Connection failed',
+                                        'NAT traversal unsuccessful'
+                                    );
+                                    set({ connectionQuality: 'disconnected' });
+                                    break;
+                            }
+                        };
+
+                        // Log ICE candidates for debugging
+                        peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+                            if (event.candidate) {
+                                const type = event.candidate.type;
+                                console.log(
+                                    `[ICE] Candidate gathered: ${type}`,
+                                    event.candidate.candidate
+                                );
+
+                                // Detect if using TURN relay
+                                if (type === 'relay') {
+                                    get().addLog(
+                                        'info',
+                                        'Using relay server',
+                                        'Connection via TURN for NAT traversal'
+                                    );
+                                }
+                            }
+                        };
+                    }
                 });
 
                 conn.on('data', (data) => handleIncomingData(data, get, set));
@@ -316,7 +395,14 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
         set({ roomCode: targetCode });
 
         try {
-            const conn = peer.connect(targetCode, { reliable: true });
+            const conn = peer.connect(targetCode, {
+                reliable: true,
+                serialization: 'binary', // Use binary for efficient file transfer
+                metadata: {
+                    timestamp: Date.now(),
+                    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
+                },
+            });
             set({ connection: conn });
 
             const timeoutPromise = new Promise((_, reject) => {
@@ -327,7 +413,7 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                                 'Connection timed out. Peer may be offline or behind a firewall.'
                             )
                         ),
-                    20000
+                    CONNECTION_TIMEOUT
                 );
             });
 
@@ -340,6 +426,70 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                 .then(() => {
                     set({ isConnected: true, connectionQuality: 'excellent' });
                     get().addLog('success', 'Connected to peer', 'You can now share files');
+
+                    // Monitor ICE connection state for diagnostics (guest side)
+                    const peerConnection = (conn as any).peerConnection;
+                    if (peerConnection) {
+                        peerConnection.oniceconnectionstatechange = () => {
+                            const iceState = peerConnection.iceConnectionState;
+                            console.log('[ICE] Connection state:', iceState);
+
+                            switch (iceState) {
+                                case 'checking':
+                                    get().addLog(
+                                        'info',
+                                        'Establishing connection...',
+                                        'NAT traversal in progress'
+                                    );
+                                    break;
+                                case 'connected':
+                                case 'completed':
+                                    get().addLog(
+                                        'success',
+                                        'Connection established',
+                                        'Using optimal route'
+                                    );
+                                    set({ connectionQuality: 'excellent' });
+                                    break;
+                                case 'disconnected':
+                                    get().addLog(
+                                        'warning',
+                                        'Connection unstable',
+                                        'Attempting to reconnect...'
+                                    );
+                                    set({ connectionQuality: 'poor' });
+                                    break;
+                                case 'failed':
+                                    get().addLog(
+                                        'error',
+                                        'Connection failed',
+                                        'NAT traversal unsuccessful'
+                                    );
+                                    set({ connectionQuality: 'disconnected' });
+                                    break;
+                            }
+                        };
+
+                        // Log ICE candidates for debugging
+                        peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+                            if (event.candidate) {
+                                const type = event.candidate.type;
+                                console.log(
+                                    `[ICE] Candidate gathered: ${type}`,
+                                    event.candidate.candidate
+                                );
+
+                                // Detect if using TURN relay
+                                if (type === 'relay') {
+                                    get().addLog(
+                                        'info',
+                                        'Using relay server',
+                                        'Connection via TURN for NAT traversal'
+                                    );
+                                }
+                            }
+                        };
+                    }
                 })
                 .catch((err) => {
                     const errorMessage = err instanceof Error ? err.message : 'Failed to connect';

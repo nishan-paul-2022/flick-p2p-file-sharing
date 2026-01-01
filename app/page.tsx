@@ -61,12 +61,20 @@ export default function HomePage() {
     const isReceiving = receivedFiles.some((f) => f.status === 'transferring');
     const isSending = outgoingFiles.some((f) => f.status === 'transferring');
 
-    // Expose store for testing
+    // Expose store and test utilities for debugging
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            // We can still expose the hook function if needed, but usually we just want the state
+            // Expose store for testing
             (window as unknown as { usePeerStore: typeof usePeerStore }).usePeerStore =
                 usePeerStore;
+
+            // Expose TURN testing utility
+            import('@/lib/test-turn').then(({ testTurnServers }) => {
+                (window as any).testTurnServers = testTurnServers;
+                console.log(
+                    '💡 Debug utilities loaded. Run testTurnServers() to test TURN servers.'
+                );
+            });
         }
     }, []);
 

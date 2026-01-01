@@ -101,9 +101,14 @@ This will force the app to stay on the loading screen for testing and refinement
 ### Connection Management
 
 - Automatic room code generation
-- Connection quality indicators
+- Connection quality indicators with real-time ICE state monitoring
 - Reconnection logic if connection drops
-- NAT traversal with STUN servers
+- **Advanced NAT traversal** with STUN and TURN servers
+    - STUN servers for public IP discovery
+    - TURN relay servers for connections through restrictive NATs (mobile networks, firewalls)
+    - Supports PC-to-PC, PC-to-Mobile, and Mobile-to-Mobile connections
+- ICE candidate monitoring and diagnostics
+- Binary serialization for efficient data transfer
 
 ### UI/UX
 
@@ -176,8 +181,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 🐛 Known Issues
 
 - Mobile browsers may experience storage quota limits for extremely large files
-- Connection may fail behind strict corporate firewalls
 - Some older browsers may not support WebRTC
+- Free TURN servers have usage limits; for production, consider deploying your own TURN server
 
 ## 📞 Support
 
