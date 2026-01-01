@@ -62,7 +62,9 @@ export function ConnectionPanel() {
     };
 
     const handleCopyCode = async () => {
-        if (!roomCode) return;
+        if (!roomCode) {
+            return;
+        }
 
         const success = await copyToClipboard(roomCode);
         if (success) {

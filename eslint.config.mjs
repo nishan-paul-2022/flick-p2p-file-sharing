@@ -29,6 +29,7 @@ const eslintConfig = [
             'simple-import-sort': simpleImportSort,
         },
         rules: {
+            curly: ['error', 'all'],
             'simple-import-sort/imports': 'error',
             'simple-import-sort/exports': 'error',
             'react/no-unescaped-entities': 'off',

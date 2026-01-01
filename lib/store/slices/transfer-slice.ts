@@ -211,7 +211,9 @@ export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice
                     const handle =
                         opfsHandleCache.get(transfer.id) ||
                         (await OPFSManager.getTransferFile(transfer.id));
-                    if (!handle) continue;
+                    if (!handle) {
+                        continue;
+                    }
                     data = await OPFSManager.getFileAsBlob(handle);
                 } else if (transfer.chunks) {
                     data = new Blob(transfer.chunks, { type: transfer.metadata.type });

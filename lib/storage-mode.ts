@@ -39,10 +39,18 @@ async function detectOPFSSupport(): Promise<boolean> {
 function getBrowserInfo(): string {
     const ua = navigator.userAgent;
 
-    if (ua.includes('Edg/')) return 'Edge';
-    if (ua.includes('Chrome/')) return 'Chrome';
-    if (ua.includes('Safari/') && !ua.includes('Chrome')) return 'Safari';
-    if (ua.includes('Firefox/')) return 'Firefox';
+    if (ua.includes('Edg/')) {
+        return 'Edge';
+    }
+    if (ua.includes('Chrome/')) {
+        return 'Chrome';
+    }
+    if (ua.includes('Safari/') && !ua.includes('Chrome')) {
+        return 'Safari';
+    }
+    if (ua.includes('Firefox/')) {
+        return 'Firefox';
+    }
 
     return 'Unknown';
 }

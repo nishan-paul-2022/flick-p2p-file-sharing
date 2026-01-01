@@ -34,7 +34,9 @@ export function FileDropZone() {
             e.preventDefault();
             e.stopPropagation();
 
-            if (disabled) return;
+            if (disabled) {
+                return;
+            }
 
             const files = Array.from(e.dataTransfer.files);
 
@@ -52,7 +54,9 @@ export function FileDropZone() {
 
     const handleFileInput = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
-            if (disabled) return;
+            if (disabled) {
+                return;
+            }
 
             const files = Array.from(e.target.files || []);
 

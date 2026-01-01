@@ -173,7 +173,9 @@ const handleIncomingData = async (
 
                 set((state) => {
                     const targetFile = state.receivedFiles.find((f) => f.id === msg.transferId);
-                    if (!targetFile) return state;
+                    if (!targetFile) {
+                        return state;
+                    }
 
                     return {
                         receivedFiles: state.receivedFiles.map((t) =>
@@ -542,8 +544,12 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
             opfsWritableCache.delete(id);
         }
 
-        if (connection) connection.close();
-        if (peer) peer.destroy();
+        if (connection) {
+            connection.close();
+        }
+        if (peer) {
+            peer.destroy();
+        }
 
         set({
             isConnected: false,

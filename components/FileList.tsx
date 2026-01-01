@@ -36,7 +36,9 @@ export function FileList({ type }: FileListProps) {
     const files = type === 'received' ? receivedFiles : outgoingFiles;
 
     const handleDownload = async (transfer: FileTransfer) => {
-        if (transfer.status !== 'completed') return;
+        if (transfer.status !== 'completed') {
+            return;
+        }
         await downloadFile(transfer);
     };
 
