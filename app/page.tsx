@@ -63,7 +63,7 @@ export default function HomePage() {
 
     // Expose store and test utilities for debugging
     useEffect(() => {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
             // Expose store for testing
             (window as unknown as { usePeerStore: typeof usePeerStore }).usePeerStore =
                 usePeerStore;
