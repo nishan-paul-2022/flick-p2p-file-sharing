@@ -4,145 +4,135 @@
 
 @layer base {
     :root {
-        --background: 0 0% 13%;
+        --background: 0 0% 12%;
         --foreground: 210 40% 98%;
-        --card: 0 0% 16%;
+        --card: 0 0% 15%;
         --card-foreground: 210 40% 98%;
-        --popover: 0 0% 13%;
+        --popover: 0 0% 12%;
         --popover-foreground: 210 40% 98%;
         --primary: 199 89% 48%;
+        --primary-rgb: 14, 165, 233;
         --primary-foreground: 222 47% 4%;
-        --secondary: 0 0% 16%;
+        --secondary: 0 0% 15%;
         --secondary-foreground: 210 40% 98%;
-        --muted: 0 0% 20%;
-        --muted-foreground: 0 0% 63.9%;
-        --accent: 0 0% 20%;
+        --muted: 0 0% 18%;
+        --muted-foreground: 0 0% 64%;
+        --accent: 0 0% 18%;
         --accent-foreground: 210 40% 98%;
-        --destructive: 0 62.8% 30.6%;
+        --destructive: 0 63% 31%;
         --destructive-foreground: 210 40% 98%;
-        --border: 0 0% 24%;
-        --input: 0 0% 24%;
-        --ring: 0 0% 63.9%;
+        --border: 0 0% 22%;
+        --input: 0 0% 22%;
+        --ring: 199 89% 48%;
         --radius: 0.75rem;
     }
 
     .light {
-        --background: 0 0% 100%;
-        --foreground: 224 71.4% 4.1%;
+        --background: 210 40% 99%;
+        --foreground: 222.2 84% 4.9%;
         --card: 0 0% 100%;
-        --card-foreground: 224 71.4% 4.1%;
+        --card-foreground: 222.2 84% 4.9%;
         --popover: 0 0% 100%;
-        --popover-foreground: 224 71.4% 4.1%;
+        --popover-foreground: 222.2 84% 4.9%;
         --primary: 199 89% 48%;
+        --primary-rgb: 14, 165, 233;
         --primary-foreground: 210 40% 98%;
-        --secondary: 220 14.3% 95.9%;
-        --secondary-foreground: 220.9 39.3% 11%;
-        --muted: 220 14.3% 95.9%;
-        --muted-foreground: 220 8.9% 46.1%;
-        --accent: 220 14.3% 95.9%;
-        --accent-foreground: 220.9 39.3% 11%;
+        --secondary: 210 40% 96.1%;
+        --secondary-foreground: 222.2 47.4% 11.2%;
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+        --accent: 210 40% 96.1%;
+        --accent-foreground: 222.2 47.4% 11.2%;
         --destructive: 0 84.2% 60.2%;
         --destructive-foreground: 210 40% 98%;
-        --border: 220 13% 91%;
-        --input: 220 13% 91%;
+        --border: 214.3 31.8% 91.4%;
+        --input: 214.3 31.8% 91.4%;
         --ring: 199 89% 48%;
-        --radius: 0.75rem;
     }
 }
 
 @layer base {
     * {
-        @apply border-border;
+        @apply border-border outline-ring/30;
     }
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground selection:bg-primary/30 selection:text-white;
         font-feature-settings:
             'rlig' 1,
             'calt' 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
     html {
         scroll-behavior: smooth;
     }
-    ::selection {
-        @apply bg-cyan-500/30 text-white;
-    }
 
-    /* Modern Sleek Minimal Scrollbar - Transparent Track */
+    /* Modern Sleek Minimal Scrollbar */
     ::-webkit-scrollbar {
-        width: 14px;
-        height: 14px;
+        @apply h-3 w-3;
     }
 
     ::-webkit-scrollbar-track {
-        background-color: transparent;
+        @apply bg-transparent;
     }
 
     ::-webkit-scrollbar-thumb {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 9999px;
-        border: 4px solid transparent;
-        background-clip: content-box;
-        transition: background-color 0.2s ease;
+        @apply rounded-full border-3 border-transparent bg-white/10 bg-clip-content transition-colors hover:bg-white/20;
     }
 
-    ::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(255, 255, 255, 0.25);
-    }
-
-    ::-webkit-scrollbar-corner {
-        background-color: transparent;
-    }
-
-    /* Scrollbar Buttons (Arrows) */
+    /* Scrollbar Buttons */
     ::-webkit-scrollbar-button:single-button {
-        background-position: center;
-        background-repeat: no-repeat;
-        display: block;
-        height: 16px;
-        width: 14px;
+        @apply block h-4 w-3 bg-center bg-no-repeat;
     }
 
-    /* Up Arrow - Filled & Subtle */
     ::-webkit-scrollbar-button:vertical:decrement {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(255,255,255,0.2)'%3E%3Cpath d='M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z'/%3E%3C/svg%3E");
     }
 
-    /* Down Arrow - Filled & Subtle */
     ::-webkit-scrollbar-button:vertical:increment {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(255,255,255,0.2)'%3E%3Cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z'/%3E%3C/svg%3E");
     }
+}
 
-    /* Hover effects for buttons */
-    ::-webkit-scrollbar-button:vertical:decrement:hover,
-    ::-webkit-scrollbar-button:vertical:increment:hover {
-        background-color: rgba(255, 255, 255, 0.05);
-        border-radius: 4px;
+@layer components {
+    .btn-card {
+        @apply relative w-full overflow-hidden rounded-2xl border border-brand-500/10 bg-surface-dark-40 transition-all duration-500 hover:border-brand-500/30 active:scale-[0.98];
     }
 
-    /* Active/Click effects for buttons */
-    ::-webkit-scrollbar-button:vertical:decrement:active,
-    ::-webkit-scrollbar-button:vertical:increment:active {
-        background-color: rgba(255, 255, 255, 0.1);
+    .btn-card-content {
+        @apply relative flex items-center justify-center gap-3 py-8;
+    }
+
+    .glass-panel {
+        @apply overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-glass-lg backdrop-blur-xl;
+    }
+
+    .input-otp {
+        @apply h-14 rounded-xl border-white/[0.05] bg-white/[0.02] font-mono text-base tracking-widest-3xl transition-all focus-visible:border-brand-500/50 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-lg;
+    }
+
+    .connection-status {
+        @apply flex items-center gap-2 rounded-full border bg-black/40 px-2.5 py-1 transition-all duration-500 md:gap-3 md:px-3 md:py-1.5;
     }
 }
 
 @layer utilities {
     .glass {
-        @apply bg-white/5 backdrop-blur-xl border border-white/10;
+        @apply border border-white/10 bg-white/5 backdrop-blur-xl;
     }
 
     .glass-dark {
-        @apply bg-black/40 backdrop-blur-xl border border-white/5;
+        @apply border border-white/5 bg-black/40 backdrop-blur-xl;
     }
 
-    .animate-in {
-        animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    .animate-in-up {
+        animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    @keyframes fadeIn {
+    @keyframes fadeInUp {
         from {
             opacity: 0;
-            transform: translateY(12px);
+            transform: translateY(1.25rem);
         }
         to {
             opacity: 1;
@@ -150,11 +140,58 @@
         }
     }
 
-    .gradient-primary {
-        @apply bg-gradient-to-br from-sky-400 via-cyan-500 to-blue-600;
+    .gradient-brand {
+        @apply bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700;
     }
 
-    .gradient-secondary {
-        @apply bg-background;
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    :root {
+        --px-fluid: clamp(1rem, 0.5rem + 2vw, 3rem);
+        --py-fluid: clamp(1rem, 0.5rem + 2vw, 3rem);
+    }
+
+    /* Fluid Typography Utilities */
+    .text-fluid-xs {
+        font-size: clamp(0.7rem, 0.65rem + 0.25vw, 0.875rem);
+    }
+    .text-fluid-sm {
+        font-size: clamp(0.8rem, 0.75rem + 0.25vw, 1rem);
+    }
+    .text-fluid-base {
+        font-size: clamp(0.9rem, 0.85rem + 0.25vw, 1.125rem);
+    }
+    .text-fluid-lg {
+        font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+    }
+    .text-fluid-xl {
+        font-size: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+    }
+    .text-fluid-2xl {
+        font-size: clamp(1.5rem, 1.25rem + 1vw, 2.25rem);
+    }
+    .text-fluid-3xl {
+        font-size: clamp(1.875rem, 1.5rem + 1.5vw, 3rem);
+    }
+    .text-fluid-4xl {
+        font-size: clamp(2.25rem, 1.75rem + 2.5vw, 4.5rem);
+    }
+
+    /* Fluid Layout Utilities */
+    .p-fluid {
+        padding: var(--py-fluid) var(--px-fluid);
+    }
+    .px-fluid {
+        padding-left: var(--px-fluid);
+        padding-right: var(--px-fluid);
+    }
+    .py-fluid {
+        padding-top: var(--py-fluid);
+        padding-bottom: var(--py-fluid);
+    }
+    .gap-fluid {
+        gap: clamp(1rem, 0.5rem + 1.5vw, 2.5rem);
     }
 }

@@ -1,12 +1,16 @@
 'use client';
 
-import { useCallback } from 'react';
 import { Upload } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useCallback } from 'react';
+
 import { usePeerStore } from '@/lib/store';
+import { cn } from '@/lib/utils';
 
 export function FileDropZone() {
-    const { isConnected, sendFile, roomCode, addLog } = usePeerStore();
+    const isConnected = usePeerStore((state) => state.isConnected);
+    const sendFile = usePeerStore((state) => state.sendFile);
+    const roomCode = usePeerStore((state) => state.roomCode);
+    const addLog = usePeerStore((state) => state.addLog);
 
     const disabled = !isConnected;
 
@@ -30,7 +34,9 @@ export function FileDropZone() {
             e.preventDefault();
             e.stopPropagation();
 
-            if (disabled) return;
+            if (disabled) {
+                return;
+            }
 
             const files = Array.from(e.dataTransfer.files);
 
@@ -48,7 +54,9 @@ export function FileDropZone() {
 
     const handleFileInput = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
-            if (disabled) return;
+            if (disabled) {
+                return;
+            }
 
             const files = Array.from(e.target.files || []);
 
@@ -67,10 +75,10 @@ export function FileDropZone() {
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             className={cn(
-                'relative border-2 border-dashed rounded-lg p-6 md:p-12 transition-all duration-200',
+                'relative rounded-lg border-2 border-dashed p-6 transition-all duration-200 md:p-12',
                 disabled
-                    ? 'border-muted bg-muted/20 cursor-not-allowed'
-                    : 'border-primary/50 bg-primary/5 hover:bg-primary/10 hover:border-primary cursor-pointer',
+                    ? 'cursor-not-allowed border-muted bg-muted/20'
+                    : 'cursor-pointer border-primary/50 bg-primary/5 hover:border-primary hover:bg-primary/10',
                 'group'
             )}
         >
@@ -79,22 +87,23 @@ export function FileDropZone() {
                 multiple
                 onChange={handleFileInput}
                 disabled={disabled}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
                 aria-label="File upload input"
+                title=""
             />
 
-            <div className="flex flex-col items-center justify-center gap-4 text-center pointer-events-none">
+            <div className="pointer-events-none flex flex-col items-center justify-center gap-4 text-center">
                 <div
                     className={cn(
-                        'p-4 rounded-full transition-all duration-200',
+                        'rounded-full p-4 transition-all duration-200',
                         disabled
                             ? 'bg-muted'
-                            : 'bg-primary/10 group-hover:bg-primary/20 group-hover:scale-110'
+                            : 'bg-primary/10 group-hover:scale-110 group-hover:bg-primary/20'
                     )}
                 >
                     <Upload
                         className={cn(
-                            'w-8 h-8',
+                            'h-8 w-8',
                             disabled ? 'text-muted-foreground' : 'text-primary'
                         )}
                     />
@@ -103,7 +112,7 @@ export function FileDropZone() {
                 <div>
                     <p
                         className={cn(
-                            'text-lg font-semibold mb-1',
+                            'mb-1 text-lg font-semibold',
                             disabled ? 'text-muted-foreground' : 'text-foreground'
                         )}
                     >

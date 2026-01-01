@@ -1,173 +1,492 @@
-# Flick - P2P File Sharing
+# 🚀 Flick - P2P File Sharing
 
-A modern, industry-standard Progressive Web App for peer-to-peer file sharing between devices. Built with Next.js 15+, React 19, PeerJS, and Tailwind CSS.
+> **Share files instantly between any devices** — no cloud, no uploads, no limits. Just pure peer-to-peer magic.
 
-## ✨ Features
+A modern Progressive Web App that enables **direct device-to-device file sharing** using WebRTC technology. Works seamlessly across PC, mobile, and tablets with zero backend infrastructure.
 
-- 🔗 **Room-based P2P file sharing** using PeerJS and WebRTC
-- 🔄 **Bidirectional transfers** - both devices can send and receive simultaneously
-- 📱 **Fully responsive** - works on PC, mobile, and tablet
-- 🎨 **Modern UI** with dark mode, glassmorphism, and smooth animations
-- 📦 **Large file support** - Unlimited file sizes with optimized 64KB chunks and dual-mode storage strategy
-- 📊 **Real-time progress tracking** for all file transfers
-- 🔒 **Zero backend** - completely client-side with no data persistence
-- 🚀 **PWA ready** - installable on all devices with offline support
-- 🎯 **Type-safe** - built with TypeScript in strict mode
+---
 
-## 🚀 Getting Started
+## 📖 Table of Contents
 
-### Prerequisites
+- [What is Flick?](#-what-is-flick)
+- [How Does It Work?](#-how-does-it-work)
+- [Why Use Flick?](#-why-use-flick)
+- [Key Features](#-key-features)
+- [Tech Stack](#-tech-stack)
+- [Quick Start](#-quick-start)
+- [Setup Guide](#-setup-guide)
+- [How to Use](#-how-to-use)
+- [Deployment](#-deployment)
+- [Development](#-development)
+- [Contributing](#-contributing)
 
-- Node.js 18+ and npm
+---
 
-### Installation
+## 🎯 What is Flick?
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd flick-P2P-file-sharing-between-devices
+**Flick** is a web application that lets you transfer files **directly between devices** without uploading to any server. Think of it as creating a private, temporary bridge between your devices where files flow directly from sender to receiver.
+
+### Real-World Use Cases
+
+- 📱 **Phone to Laptop**: Quickly send photos from your phone to your computer
+- 💼 **Work Collaboration**: Share large files with colleagues without email size limits
+- 🏠 **Home Network**: Transfer files between family devices instantly
+- 🌍 **Cross-Platform**: Works between Windows, Mac, Linux, iOS, and Android
+
+---
+
+## 🔬 How Does It Work?
+
+Flick uses **WebRTC** (Web Real-Time Communication) technology to create direct peer-to-peer connections between browsers:
+
+```
+Device A  ←→  WebRTC Connection  ←→  Device B
+   ↓                                      ↓
+Files transfer directly (no middleman!)
 ```
 
-2. Install dependencies:
+### The Process (Simplified)
+
+1. **Room Creation**: Device A generates a unique 6-character room code
+2. **Connection**: Device B enters the same code to join the room
+3. **Handshake**: Devices exchange connection information through a signaling server
+4. **Direct Link**: Once connected, a direct peer-to-peer tunnel is established
+5. **File Transfer**: Files flow directly between devices in optimized 64KB chunks
+
+### Technical Architecture
+
+- **WebRTC Data Channels**: For direct browser-to-browser communication
+- **STUN Servers**: Help devices discover their public IP addresses
+- **TURN Servers**: Relay traffic when direct connection isn't possible (firewalls/NAT)
+- **OPFS Storage**: Browser's private file system for handling large files efficiently
+- **Chunked Transfer**: Files split into 64KB pieces for optimal speed and reliability
+
+---
+
+## 💡 Why Use Flick?
+
+### Privacy First
+
+- ✅ **Zero server storage** - files never touch our servers
+- ✅ **No tracking** - zero analytics or data collection
+- ✅ **Direct transfer** - end-to-end between your devices only
+
+### No Limitations
+
+- ✅ **Unlimited file sizes** - send files of any size
+- ✅ **No registration** - start sharing immediately
+- ✅ **No subscriptions** - completely free forever
+
+### Modern Experience
+
+- ✅ **Beautiful UI** - dark mode, smooth animations, glassmorphism
+- ✅ **Real-time progress** - see exactly how your transfer is going
+- ✅ **Works everywhere** - responsive design for all screen sizes
+- ✅ **Install as app** - PWA support for native-like experience
+
+---
+
+## ✨ Key Features
+
+| Feature                   | Description                                          |
+| ------------------------- | ---------------------------------------------------- |
+| 🔗 **Room-Based Sharing** | Simple 6-character codes to connect devices          |
+| 🔄 **Bidirectional**      | Both devices can send and receive simultaneously     |
+| 📱 **Fully Responsive**   | Perfect experience on desktop, tablet, and mobile    |
+| 📦 **Large File Support** | Handle unlimited file sizes with smart chunking      |
+| 📊 **Progress Tracking**  | Real-time transfer speed and completion status       |
+| 🎨 **Modern UI**          | Dark mode, glassmorphism, smooth animations          |
+| 🔒 **Zero Backend**       | Completely client-side, no data persistence          |
+| 🚀 **PWA Ready**          | Installable on all devices with offline support      |
+| 🎯 **Type-Safe**          | Built with TypeScript in strict mode                 |
+| ⚡ **Lightning Fast**     | Optimized chunked transfer with backpressure control |
+
+---
+
+## 🏗️ Tech Stack
+
+### Core Framework
+
+- **[Next.js 15+](https://nextjs.org/)** - React framework with App Router
+- **[React 19](https://react.dev/)** - UI library with latest features
+- **[TypeScript 5](https://www.typescriptlang.org/)** - Type safety in strict mode
+
+### Styling & UI Components
+
+- **[Tailwind CSS 3.4+](https://tailwindcss.com/)** - Utility-first CSS framework
+- **[shadcn/ui](https://ui.shadcn.com/)** - Re-usable component library
+- **[Radix UI](https://www.radix-ui.com/)** - Unstyled, accessible component primitives
+    - `@radix-ui/react-slot` - Composition utilities
+    - `@radix-ui/react-tabs` - Tab components
+    - `@radix-ui/react-tooltip` - Tooltip components
+- **[Framer Motion](https://www.framer.com/motion/)** - Production-ready animations
+- **[Lucide React](https://lucide.dev/)** - Beautiful icon library
+- **[next-themes](https://github.com/pacocoursey/next-themes)** - Dark mode support
+
+### P2P & File Handling
+
+- **[PeerJS](https://peerjs.com/)** - WebRTC wrapper for peer connections
+- **[idb-keyval](https://github.com/jakearchibald/idb-keyval)** - IndexedDB for browser storage
+- **[JSZip](https://stuk.github.io/jszip/)** - ZIP file generation and handling
+
+### State Management & Utilities
+
+- **[Zustand](https://zustand-demo.pmnd.rs/)** - Lightweight state management
+- **[class-variance-authority](https://cva.style/)** - Component variant management
+- **[clsx](https://github.com/lukeed/clsx)** - Conditional className utility
+- **[tailwind-merge](https://github.com/dcastil/tailwind-merge)** - Merge Tailwind classes
+- **[tailwindcss-animate](https://github.com/jamiebuilds/tailwindcss-animate)** - Animation utilities
+
+### Development Tools
+
+- **[ESLint 9](https://eslint.org/)** - Code linting
+    - `eslint-config-next` - Next.js specific rules
+    - `eslint-config-prettier` - Prettier integration
+    - `eslint-plugin-simple-import-sort` - Auto-sort imports
+- **[Prettier 3.7+](https://prettier.io/)** - Code formatting
+    - `prettier-plugin-tailwindcss` - Auto-sort Tailwind classes
+- **[Husky](https://typicode.github.io/husky/)** - Git hooks
+- **[lint-staged](https://github.com/lint-staged/lint-staged)** - Run linters on staged files
+- **[Commitlint](https://commitlint.js.org/)** - Enforce conventional commits
+- **[@next/bundle-analyzer](https://www.npmjs.com/package/@next/bundle-analyzer)** - Bundle size analysis
+
+### Build & Deployment
+
+- **[PostCSS](https://postcss.org/)** - CSS transformations
+- **[Autoprefixer](https://github.com/postcss/autoprefixer)** - Auto-add vendor prefixes
+- **[Docker](https://www.docker.com/)** - Containerization support
+- **Standalone Output** - Optimized production builds
+
+---
+
+## ⚡ Quick Start
+
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd flick-p2p-file-sharing
+
+# Install dependencies
+npm install
+
+# Set up environment variables (see Setup Guide below)
+cp .env.example .env
+
+# Run development server
+npm run dev
+
+# Open http://localhost:3000
+```
+
+---
+
+## 📋 Setup Guide
+
+Follow these steps for a **complete, error-free setup**:
+
+### 1️⃣ Prerequisites
+
+Ensure you have the following installed:
+
+- **Node.js 18+** ([Download](https://nodejs.org/))
+- **npm** (comes with Node.js)
+- **Git** ([Download](https://git-scm.com/))
+
+Verify installation:
+
+```bash
+node --version  # Should be 18.0.0 or higher
+npm --version   # Should be 8.0.0 or higher
+```
+
+### 2️⃣ Clone & Install
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd flick-p2p-file-sharing
+
+# Install all dependencies
 npm install
 ```
 
-3. Run the development server:
+### 3️⃣ Environment Configuration
+
+**This step is CRITICAL for cross-network connections (PC-to-Mobile, Mobile-to-Mobile).**
+
+#### Create Environment File
+
+```bash
+cp .env.example .env
+```
+
+#### Configure Xirsys TURN Server (Required)
+
+For connections to work across different networks (mobile data, firewalls), you need TURN server credentials:
+
+1. **Sign up for Xirsys** (Free tier: 500MB/month)
+    - Visit: [https://xirsys.com/](https://xirsys.com/)
+    - Click **"Sign Up"** and create a free account
+    - Verify your email
+
+2. **Get Your Credentials**
+    - Log in to [Xirsys Dashboard](https://dashboard.xirsys.com/)
+    - Go to **"Account"** → **"Credentials"**
+    - Copy your:
+        - **Username** (ident)
+        - **Secret Key**
+        - **Channel** (you can create one, e.g., "flick-app")
+
+3. **Update `.env` File**
+
+    Open `.env` and replace the placeholder values:
+
+    ```env
+    # Xirsys TURN Server Credentials
+    NEXT_PUBLIC_XIRSYS_IDENT=your_actual_username
+    NEXT_PUBLIC_XIRSYS_SECRET=your_actual_secret_key
+    NEXT_PUBLIC_XIRSYS_CHANNEL=your_channel_name
+    ```
+
+    **Example:**
+
+    ```env
+    NEXT_PUBLIC_XIRSYS_IDENT=john_doe_123
+    NEXT_PUBLIC_XIRSYS_SECRET=a1b2c3d4e5f6g7h8
+    NEXT_PUBLIC_XIRSYS_CHANNEL=flick-production
+    ```
+
+#### Optional: Custom PeerJS Server
+
+If you want to use your own PeerJS server (advanced):
+
+```env
+NEXT_PUBLIC_PEER_HOST=your-peer-server.com
+NEXT_PUBLIC_PEER_PORT=9000
+NEXT_PUBLIC_PEER_PATH=/myapp
+```
+
+**Note:** Leave these empty to use the default public PeerJS server.
+
+### 4️⃣ Run Development Server
+
 ```bash
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+Open [http://localhost:3000](http://localhost:3000) in your browser. You should see the Flick home page!
 
-### Building for Production
+### 5️⃣ Build for Production
 
 ```bash
+# Create optimized production build
 npm run build
+
+# Start production server
 npm start
 ```
 
+The app will run on [http://localhost:3000](http://localhost:3000).
+
+### 6️⃣ Verify Setup
+
+Test that everything works:
+
+1. Open the app on **Device A** (e.g., your laptop)
+2. Click **"Create New Room"** - note the 6-character code
+3. Open the app on **Device B** (e.g., your phone)
+4. Enter the room code and click **"Join"**
+5. Try sending a file from one device to the other
+
+✅ **If the connection succeeds and file transfers, you're all set!**
+
+---
+
 ## 🎯 How to Use
 
-1. **Create a Room**: Click "Create New Room" to generate a unique 6-character room code
-2. **Share the Code**: Share the room code with the device you want to connect to
-3. **Join the Room**: On the other device, enter the room code and click "Join"
-4. **Transfer Files**: Once connected, drag and drop files or click to browse
-5. **Download**: Received files appear in the "Received" tab with a download button
+### Step-by-Step Guide
 
-## 🛠️ Development Tips
+1. **Create a Room**
+    - Open Flick on the first device
+    - Click **"Create New Room"**
+    - A unique 6-character code appears (e.g., `A3X9K2`)
 
-### Previewing the Loading Screen
-Since the application loads extremely fast, the custom animated splash screen might only flash briefly. To preview the full animation during development, use the following bypass:
-- **URL**: [http://localhost:3000/?loading=true](http://localhost:3000/?loading=true)
+2. **Join from Another Device**
+    - Open Flick on the second device
+    - Enter the room code
+    - Click **"Join Room"**
 
-This will force the app to stay on the loading screen for testing and refinement purposes.
+3. **Wait for Connection**
+    - Both devices will show "Connecting..."
+    - Once connected, you'll see a green "Connected" status
 
-## 🏗️ Tech Stack
+4. **Send Files**
+    - Drag and drop files onto the upload area, OR
+    - Click **"Browse Files"** to select from your device
+    - Watch real-time progress as files transfer
 
-- **Framework**: Next.js 15+ with App Router
-- **UI Library**: React 19
-- **Styling**: Tailwind CSS with custom design system
-- **Components**: shadcn/ui (Radix UI primitives)
-- **P2P**: PeerJS (WebRTC wrapper)
-- **Animations**: Framer Motion
-- **Theme**: next-themes for dark mode
-- **Notifications**: Sonner
-- **Type Safety**: TypeScript with strict mode
+5. **Receive Files**
+    - Received files appear in the **"Received"** tab
+    - Click **"Download"** to save to your device
 
-## 🔒 Security & Privacy
+### Tips for Best Experience
 
-- **Direct P2P** - files are transferred directly between peers via WebRTC
-- **No tracking** - zero analytics or tracking scripts
-- **Client-side only** - all logic runs in the browser
-- **Secure headers** - CSP and security headers configured
+- 📶 **Stable Connection**: Use WiFi for large files
+- 🔋 **Keep Screen On**: Prevent devices from sleeping during transfer
+- 🚀 **Same Network**: Fastest speeds when devices are on the same WiFi
+- 🌐 **Cross-Network**: Works across different networks (requires TURN server)
 
-## 🎨 Features in Detail
+---
 
-### File Transfer
-- Optimized chunked transfer (64KB) with backpressure for high-speed P2P communication
-- Support for unlimited file sizes using OPFS (Origin Private File System)
-- Hybrid storage strategy (Power Mode vs Compatibility Mode) for maximum device support
-- Real-time progress tracking
-- Queue system for multiple simultaneous transfers
-- Automatic retry logic for failed chunks
+## 🚀 Deployment
 
-### Connection Management
-- Automatic room code generation
-- Connection quality indicators
-- Reconnection logic if connection drops
-- NAT traversal with STUN servers
+### Recommended: Vercel (Free & Automatic CI/CD)
 
-### UI/UX
-- Dark mode with system preference detection
-- Glassmorphism effects with backdrop blur
-- Micro-interactions and hover states
-- Loading skeletons and optimistic updates
-- Toast notifications for all events
-- Smooth page transitions
-
-## 📱 PWA Support
-
-The app is fully installable as a Progressive Web App:
-- Offline support with service workers
-- Add to home screen on mobile devices
-- Standalone display mode
-- Custom app icons and splash screens
-
-## 🚀 Deployment & CI/CD
-
-### The Best Free Approach: Vercel + GitHub
-
-The most robust and free CI/CD setup for this project is using the native **Vercel Git Integration**. 
+Vercel provides the best free deployment experience with automatic CI/CD:
 
 #### 1. Push to GitHub
-If you haven't already, push your code to a GitHub repository:
+
 ```bash
-git remote add origin <your-repo-url>
+git remote add origin <your-github-repo-url>
 git branch -M main
 git push -u origin main
 ```
 
-#### 2. Connect to Vercel
-1. Go to [Vercel Dashboard](https://vercel.com/dashboard).
-2. Click **"Add New"** > **"Project"**.
-3. Import your GitHub repository.
-4. Vercel will automatically detect **Next.js** and configure the build settings.
-5. Click **"Deploy"**.
+#### 2. Deploy to Vercel
 
-### CI/CD Features (Automated)
-Once connected, the following CI/CD pipeline is active for **FREE**:
-- **Production Deployments**: Every push to `main` triggers an automatic production build.
-- **Preview Deployments**: Every push to a non-main branch (or Pull Request) generates a unique "Preview URL" to test changes.
-- **Instant Rollbacks**: Easily revert to any previous deployment from the dashboard.
-- **Edge Network**: Your app is automatically deployed to global edge locations for maximum speed.
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Click **"Add New"** → **"Project"**
+3. Import your GitHub repository
+4. Vercel auto-detects Next.js settings
+5. **Add Environment Variables**:
+    - Click **"Environment Variables"**
+    - Add your Xirsys credentials:
+        - `NEXT_PUBLIC_XIRSYS_IDENT`
+        - `NEXT_PUBLIC_XIRSYS_SECRET`
+        - `NEXT_PUBLIC_XIRSYS_CHANNEL`
+6. Click **"Deploy"**
 
-### Manual Deployment (CLI)
-You can also deploy directly from your terminal using the Vercel CLI:
+#### 3. Automatic CI/CD (Free!)
+
+Once connected, you get:
+
+- ✅ **Auto-deploy** on every push to `main`
+- ✅ **Preview URLs** for pull requests
+- ✅ **Instant rollbacks** from dashboard
+- ✅ **Global CDN** for maximum speed
+
+### Alternative: Docker Deployment
+
 ```bash
+# Build Docker image
+docker build -t flick-app .
+
+# Run container
+docker run -p 3000:3000 flick-app
+```
+
+### Alternative: Manual CLI Deployment
+
+```bash
+# Install Vercel CLI
 npm i -g vercel
+
+# Deploy
 vercel
 ```
 
+---
 
-## 📄 License
+## 🛠️ Development
 
-MIT License - feel free to use this project for personal or commercial purposes.
+### Available Scripts
 
-## 🤝 Contributing
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm start            # Start production server
+npm run lint         # Run ESLint
+npm run format       # Format code with Prettier
+npm run check-types  # TypeScript type checking
+```
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+### Testing System Pages
 
-## 🐛 Known Issues
+Preview special pages during development:
 
-- Mobile browsers may experience storage quota limits for extremely large files
-- Connection may fail behind strict corporate firewalls
-- Some older browsers may not support WebRTC
+- **Loading Screen**: [http://localhost:3000/?loading=true](http://localhost:3000/?loading=true)
+- **404 Page**: [http://localhost:3000/?404=true](http://localhost:3000/?404=true)
 
-## 📞 Support
+### Code Quality Tools
 
-For issues or questions, please open an issue on GitHub.
+- **Pre-commit Hooks**: Husky runs linting and formatting before commits
+- **Conventional Commits**: Commitlint enforces commit message standards
+- **Bundle Analysis**: Run `ANALYZE=true npm run build` to analyze bundle size
+
+### Project Structure
+
+```
+flick-p2p-file-sharing/
+├── app/              # Next.js app directory (routes & layouts)
+├── components/       # React components
+├── lib/              # Utilities, hooks, and business logic
+├── public/           # Static assets (icons, manifest)
+├── docs/             # Documentation files
+└── .env              # Environment variables (create from .env.example)
+```
 
 ---
 
-Built with ❤️ using Next.js and PeerJS
+## 🔒 Security & Privacy
+
+- **🔐 Direct P2P**: Files transfer directly between devices via WebRTC
+- **🚫 No Storage**: Zero server-side file storage or persistence
+- **👻 No Tracking**: No analytics, cookies, or user tracking
+- **🛡️ Secure Headers**: CSP, HSTS, and other security headers configured
+- **🔒 Client-Side Only**: All logic runs in your browser
+
+---
+
+## 🐛 Known Limitations
+
+- **Mobile Storage**: Some mobile browsers have storage quota limits for very large files (>2GB)
+- **Browser Support**: Older browsers may not support WebRTC (use modern browsers)
+- **TURN Limits**: Free Xirsys tier has 500MB/month relay limit (upgrade if needed)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how:
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'feat: add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+Please follow the [Conventional Commits](https://www.conventionalcommits.org/) standard.
+
+---
+
+## 📄 License
+
+**MIT License** - Free to use for personal or commercial purposes.
+
+---
+
+## 📞 Support
+
+- 🐛 **Bug Reports**: [Open an issue](https://github.com/your-repo/issues)
+- 💬 **Questions**: [Start a discussion](https://github.com/your-repo/discussions)
+- 📧 **Contact**: [Your email or contact method]
+
+---
+
+<div align="center">
+
+**Built with ❤️ using Next.js, React, and PeerJS**
+
+[⭐ Star this repo](https://github.com/your-repo) if you find it useful!
+
+</div>

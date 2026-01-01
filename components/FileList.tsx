@@ -1,37 +1,44 @@
 'use client';
 
-import { usePeerStore } from '@/lib/store';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
+    CheckCircle2,
+    Clock,
     Download,
     File,
-    CheckCircle2,
-    XCircle,
-    Clock,
-    Trash2,
-    FileImage,
-    FileVideo,
-    FileAudio,
-    FileText,
     FileArchive,
+    FileAudio,
     FileCode,
+    FileImage,
     FileSpreadsheet,
+    FileText,
+    FileVideo,
+    Trash2,
+    XCircle,
 } from 'lucide-react';
-import { formatBytes, formatTimestamp, cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { usePeerStore } from '@/lib/store';
 import { FileTransfer } from '@/lib/types';
+import { cn, formatBytes, formatTimestamp } from '@/lib/utils';
 
 interface FileListProps {
     type: 'received' | 'sent';
 }
 
 export function FileList({ type }: FileListProps) {
-    const { receivedFiles, outgoingFiles, removeFile, downloadFile } = usePeerStore();
+    const receivedFiles = usePeerStore((state) => state.receivedFiles);
+    const outgoingFiles = usePeerStore((state) => state.outgoingFiles);
+    const removeFile = usePeerStore((state) => state.removeFile);
+    const downloadFile = usePeerStore((state) => state.downloadFile);
+
     const files = type === 'received' ? receivedFiles : outgoingFiles;
 
     const handleDownload = async (transfer: FileTransfer) => {
-        if (transfer.status !== 'completed') return;
+        if (transfer.status !== 'completed') {
+            return;
+        }
         await downloadFile(transfer);
     };
 
@@ -79,13 +86,13 @@ export function FileList({ type }: FileListProps) {
     const getStatusIcon = (status: FileTransfer['status']) => {
         switch (status) {
             case 'completed':
-                return <CheckCircle2 className="w-5 h-5 text-emerald-500" />;
+                return <CheckCircle2 className="h-5 w-5 text-emerald-500" />;
             case 'failed':
-                return <XCircle className="w-5 h-5 text-rose-500" />;
+                return <XCircle className="h-5 w-5 text-rose-500" />;
             case 'transferring':
-                return <Clock className="w-5 h-5 text-sky-400" />;
+                return <Clock className="h-5 w-5 text-sky-400" />;
             default:
-                return <Clock className="w-5 h-5 text-muted-foreground" />;
+                return <Clock className="h-5 w-5 text-muted-foreground" />;
         }
     };
 
@@ -93,7 +100,7 @@ export function FileList({ type }: FileListProps) {
         return (
             <Card className="glass-dark">
                 <CardContent className="p-8 text-center">
-                    <File className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                    <File className="mx-auto mb-4 h-12 w-12 text-muted-foreground opacity-50" />
                     <p className="text-muted-foreground">
                         {type === 'received' ? 'No files received yet' : 'No files sent yet'}
                     </p>
@@ -119,25 +126,27 @@ export function FileList({ type }: FileListProps) {
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.2 }}
                         >
-                            <Card className="glass-dark hover:bg-white/5 transition-all duration-200 relative overflow-hidden group">
-                                <CardContent className="p-4">
-                                    <div className="flex items-center gap-4">
+                            <Card className="glass-dark group relative overflow-hidden transition-all duration-200 hover:bg-white/5">
+                                <CardContent className="p-3 md:p-4">
+                                    <div className="flex items-center gap-3 md:gap-4">
                                         <div className="flex-shrink-0">
-                                            <FileIcon className={cn('w-7 h-7', iconColor)} />
+                                            <FileIcon
+                                                className={cn('h-6 w-6 md:h-7 md:w-7', iconColor)}
+                                            />
                                         </div>
 
-                                        <div className="flex-1 min-w-0">
+                                        <div className="min-w-0 flex-1">
                                             <div className="flex items-center justify-between gap-2">
-                                                <div className="flex-1 min-w-0">
-                                                    <h4 className="font-medium truncate mb-0.5 max-w-[150px] sm:max-w-none transition-colors cursor-text">
+                                                <div className="min-w-0 flex-1">
+                                                    <h4 className="mb-0.5 cursor-text truncate text-sm font-medium transition-colors md:text-base">
                                                         {transfer.metadata.name}
                                                     </h4>
-                                                    <div className="flex items-center gap-2 text-xs text-muted-foreground/80">
+                                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-2xs text-muted-foreground/80 md:text-xs">
                                                         <span className="tabular-nums">
                                                             {formatBytes(transfer.metadata.size)}
                                                         </span>
-                                                        <span>•</span>
-                                                        <span>
+                                                        <span className="hidden xs:inline">•</span>
+                                                        <span className="hidden xs:inline">
                                                             {formatTimestamp(
                                                                 transfer.metadata.timestamp
                                                             )}
@@ -145,7 +154,7 @@ export function FileList({ type }: FileListProps) {
                                                         {transfer.status === 'transferring' && (
                                                             <>
                                                                 <span>•</span>
-                                                                <span className="text-sky-400 font-semibold tabular-nums">
+                                                                <span className="font-semibold tabular-nums text-sky-400">
                                                                     {Math.round(transfer.progress)}%
                                                                 </span>
                                                             </>
@@ -153,17 +162,17 @@ export function FileList({ type }: FileListProps) {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center gap-1.5">
+                                                <div className="flex flex-shrink-0 items-center gap-1 md:gap-1.5">
                                                     {transfer.status === 'completed' &&
                                                         type === 'received' && (
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 className={cn(
-                                                                    'h-9 w-9 hover:bg-white/10 transition-none hover:text-white',
+                                                                    'h-8 w-8 transition-colors md:h-9 md:w-9',
                                                                     transfer.downloaded
-                                                                        ? 'text-emerald-500'
-                                                                        : 'text-zinc-400'
+                                                                        ? 'text-emerald-500 hover:bg-emerald-500/10 hover:text-emerald-500'
+                                                                        : 'text-zinc-400 hover:bg-primary/10 hover:text-primary'
                                                                 )}
                                                                 onClick={() =>
                                                                     handleDownload(transfer)
@@ -174,13 +183,13 @@ export function FileList({ type }: FileListProps) {
                                                                         : 'Download'
                                                                 }
                                                             >
-                                                                <Download className="w-5 h-5" />
+                                                                <Download className="h-4 w-4 md:h-5 md:w-5" />
                                                             </Button>
                                                         )}
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        className="h-9 w-9 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10"
+                                                        className="h-8 w-8 text-muted-foreground transition-colors hover:bg-rose-500/10 hover:text-rose-500 md:h-9 md:w-9"
                                                         onClick={() =>
                                                             removeFile(
                                                                 transfer.id,
@@ -191,9 +200,9 @@ export function FileList({ type }: FileListProps) {
                                                         }
                                                         title="Remove"
                                                     >
-                                                        <Trash2 className="w-4 h-4" />
+                                                        <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                                                     </Button>
-                                                    <div className="shrink-0 h-9 w-9 flex items-center justify-center">
+                                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center md:h-9 md:w-9">
                                                         {getStatusIcon(transfer.status)}
                                                     </div>
                                                 </div>

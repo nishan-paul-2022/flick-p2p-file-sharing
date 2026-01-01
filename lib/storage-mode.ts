@@ -23,7 +23,7 @@ async function detectOPFSSupport(): Promise<boolean> {
 
         // Test actual OPFS access (some browsers report support but fail in practice)
         const root = await navigator.storage.getDirectory();
-        const _testHandle = await root.getFileHandle('__flick_test__', { create: true });
+        await root.getFileHandle('__flick_test__', { create: true });
         await root.removeEntry('__flick_test__');
 
         return true;
@@ -39,10 +39,18 @@ async function detectOPFSSupport(): Promise<boolean> {
 function getBrowserInfo(): string {
     const ua = navigator.userAgent;
 
-    if (ua.includes('Edg/')) return 'Edge';
-    if (ua.includes('Chrome/')) return 'Chrome';
-    if (ua.includes('Safari/') && !ua.includes('Chrome')) return 'Safari';
-    if (ua.includes('Firefox/')) return 'Firefox';
+    if (ua.includes('Edg/')) {
+        return 'Edge';
+    }
+    if (ua.includes('Chrome/')) {
+        return 'Chrome';
+    }
+    if (ua.includes('Safari/') && !ua.includes('Chrome')) {
+        return 'Safari';
+    }
+    if (ua.includes('Firefox/')) {
+        return 'Firefox';
+    }
 
     return 'Unknown';
 }
