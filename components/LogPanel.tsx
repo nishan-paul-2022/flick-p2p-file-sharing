@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle, CheckCircle2, Fingerprint, Info, Trash2, X, XCircle } from 'lucide-react';
+import { Activity, AlertTriangle, CheckCircle2, Info, Trash2, X, XCircle } from 'lucide-react';
 import React, { useEffect, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -71,9 +71,7 @@ export const LogPanel: React.FC = () => {
                         {/* Header */}
                         <div className="flex flex-shrink-0 items-center justify-between border-b border-white/10 bg-white/[0.02] px-6 pb-4 pt-[calc(var(--py-fluid)+0.25rem+0.5rem)] md:pb-6 md:pt-[calc(var(--py-fluid)+0.5rem+0.75rem)]">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 bg-white/10 shadow-log-glow backdrop-blur-md md:h-10 md:w-10">
-                                    <Fingerprint className="h-4 w-4 text-white md:h-5 md:w-5" />
-                                </div>
+                                <Activity className="h-5 w-5 text-primary md:h-6 md:w-6" />
                                 <div>
                                     <h3 className="text-sm font-bold text-white/90">System Logs</h3>
                                 </div>
