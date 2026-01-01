@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next';
 export default function sitemap(): MetadataRoute.Sitemap {
     return [
         {
-            url: 'https://flick-p2p.vercel.app',
+            url: 'https://flickfile.vercel.app',
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 1,

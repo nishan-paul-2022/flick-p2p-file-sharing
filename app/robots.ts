@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: '/private/',
         },
-        sitemap: 'https://flick-p2p.vercel.app/sitemap.xml',
+        sitemap: 'https://flickfile.vercel.app/sitemap.xml',
     };
 }

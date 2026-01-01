@@ -31,14 +31,14 @@ export const metadata: Metadata = {
     authors: [{ name: 'Flick' }],
     creator: 'Flick',
     publisher: 'Flick',
-    metadataBase: new URL('https://flick-p2p.vercel.app'),
+    metadataBase: new URL('https://flickfile.vercel.app'),
     alternates: {
         canonical: '/',
     },
     openGraph: {
         type: 'website',
         locale: 'en_US',
-        url: 'https://flick-p2p.vercel.app',
+        url: 'https://flickfile.vercel.app',
         title: 'Flick - P2P File Sharing',
         description: 'Securely share files between devices in seconds with P2P technology.',
         siteName: 'Flick',
