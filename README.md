@@ -60,13 +60,14 @@ npm start
 
 ## 🛠️ Development Tips
 
-### Previewing the Loading Screen
+### Previewing System Pages
 
-Since the application loads extremely fast, the custom animated splash screen might only flash briefly. To preview the full animation during development, use the following bypass:
+Since the application loads extremely fast and 404 errors are rare during development, you can use these URL parameters to preview and test the custom system pages:
 
-- **URL**: [http://localhost:3000/?loading=true](http://localhost:3000/?loading=true)
+- **Loading Screen**: [http://localhost:3000/?loading=true](http://localhost:3000/?loading=true)
+- **404 Not Found**: [http://localhost:3000/?404=true](http://localhost:3000/?404=true)
 
-This will force the app to stay on the loading screen for testing and refinement purposes.
+These parameters will force the app to stay on the respective screens for testing and refinement.
 
 ## 🏗️ Tech Stack
 

@@ -42,7 +42,7 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
                     />
                     {/* Notification Dot */}
                     {hasUnreadLogs && (
-                        <span className="absolute right-1.5 top-1.5 h-2 w-2 animate-pulse rounded-full bg-primary shadow-primary-glow-sm" />
+                        <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary" />
                     )}
                 </motion.div>
             </div>

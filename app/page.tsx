@@ -20,15 +20,18 @@ import { usePeerStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
 import Loading from './loading';
+import NotFound from './not-found';
 
 export default function HomePage() {
     const searchParams = useSearchParams();
     const [isAppLoading, setIsAppLoading] = useState(true);
     const [showLoadingParam, setShowLoadingParam] = useState(false);
+    const [showNotFoundParam, setShowNotFoundParam] = useState(false);
 
     // Handle search params only on client side to avoid hydration mismatch
     useEffect(() => {
         setShowLoadingParam(searchParams.get('loading') === 'true');
+        setShowNotFoundParam(searchParams.get('404') === 'true');
     }, [searchParams]);
 
     useEffect(() => {
@@ -91,6 +94,16 @@ export default function HomePage() {
                     className="fixed inset-0 z-[100]"
                 >
                     <Loading />
+                </motion.div>
+            ) : showNotFoundParam ? (
+                <motion.div
+                    key="404"
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="fixed inset-0 z-[100]"
+                >
+                    <NotFound />
                 </motion.div>
             ) : (
                 <motion.div

@@ -155,7 +155,7 @@ export function ConnectionPanel() {
                             aria-label="Create a new room"
                             className="btn-card group"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-br from-brand-500/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                            <div className="absolute inset-0 bg-white/[0.03] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                             <div className="btn-card-content">
                                 <RefreshCw
                                     className="h-4 w-4 text-brand-400 transition-transform duration-700 group-hover:rotate-180"
