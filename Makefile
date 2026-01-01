@@ -40,7 +40,7 @@ build-local:
 	npm run build
 
 start-local:
-	npm run start
+	node .next/standalone/server.js
 
 # Docker
 build:

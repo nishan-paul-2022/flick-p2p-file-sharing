@@ -12,13 +12,16 @@ import { StoreState } from './types';
 // Custom storage adapter using IndexedDB (idb-keyval)
 const idbStorage = {
     getItem: async (name: string) => {
+        if (typeof window === 'undefined') return null;
         const value = await get(name);
         return value || null;
     },
     setItem: async (name: string, value: unknown) => {
+        if (typeof window === 'undefined') return;
         await set(name, value);
     },
     removeItem: async (name: string) => {
+        if (typeof window === 'undefined') return;
         await del(name);
     },
 };

@@ -5,6 +5,10 @@ const nextConfig = {
     compiler: {
         removeConsole: process.env.NODE_ENV === 'production',
     },
+    // In Next.js 15, allowedDevOrigins is no longer experimental
+    // but the error message suggests it's not in experimental.
+    // If this fails, we will remove it.
+    allowedDevOrigins: ['localhost:3000', '0.0.0.0:3000', '127.0.0.1:3000'],
     images: {
         formats: ['image/avif', 'image/webp'],
     },
