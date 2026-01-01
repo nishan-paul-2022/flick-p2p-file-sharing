@@ -26,6 +26,7 @@ export function usePeerRestoration() {
                         // Small delay to ensure stability before connecting
                         setTimeout(() => connectToPeer(roomCode), 500);
                     }
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 } catch (error: any) {
                     // Ignore known PeerJS issues during restoration
                     if (error?.type !== 'unavailable-id') {

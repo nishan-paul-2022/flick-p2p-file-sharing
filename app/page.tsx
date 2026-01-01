@@ -70,7 +70,9 @@ export default function HomePage() {
 
             // Expose TURN testing utility
             import('@/lib/test-turn').then(({ testTurnServers }) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (window as any).testTurnServers = testTurnServers;
+                // eslint-disable-next-line no-console
                 console.log(
                     '💡 Debug utilities loaded. Run testTurnServers() to test TURN servers.'
                 );

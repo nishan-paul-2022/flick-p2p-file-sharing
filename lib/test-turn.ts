@@ -1,3 +1,4 @@
+/* eslint-disable no-console, @typescript-eslint/no-explicit-any */
 /**
  * Test TURN Server Connectivity
  * Run this in browser console to verify TURN servers are working

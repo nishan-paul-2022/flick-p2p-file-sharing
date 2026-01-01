@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Dynamic ICE Server Configuration
  * Fetches fresh TURN credentials from Metered.ca API

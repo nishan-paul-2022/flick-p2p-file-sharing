@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Peer from 'peerjs';
 import { StateCreator } from 'zustand';
 
@@ -263,6 +264,7 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                     get().addLog('success', 'Connected to peer', 'You can now share files');
 
                     // Monitor ICE connection state for diagnostics
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const peerConnection = (conn as any).peerConnection;
                     if (peerConnection) {
                         peerConnection.oniceconnectionstatechange = () => {
@@ -428,6 +430,7 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                     get().addLog('success', 'Connected to peer', 'You can now share files');
 
                     // Monitor ICE connection state for diagnostics (guest side)
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const peerConnection = (conn as any).peerConnection;
                     if (peerConnection) {
                         peerConnection.oniceconnectionstatechange = () => {
