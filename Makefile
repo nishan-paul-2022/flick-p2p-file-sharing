@@ -1,4 +1,4 @@
-.PHONY: help install dev lint format build-local start-local build up down logs shell clean
+.PHONY: help install dev lint format check-types build-local start-local build up down logs shell clean
 
 # Default target
 help:
@@ -9,6 +9,7 @@ help:
 	@echo "  make dev          - Run local development server (npm run dev)"
 	@echo "  make lint         - Run linter (npm run lint)"
 	@echo "  make format       - Format code (npm run format)"
+	@echo "  make check-types   - Run TypeScript type checking (npm run check-types)"
 	@echo ""
 	@echo "Local Build:"
 	@echo "  make build-local  - Build the application locally (npm run build)"
@@ -31,6 +32,9 @@ dev:
 
 lint:
 	npm run lint
+
+check-types:
+	npm run check-types
 
 format:
 	npm run format
