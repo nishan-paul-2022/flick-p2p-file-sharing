@@ -2,9 +2,9 @@
 import Peer from 'peerjs';
 import { StateCreator } from 'zustand';
 
-import { CHUNK_SIZE, CONNECTION_TIMEOUT, MAX_LOGS } from '../../constants';
+import { CHUNK_SIZE, CONNECTION_TIMEOUT } from '../../constants';
 import { OPFSManager } from '../../opfs-manager';
-import { LogEntry, P2PMessage } from '../../types';
+import { P2PMessage } from '../../types';
 import {
     incomingMessageSequenceCache,
     opfsHandleCache,
@@ -62,18 +62,8 @@ const handleIncomingData = async (
 
                 set((state) => ({
                     receivedFiles: [...state.receivedFiles, transfer],
-                    logs: [
-                        {
-                            id: Math.random().toString(36).substring(7),
-                            timestamp: Date.now(),
-                            type: 'info',
-                            message: 'Receiving file',
-                            description: msg.metadata.name,
-                        } as LogEntry,
-                        ...state.logs,
-                    ].slice(0, MAX_LOGS),
-                    hasUnreadLogs: !state.isLogPanelOpen,
                 }));
+                get().addLog('info', 'Receiving file', msg.metadata.name);
             } else if (msg.type === 'chunk') {
                 const transfer = receivedFiles.find((t) => t.id === msg.transferId);
                 if (!transfer) {
@@ -171,31 +161,21 @@ const handleIncomingData = async (
                     }
                 }
 
-                set((state) => {
-                    const targetFile = state.receivedFiles.find((f) => f.id === msg.transferId);
-                    if (!targetFile) {
-                        return state;
-                    }
+                const targetFile = get().receivedFiles.find((f) => f.id === msg.transferId);
+                if (!targetFile) {
+                    console.warn(`Completed message for unknown transfer: ${msg.transferId}`);
+                    incomingMessageSequenceCache.delete(transferId);
+                    return;
+                }
 
-                    return {
-                        receivedFiles: state.receivedFiles.map((t) =>
-                            t.id === msg.transferId
-                                ? { ...t, status: 'completed' as const, progress: 100 }
-                                : t
-                        ),
-                        logs: [
-                            {
-                                id: Math.random().toString(36).substring(7),
-                                timestamp: Date.now(),
-                                type: 'success',
-                                message: 'File received',
-                                description: targetFile.metadata.name,
-                            } as LogEntry,
-                            ...state.logs,
-                        ].slice(0, MAX_LOGS),
-                        hasUnreadLogs: !state.isLogPanelOpen,
-                    };
-                });
+                set((state) => ({
+                    receivedFiles: state.receivedFiles.map((t) =>
+                        t.id === msg.transferId
+                            ? { ...t, status: 'completed' as const, progress: 100 }
+                            : t
+                    ),
+                }));
+                get().addLog('success', 'File received', targetFile.metadata.name);
 
                 incomingMessageSequenceCache.delete(transferId);
             }

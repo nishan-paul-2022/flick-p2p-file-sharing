@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function NotFound() {
     return (
-        <main className="gradient-secondary relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4">
+        <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4">
             <div className="relative z-10 flex flex-col items-center gap-14">
                 {/* Logo Section - EXACTLY as in loading.tsx */}
                 <motion.div

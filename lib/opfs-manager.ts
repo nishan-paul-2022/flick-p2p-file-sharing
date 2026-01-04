@@ -114,57 +114,6 @@ export class OPFSManager {
     }
 
     /**
-     * Clear all transfer files (cleanup)
-     */
-    static async clearAllTransfers(): Promise<number> {
-        try {
-            const root = await this.getRootDirectory();
-            await root.removeEntry(this.TRANSFER_DIR, { recursive: true });
-            return 0;
-        } catch (error) {
-            console.warn('Failed to clear transfers:', error);
-            return -1;
-        }
-    }
-
-    /**
-     * Get storage usage estimate
-     */
-    static async getStorageEstimate(): Promise<{ usage: number; quota: number }> {
-        if (!navigator.storage?.estimate) {
-            return { usage: 0, quota: 0 };
-        }
-
-        const estimate = await navigator.storage.estimate();
-        return {
-            usage: estimate.usage || 0,
-            quota: estimate.quota || 0,
-        };
-    }
-
-    /**
-     * List all transfer files
-     */
-    static async listTransferFiles(): Promise<string[]> {
-        try {
-            const transfersDir = await this.getTransfersDirectory();
-            const files: string[] = [];
-
-            // @ts-expect-error - FileSystemDirectoryHandle has async iterator but TS doesn't recognize it yet
-            for await (const entry of transfersDir.values()) {
-                if (entry.kind === 'file') {
-                    files.push(entry.name);
-                }
-            }
-
-            return files;
-        } catch (error) {
-            console.warn('Failed to list transfer files:', error);
-            return [];
-        }
-    }
-
-    /**
      * Check if OPFS is available
      */
     static isAvailable(): boolean {

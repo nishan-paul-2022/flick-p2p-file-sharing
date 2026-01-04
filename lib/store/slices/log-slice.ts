@@ -21,5 +21,4 @@ export const createLogSlice: StateCreator<StoreState, [], [], LogSlice> = (set) 
         }));
     },
     clearLogs: () => set({ logs: [], hasUnreadLogs: false }),
-    setLogsRead: () => set({ hasUnreadLogs: false }),
 });

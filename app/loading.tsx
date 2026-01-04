@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 export default function Loading() {
     return (
-        <div className="gradient-secondary relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden">
+        <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden">
             <div className="relative z-10 flex flex-col items-center">
                 {/* Logo Animation */}
                 <motion.div

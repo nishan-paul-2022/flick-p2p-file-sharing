@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import { useLogNotification } from '@/lib/hooks/useLogNotification';
 import { usePeerRestoration } from '@/lib/hooks/usePeerRestoration';
 import { usePeerStore } from '@/lib/store';
 
@@ -8,7 +7,7 @@ export function useAppInitialize() {
     const [isAppLoading, setIsAppLoading] = useState(true);
 
     const isLogPanelOpen = usePeerStore((state) => state.isLogPanelOpen);
-    const logs = usePeerStore((state) => state.logs);
+    const hasUnreadLogs = usePeerStore((state) => state.hasUnreadLogs);
     const hasHydrated = usePeerStore((state) => state.hasHydrated);
 
     useEffect(() => {
@@ -18,7 +17,6 @@ export function useAppInitialize() {
         return () => clearTimeout(timer);
     }, []);
 
-    const { hasUnreadLogs } = useLogNotification(logs, isLogPanelOpen);
     usePeerRestoration();
 
     useEffect(() => {

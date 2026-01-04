@@ -43,7 +43,6 @@ export interface LogSlice {
 
     addLog: (type: LogEntry['type'], message: string, description?: string) => void;
     clearLogs: () => void;
-    setLogsRead: () => void;
 }
 
 export interface UISlice {
@@ -70,4 +69,3 @@ export interface StorageSlice {
 }
 
 export type StoreState = PeerSlice & TransferSlice & LogSlice & UISlice & StorageSlice;
-export type PeerState = StoreState;

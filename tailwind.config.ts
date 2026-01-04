@@ -92,18 +92,6 @@ const config: Config = {
                 '3xl': '2rem',
             },
             keyframes: {
-                'accordion-down': {
-                    from: { height: '0' },
-                    to: { height: 'var(--radix-accordion-content-height)' },
-                },
-                'accordion-up': {
-                    from: { height: 'var(--radix-accordion-content-height)' },
-                    to: { height: '0' },
-                },
-                'pulse-subtle': {
-                    '0%, 100%': { opacity: '1' },
-                    '50%': { opacity: '0.8' },
-                },
                 float: {
                     '0%, 100%': { transform: 'translateY(0)' },
                     '50%': { transform: 'translateY(-5px)' },
@@ -114,19 +102,14 @@ const config: Config = {
                 },
             },
             animation: {
-                'accordion-down': 'accordion-down 0.2s ease-out',
-                'accordion-up': 'accordion-up 0.2s ease-out',
-                'pulse-subtle': 'pulse-subtle 3s ease-in-out infinite',
                 float: 'float 4s ease-in-out infinite',
                 glow: 'glow 2s ease-in-out infinite',
             },
             letterSpacing: {
-                tightest: '0.05em',
                 'widest-lg': '0.15em',
                 'widest-xl': '0.2em',
                 'widest-2xl': '0.25em',
                 'widest-3xl': '0.3em',
-                'widest-4xl': '0.4em',
             },
             fontSize: {
                 '2xs': ['0.625rem', { lineHeight: '1rem' }], // 10px
@@ -136,16 +119,10 @@ const config: Config = {
             },
             boxShadow: {
                 'glass-sm': '0 2px 8px 0 rgba(0, 0, 0, 0.1)',
-                'glass-md': '0 4px 16px 0 rgba(0, 0, 0, 0.15)',
                 'glass-lg': '0 8px 32px 0 rgba(0, 0, 0, 0.2)',
                 'brand-glow': '0 0 15px -3px var(--primary)',
-                'header-glass':
-                    '0 8px 40px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
-                'primary-glow-sm': '0 0 8px rgba(var(--primary-rgb), 0.8)',
                 'primary-glow-lg': '0 0 12px -4px rgba(var(--primary-rgb), 0.8)',
-                'log-glow': '0 0 15px rgba(255,255,255,0.05)',
                 'log-dot-glow': '0 0 10px rgba(255,255,255,0.1)',
-                'glass-inset': 'inset 0 1px 0 0 rgba(255,255,255,0.02)',
             },
             maxWidth: {
                 layout: '1440px',

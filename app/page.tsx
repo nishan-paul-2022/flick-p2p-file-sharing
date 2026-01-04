@@ -60,7 +60,7 @@ export default function HomePage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
-                    className="gradient-secondary flex min-h-screen flex-col"
+                    className="flex min-h-screen flex-col"
                 >
                     <div
                         className={cn(
