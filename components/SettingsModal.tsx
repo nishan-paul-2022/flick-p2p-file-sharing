@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { get, set } from 'idb-keyval';
 import { RefreshCw, Save, Settings, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -73,7 +74,17 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         }
     };
 
-    return (
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return null;
+    }
+
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
                 <motion.div
@@ -188,6 +199,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     </motion.div>
                 </motion.div>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 }
