@@ -31,7 +31,6 @@ export interface TransferSlice {
 
     sendFile: (file: File) => Promise<void>;
     removeFile: (id: string, type: 'received' | 'outgoing') => Promise<void>;
-    clearHistory: () => Promise<void>;
     downloadFile: (transfer: FileTransfer) => Promise<void>;
     downloadAllReceivedFiles: () => Promise<void>;
     clearReceivedHistory: () => Promise<void>;

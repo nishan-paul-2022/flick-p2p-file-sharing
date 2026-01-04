@@ -129,12 +129,6 @@ export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice
         get().addLog('success', 'File removed from history');
     },
 
-    clearHistory: async () => {
-        await get().clearReceivedHistory();
-        await get().clearSentHistory();
-        get().addLog('success', 'History cleared', 'All transfer history has been removed');
-    },
-
     clearReceivedHistory: async () => {
         const { receivedFiles } = get();
         const opfsFiles = receivedFiles.filter((f) => f.storageMode === 'power');

@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Check, Copy, RefreshCw, Trash2, Wifi, WifiOff, Zap, ZapOff } from 'lucide-react';
+import { Check, Copy, RefreshCw, Wifi, WifiOff, Zap, ZapOff } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,6 @@ export function ConnectionPanel() {
     const initializePeer = usePeerStore((state) => state.initializePeer);
     const connectToPeer = usePeerStore((state) => state.connectToPeer);
     const disconnect = usePeerStore((state) => state.disconnect);
-    const clearHistory = usePeerStore((state) => state.clearHistory);
     const storageCapabilities = usePeerStore((state) => state.storageCapabilities);
     const initializeStorage = usePeerStore((state) => state.initializeStorage);
     const addLog = usePeerStore((state) => state.addLog);
@@ -254,20 +253,6 @@ export function ConnectionPanel() {
                         </button>
                     </motion.div>
                 )}
-
-                <div className="flex justify-center pt-2">
-                    <button
-                        onClick={clearHistory}
-                        aria-label="Clear all transfer history"
-                        className="group flex items-center gap-2 rounded-full border border-white/5 px-4 py-2 text-2xs font-bold uppercase tracking-wider text-muted-foreground/40 transition-all duration-300 hover:border-red-500 hover:bg-red-500 hover:text-white active:scale-95"
-                    >
-                        <Trash2
-                            className="h-3.5 w-3.5 transition-transform group-hover:scale-110"
-                            aria-hidden="true"
-                        />
-                        Clear History
-                    </button>
-                </div>
             </CardContent>
         </Card>
     );
