@@ -290,7 +290,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                                             : 'text-white/40 hover:text-white/60'
                                                     } ${isSaving ? 'cursor-not-allowed opacity-50' : ''}`}
                                                 >
-                                                    Xirsys Settings
+                                                    Xirsys
                                                 </button>
                                                 <button
                                                     onClick={() => setActiveTab('metered')}
@@ -301,7 +301,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                                             : 'text-white/40 hover:text-white/60'
                                                     } ${isSaving ? 'cursor-not-allowed opacity-50' : ''}`}
                                                 >
-                                                    Metered Settings
+                                                    Metered
                                                 </button>
                                             </div>
 
