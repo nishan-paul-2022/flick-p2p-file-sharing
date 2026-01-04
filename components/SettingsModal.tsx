@@ -253,14 +253,14 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             <Button
                                 variant="ghost"
                                 onClick={onClose}
-                                className="text-white/70 hover:bg-white/10 hover:text-white focus-visible:ring-white/20"
+                                className="h-11 px-6 text-white/70 transition-all duration-300 hover:bg-white/10 hover:text-white focus-visible:ring-white/20"
                             >
                                 Cancel
                             </Button>
                             <Button
                                 onClick={handleSave}
                                 disabled={isSaving || !hasChanges}
-                                className="bg-white text-zinc-950 hover:bg-white/90 focus-visible:ring-white/20 disabled:opacity-30 disabled:hover:bg-white"
+                                className="h-11 bg-white px-6 text-zinc-950 transition-all duration-300 hover:scale-[1.02] hover:bg-white focus-visible:ring-white/20 active:scale-100 disabled:opacity-30 disabled:hover:scale-100 disabled:hover:bg-white"
                             >
                                 {isSaving ? (
                                     <>
