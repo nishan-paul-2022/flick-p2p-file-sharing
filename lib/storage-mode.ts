@@ -76,20 +76,3 @@ export async function detectStorageCapabilities(): Promise<StorageCapabilities> 
         browserInfo,
     };
 }
-
-/**
- * Get storage mode display name
- */
-export function getStorageModeLabel(mode: StorageMode): string {
-    return mode === 'power' ? 'Power Mode' : 'Compatibility Mode';
-}
-
-/**
- * Get storage mode description
- */
-export function getStorageModeDescription(mode: StorageMode): string {
-    if (mode === 'power') {
-        return 'Files streamed to disk. Zero memory pressure, supports unlimited file sizes.';
-    }
-    return 'Files stored in memory. Supports fast, peer-to-peer transfers.';
-}

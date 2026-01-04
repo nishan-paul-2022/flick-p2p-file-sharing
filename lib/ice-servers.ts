@@ -98,11 +98,3 @@ export async function getIceServers(): Promise<RTCIceServer[]> {
 
     return BASE_STUN_SERVERS;
 }
-
-/**
- * Get ICE servers synchronously (for backwards compatibility)
- * Uses only STUN servers - call getIceServers() for TURN support
- */
-export function getIceServersSync(): RTCIceServer[] {
-    return BASE_STUN_SERVERS;
-}
