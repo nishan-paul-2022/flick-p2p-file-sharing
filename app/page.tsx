@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { Download, Send } from 'lucide-react';
+import { Download, Send, Trash2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -11,9 +11,9 @@ import { FileList } from '@/components/FileList';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { LogPanel } from '@/components/LogPanel';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLogNotification } from '@/lib/hooks/useLogNotification';
 import { usePeerRestoration } from '@/lib/hooks/usePeerRestoration';
 import { usePeerStore } from '@/lib/store';
@@ -49,6 +49,8 @@ export default function HomePage() {
     const logs = usePeerStore((state) => state.logs);
     const hasHydrated = usePeerStore((state) => state.hasHydrated);
     const downloadAllReceivedFiles = usePeerStore((state) => state.downloadAllReceivedFiles);
+    const clearReceivedHistory = usePeerStore((state) => state.clearReceivedHistory);
+    const clearSentHistory = usePeerStore((state) => state.clearSentHistory);
 
     const completedCount = receivedFiles.filter((f) => f.status === 'completed').length;
 
@@ -171,58 +173,29 @@ export default function HomePage() {
                                                 className="group gap-1 rounded-lg py-2.5 font-semibold transition-all duration-300 hover:bg-white/5 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground md:gap-2 md:py-3"
                                             >
                                                 <div className="flex items-center gap-1.5 md:gap-2">
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <motion.div
-                                                                className="relative"
-                                                                whileHover={
-                                                                    completedCount > 0
-                                                                        ? { scale: 1.2 }
-                                                                        : {}
-                                                                }
-                                                                whileTap={
-                                                                    completedCount > 0
-                                                                        ? { scale: 0.9 }
-                                                                        : {}
-                                                                }
-                                                                onClick={(e) => {
-                                                                    if (completedCount > 0) {
-                                                                        e.stopPropagation();
-                                                                        downloadAllReceivedFiles();
-                                                                    }
-                                                                }}
-                                                                animate={
-                                                                    isReceiving
-                                                                        ? {
-                                                                              y: [0, -3, 0],
-                                                                              scale: [1, 1.1, 1],
-                                                                          }
-                                                                        : {}
-                                                                }
-                                                                transition={{
-                                                                    duration: 1.5,
-                                                                    repeat: Infinity,
-                                                                    ease: 'easeInOut',
-                                                                }}
-                                                            >
-                                                                <Download
-                                                                    className={`h-3.5 w-3.5 transition-colors md:h-4 md:w-4 ${
-                                                                        isReceiving
-                                                                            ? 'text-primary'
-                                                                            : 'group-data-[state=active]:text-foreground'
-                                                                    } ${completedCount > 0 ? 'cursor-pointer hover:text-sky-400' : ''}`}
-                                                                />
-                                                            </motion.div>
-                                                        </TooltipTrigger>
-                                                        {completedCount > 0 && (
-                                                            <TooltipContent
-                                                                side="top"
-                                                                className="shadow-sky-500/20"
-                                                            >
-                                                                Download all files as ZIP
-                                                            </TooltipContent>
-                                                        )}
-                                                    </Tooltip>
+                                                    <motion.div
+                                                        animate={
+                                                            isReceiving
+                                                                ? {
+                                                                      y: [0, -3, 0],
+                                                                      scale: [1, 1.1, 1],
+                                                                  }
+                                                                : {}
+                                                        }
+                                                        transition={{
+                                                            duration: 1.5,
+                                                            repeat: Infinity,
+                                                            ease: 'easeInOut',
+                                                        }}
+                                                    >
+                                                        <Download
+                                                            className={`h-3.5 w-3.5 transition-colors md:h-4 md:w-4 ${
+                                                                isReceiving
+                                                                    ? 'text-primary'
+                                                                    : 'group-data-[state=active]:text-foreground'
+                                                            }`}
+                                                        />
+                                                    </motion.div>
                                                     <span
                                                         className={`text-xs transition-colors duration-300 md:text-sm ${
                                                             isReceiving
@@ -293,6 +266,67 @@ export default function HomePage() {
                                                 </div>
                                             </TabsTrigger>
                                         </TabsList>
+
+                                        {/* Actions Bar */}
+                                        <div className="mt-2 min-h-[40px]">
+                                            <AnimatePresence mode="wait">
+                                                {activeTab === 'received' ? (
+                                                    <motion.div
+                                                        key="received-actions"
+                                                        initial={{ opacity: 0, y: -10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        exit={{ opacity: 0, y: -10 }}
+                                                        className="flex items-center gap-2"
+                                                    >
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={clearReceivedHistory}
+                                                            disabled={receivedFiles.length === 0}
+                                                            className="glass-dark gap-2 border-white/10 hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                            <span className="hidden sm:inline">
+                                                                Clear History
+                                                            </span>
+                                                        </Button>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={downloadAllReceivedFiles}
+                                                            disabled={completedCount === 0}
+                                                            className="glass-dark gap-2 border-white/10 hover:border-emerald-500/20 hover:bg-emerald-500/10 hover:text-emerald-500"
+                                                        >
+                                                            <Download className="h-4 w-4" />
+                                                            <span className="hidden sm:inline">
+                                                                Download All
+                                                            </span>
+                                                        </Button>
+                                                    </motion.div>
+                                                ) : (
+                                                    <motion.div
+                                                        key="sent-actions"
+                                                        initial={{ opacity: 0, y: -10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        exit={{ opacity: 0, y: -10 }}
+                                                        className="flex justify-end"
+                                                    >
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={clearSentHistory}
+                                                            disabled={outgoingFiles.length === 0}
+                                                            className="glass-dark gap-2 border-white/10 hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                            <span className="hidden sm:inline">
+                                                                Clear History
+                                                            </span>
+                                                        </Button>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
 
                                         <TabsContent value="received" className="mt-4">
                                             <FileList type="received" />

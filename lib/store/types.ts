@@ -34,6 +34,8 @@ export interface TransferSlice {
     clearHistory: () => Promise<void>;
     downloadFile: (transfer: FileTransfer) => Promise<void>;
     downloadAllReceivedFiles: () => Promise<void>;
+    clearReceivedHistory: () => Promise<void>;
+    clearSentHistory: () => Promise<void>;
 }
 
 export interface LogSlice {
