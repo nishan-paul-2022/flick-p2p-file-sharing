@@ -5,6 +5,7 @@ import { Check, Loader2, RefreshCw, Settings, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+import { useKeyDown } from '@/lib/hooks/useKeyDown';
 import { ProviderType, useSettings } from '@/lib/hooks/useSettings';
 
 // Sub-components
@@ -23,6 +24,13 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const { formState, setters, status, handleSave } = useSettings(isOpen, onClose);
     const [activeTab, setActiveTab] = useState<ProviderType>('xirsys');
     const [mounted, setMounted] = useState(false);
+
+    // Handle Escape key
+    useKeyDown(['Escape'], () => {
+        if (isOpen && !status.isSaving) {
+            onClose();
+        }
+    });
 
     // Sync active tab with provider when loading completes
     useEffect(() => {
@@ -50,9 +58,13 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     exit={{ opacity: 0 }}
                     onClick={!status.isSaving ? onClose : undefined}
                     className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+                    role="presentation"
                 >
                     {/* Backdrop */}
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        aria-hidden="true"
+                    />
 
                     {/* Modal */}
                     <motion.div
@@ -61,6 +73,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
                         onClick={(e) => e.stopPropagation()}
                         className="relative flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/90 shadow-2xl backdrop-blur-xl sm:max-h-[90vh]"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="settings-title"
                     >
                         {/* Header */}
                         <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-4 py-4 sm:px-6">
@@ -69,7 +84,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                     <Settings className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-bold text-white">
+                                    <h2
+                                        id="settings-title"
+                                        className="text-lg font-bold text-white"
+                                    >
                                         Connection Settings
                                     </h2>
                                 </div>

@@ -2,9 +2,11 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpDown, Check, ChevronDown } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { useClickOutside } from '@/lib/hooks/useClickOutside';
+import { useKeyDown } from '@/lib/hooks/useKeyDown';
 import { SortBy, SortOrder } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
@@ -26,15 +28,8 @@ export function SortMenu({
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+    useClickOutside(menuRef, () => setIsOpen(false));
+    useKeyDown(['Escape'], () => setIsOpen(false));
 
     const getSortLabel = () => {
         const label = sortBy === 'name' ? 'Name' : 'Date';
