@@ -161,10 +161,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/90 shadow-2xl backdrop-blur-xl"
+                        className="relative flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/90 shadow-2xl backdrop-blur-xl sm:max-h-[90vh]"
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+                        <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-4 py-4 sm:px-6">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                                     <Settings className="h-5 w-5" />
@@ -185,11 +185,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         </div>
 
                         {/* Body */}
-                        <div
-                            className="relative min-h-[300px] px-6 py-6"
-                            style={{ minHeight: '300px' }}
-                        >
-                            <AnimatePresence mode="wait">
+                        <div className="relative min-h-[200px] overflow-y-auto px-4 py-4 sm:min-h-[300px] sm:px-6 sm:py-6">
+                            <AnimatePresence>
                                 {isLoading ? (
                                     <motion.div
                                         key="loader"
@@ -198,7 +195,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                         exit={{ opacity: 0 }}
                                         className="absolute inset-0 flex items-center justify-center"
                                     >
-                                        <Loader2 className="h-8 w-8 animate-spin text-white/20" />
+                                        <Loader2 className="h-8 w-8 animate-spin text-white/50" />
                                     </motion.div>
                                 ) : (
                                     <motion.div
@@ -385,7 +382,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         </div>
 
                         {/* Footer */}
-                        <div className="flex items-center justify-end gap-3 border-t border-white/10 bg-white/5 px-6 py-4">
+                        <div className="flex shrink-0 items-center justify-end gap-3 border-t border-white/10 bg-white/5 px-4 py-4 sm:px-6">
                             <Button
                                 variant="ghost"
                                 onClick={onClose}
