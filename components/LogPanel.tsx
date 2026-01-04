@@ -148,7 +148,7 @@ export const LogPanel: React.FC = () => {
                         {/* Footer Status */}
                         <div className="flex flex-shrink-0 items-center justify-between border-t border-white/5 bg-white/[0.02] px-6 py-3 text-2xs text-white/20">
                             <span>Flick - P2P File Sharing</span>
-                            <span>v0.0.1</span>
+                            <span>v0.1.0</span>
                         </div>
                     </motion.div>
                 </>
