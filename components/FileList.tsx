@@ -16,6 +16,7 @@ import {
     Trash2,
     XCircle,
 } from 'lucide-react';
+import { useMemo } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,15 +26,33 @@ import { cn, formatBytes, formatTimestamp } from '@/lib/utils';
 
 interface FileListProps {
     type: 'received' | 'sent';
+    sortBy: 'name' | 'time';
+    sortOrder: 'asc' | 'desc';
 }
 
-export function FileList({ type }: FileListProps) {
+export function FileList({ type, sortBy, sortOrder }: FileListProps) {
     const receivedFiles = usePeerStore((state) => state.receivedFiles);
     const outgoingFiles = usePeerStore((state) => state.outgoingFiles);
     const removeFile = usePeerStore((state) => state.removeFile);
     const downloadFile = usePeerStore((state) => state.downloadFile);
 
     const files = type === 'received' ? receivedFiles : outgoingFiles;
+
+    const sortedFiles = useMemo(() => {
+        return [...files].sort((a, b) => {
+            if (sortBy === 'name') {
+                const nameA = a.metadata.name.toLowerCase();
+                const nameB = b.metadata.name.toLowerCase();
+                const comparison = nameA.localeCompare(nameB);
+                return sortOrder === 'asc' ? comparison : -comparison;
+            } else {
+                const timeA = a.metadata.timestamp;
+                const timeB = b.metadata.timestamp;
+                const comparison = timeA - timeB;
+                return sortOrder === 'asc' ? comparison : -comparison;
+            }
+        });
+    }, [files, sortBy, sortOrder]);
 
     const handleDownload = async (transfer: FileTransfer) => {
         if (transfer.status !== 'completed') {
@@ -111,8 +130,8 @@ export function FileList({ type }: FileListProps) {
 
     return (
         <div className="space-y-3">
-            <AnimatePresence mode="popLayout">
-                {files.map((transfer) => {
+            <AnimatePresence mode="popLayout" initial={false}>
+                {sortedFiles.map((transfer) => {
                     const { icon: FileIcon, color: iconColor } = getFileIcon(
                         transfer.metadata.name,
                         transfer.metadata.type

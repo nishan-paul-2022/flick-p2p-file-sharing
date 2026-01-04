@@ -11,6 +11,7 @@ import { FileList } from '@/components/FileList';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { LogPanel } from '@/components/LogPanel';
+import { SortBy, SortMenu, SortOrder } from '@/components/SortMenu';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -58,6 +59,12 @@ export default function HomePage() {
 
     // UX Updates State
     const [activeTab, setActiveTab] = useState('received');
+
+    // Sorting State
+    const [receivedSortBy, setReceivedSortBy] = useState<SortBy>('time');
+    const [receivedSortOrder, setReceivedSortOrder] = useState<SortOrder>('desc');
+    const [sentSortBy, setSentSortBy] = useState<SortBy>('time');
+    const [sentSortOrder, setSentSortOrder] = useState<SortOrder>('desc');
 
     // Custom hooks for complex logic
     const { hasUnreadLogs } = useLogNotification(logs, isLogPanelOpen);
@@ -276,32 +283,44 @@ export default function HomePage() {
                                                         initial={{ opacity: 0, y: -10 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         exit={{ opacity: 0, y: -10 }}
-                                                        className="flex items-center gap-2"
+                                                        className="flex items-center justify-between"
                                                     >
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={clearReceivedHistory}
+                                                        <div className="flex items-center gap-2">
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={clearReceivedHistory}
+                                                                disabled={
+                                                                    receivedFiles.length === 0
+                                                                }
+                                                                className="glass-dark gap-2 border-white/10 hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500"
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                                <span className="hidden sm:inline">
+                                                                    Clear History
+                                                                </span>
+                                                            </Button>
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={downloadAllReceivedFiles}
+                                                                disabled={completedCount === 0}
+                                                                className="glass-dark gap-2 border-white/10 hover:border-emerald-500/20 hover:bg-emerald-500/10 hover:text-emerald-500"
+                                                            >
+                                                                <Download className="h-4 w-4" />
+                                                                <span className="hidden sm:inline">
+                                                                    Download All
+                                                                </span>
+                                                            </Button>
+                                                        </div>
+
+                                                        <SortMenu
+                                                            sortBy={receivedSortBy}
+                                                            onSortByChange={setReceivedSortBy}
+                                                            sortOrder={receivedSortOrder}
+                                                            onSortOrderChange={setReceivedSortOrder}
                                                             disabled={receivedFiles.length === 0}
-                                                            className="glass-dark gap-2 border-white/10 hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500"
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                            <span className="hidden sm:inline">
-                                                                Clear History
-                                                            </span>
-                                                        </Button>
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={downloadAllReceivedFiles}
-                                                            disabled={completedCount === 0}
-                                                            className="glass-dark gap-2 border-white/10 hover:border-emerald-500/20 hover:bg-emerald-500/10 hover:text-emerald-500"
-                                                        >
-                                                            <Download className="h-4 w-4" />
-                                                            <span className="hidden sm:inline">
-                                                                Download All
-                                                            </span>
-                                                        </Button>
+                                                        />
                                                     </motion.div>
                                                 ) : (
                                                     <motion.div
@@ -309,7 +328,7 @@ export default function HomePage() {
                                                         initial={{ opacity: 0, y: -10 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         exit={{ opacity: 0, y: -10 }}
-                                                        className="flex justify-end"
+                                                        className="flex items-center justify-between"
                                                     >
                                                         <Button
                                                             variant="outline"
@@ -323,17 +342,33 @@ export default function HomePage() {
                                                                 Clear History
                                                             </span>
                                                         </Button>
+
+                                                        <SortMenu
+                                                            sortBy={sentSortBy}
+                                                            onSortByChange={setSentSortBy}
+                                                            sortOrder={sentSortOrder}
+                                                            onSortOrderChange={setSentSortOrder}
+                                                            disabled={outgoingFiles.length === 0}
+                                                        />
                                                     </motion.div>
                                                 )}
                                             </AnimatePresence>
                                         </div>
 
                                         <TabsContent value="received" className="mt-4">
-                                            <FileList type="received" />
+                                            <FileList
+                                                type="received"
+                                                sortBy={receivedSortBy}
+                                                sortOrder={receivedSortOrder}
+                                            />
                                         </TabsContent>
 
                                         <TabsContent value="sent" className="mt-4">
-                                            <FileList type="sent" />
+                                            <FileList
+                                                type="sent"
+                                                sortBy={sentSortBy}
+                                                sortOrder={sentSortOrder}
+                                            />
                                         </TabsContent>
                                     </Tabs>
                                 </motion.div>
