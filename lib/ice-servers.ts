@@ -1,6 +1,6 @@
 /**
  * Dynamic ICE Server Configuration
- * Fetches fresh TURN credentials from Xirsys API
+ * Fetches fresh TURN credentials from Xirsys or Metered API
  */
 
 import { get } from 'idb-keyval';
@@ -14,59 +14,72 @@ const BASE_STUN_SERVERS = [
 ];
 
 /**
- * Fetch fresh TURN credentials from Xirsys using your API credentials
- * Credentials are loaded exclusively from IndexedDB (User Settings)
+ * Fetch fresh TURN credentials from the selected provider
  */
 async function fetchDynamicTurnCredentials(): Promise<RTCIceServer[]> {
     try {
-        let ident: string | undefined;
-        let secret: string | undefined;
-        let channel: string | undefined;
-
-        // 1. Try to get from IndexedDB (User Preference)
-        if (typeof window !== 'undefined') {
-            try {
-                ident = (await get('xirsys_ident')) as string | undefined;
-                secret = (await get('xirsys_secret')) as string | undefined;
-                channel = (await get('xirsys_channel')) as string | undefined;
-            } catch (err) {
-                console.warn('[ICE] Failed to read from IndexedDB:', err);
-            }
-        }
-
-        if (!ident || !secret || !channel) {
-            console.warn('[ICE] Xirsys credentials not configured in Settings');
+        if (typeof window === 'undefined') {
             return [];
         }
 
-        const response = await fetch(`https://global.xirsys.net/_turn/${channel}`, {
-            method: 'PUT',
-            headers: {
-                Authorization: 'Basic ' + btoa(`${ident}:${secret}`),
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ format: 'urls' }),
-        });
+        // Get provider from IndexedDB (defaults to xirsys for backward compatibility)
+        const provider = ((await get('turn_provider')) as 'xirsys' | 'metered') || 'xirsys';
 
-        if (response.ok) {
-            const data = await response.json();
-            if (data.v && data.v.iceServers) {
-                const servers = data.v.iceServers;
-                const iceServers: RTCIceServer[] = [
-                    {
-                        urls: servers.urls,
-                        username: servers.username,
-                        credential: servers.credential,
-                    },
-                ];
-                return iceServers;
+        if (provider === 'metered') {
+            const apiKey = (await get('metered_api_key')) as string | undefined;
+            if (!apiKey) {
+                console.warn('[ICE] Metered API key not configured');
+                return [];
+            }
+
+            const response = await fetch(
+                `https://metered.ca/api/v1/turn/credentials?apiKey=${apiKey}`
+            );
+
+            if (response.ok) {
+                return await response.json();
+            } else {
+                console.warn('[ICE] Metered API error:', response.status);
+                return [];
             }
         } else {
-            const errorText = await response.text();
-            console.warn('[ICE] Xirsys API error:', response.status, errorText);
+            // Xirsys Provider
+            const ident = (await get('xirsys_ident')) as string | undefined;
+            const secret = (await get('xirsys_secret')) as string | undefined;
+            const channel = (await get('xirsys_channel')) as string | undefined;
+
+            if (!ident || !secret || !channel) {
+                console.warn('[ICE] Xirsys credentials not configured');
+                return [];
+            }
+
+            const response = await fetch(`https://global.xirsys.net/_turn/${channel}`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: 'Basic ' + btoa(`${ident}:${secret}`),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ format: 'urls' }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.v && data.v.iceServers) {
+                    const servers = data.v.iceServers;
+                    return [
+                        {
+                            urls: servers.urls,
+                            username: servers.username,
+                            credential: servers.credential,
+                        },
+                    ];
+                }
+            } else {
+                console.warn('[ICE] Xirsys API error:', response.status);
+            }
         }
     } catch (error) {
-        console.warn('[ICE] Xirsys fetch failed:', error);
+        console.warn('[ICE] Failed to fetch dynamic TURN credentials:', error);
     }
 
     return [];

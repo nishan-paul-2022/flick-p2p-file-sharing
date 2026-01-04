@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { get, set } from 'idb-keyval';
-import { RefreshCw, Save, Settings, X } from 'lucide-react';
+import { Check, RefreshCw, Settings, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -15,39 +15,65 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+    const [provider, setProvider] = useState<'xirsys' | 'metered'>('xirsys');
     const [ident, setIdent] = useState('');
     const [secret, setSecret] = useState('');
     const [channel, setChannel] = useState('');
+    const [meteredApiKey, setMeteredApiKey] = useState('');
     const [isSaving, setIsSaving] = useState(false);
+    const [initialSettings, setInitialSettings] = useState({
+        provider: 'xirsys',
+        ident: '',
+        secret: '',
+        channel: '',
+        meteredApiKey: '',
+    });
 
     useEffect(() => {
         if (isOpen) {
-            const loadCredentials = async () => {
+            const loadSettings = async () => {
+                const storedProvider = (await get('turn_provider')) as
+                    | 'xirsys'
+                    | 'metered'
+                    | undefined;
                 const storedIdent = (await get('xirsys_ident')) as string | undefined;
                 const storedSecret = (await get('xirsys_secret')) as string | undefined;
                 const storedChannel = (await get('xirsys_channel')) as string | undefined;
+                const storedMeteredKey = (await get('metered_api_key')) as string | undefined;
 
-                setIdent(storedIdent || '');
-                setSecret(storedSecret || '');
-                setChannel(storedChannel || '');
+                const settings = {
+                    provider: storedProvider || 'xirsys',
+                    ident: storedIdent || '',
+                    secret: storedSecret || '',
+                    channel: storedChannel || '',
+                    meteredApiKey: storedMeteredKey || '',
+                };
+
+                setProvider(settings.provider as 'xirsys' | 'metered');
+                setIdent(settings.ident);
+                setSecret(settings.secret);
+                setChannel(settings.channel);
+                setMeteredApiKey(settings.meteredApiKey);
+                setInitialSettings(settings);
             };
-            loadCredentials();
+            loadSettings();
         }
     }, [isOpen]);
 
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            // Save credentials concurrently
+            // Save settings concurrently
             await Promise.all([
+                set('turn_provider', provider),
                 set('xirsys_ident', ident),
                 set('xirsys_secret', secret),
                 set('xirsys_channel', channel),
+                set('metered_api_key', meteredApiKey),
                 new Promise((resolve) => setTimeout(resolve, 800)), // Minimum UX delay
             ]);
 
             // Dynamically re-initialize peer connection with new credentials
-            // This avoids a full page reload for a smoother experience
             const { usePeerStore } = await import('@/lib/store');
             const store = usePeerStore.getState();
 
@@ -57,11 +83,19 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             }
 
             // Re-initialize (pass null code to join as new peer/host)
-            // The store's initializePeer will internally fetch the new ICE servers
             await store.initializePeer(store.roomCode || undefined);
 
             // Notify user
             store.addLog('success', 'Settings Saved', 'Connection refreshed with new credentials');
+
+            // Update initial settings after successful save
+            setInitialSettings({
+                provider,
+                ident,
+                secret,
+                channel,
+                meteredApiKey,
+            });
         } catch (error) {
             console.error('Failed to save settings:', error);
             const { usePeerStore } = await import('@/lib/store');
@@ -79,6 +113,13 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    const hasChanges =
+        provider !== initialSettings.provider ||
+        ident !== initialSettings.ident ||
+        secret !== initialSettings.secret ||
+        channel !== initialSettings.channel ||
+        meteredApiKey !== initialSettings.meteredApiKey;
 
     if (!mounted) {
         return null;
@@ -112,10 +153,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                     <Settings className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-bold text-white">Settings</h2>
-                                    <p className="text-xs text-white/50">
-                                        Configure connection servers
-                                    </p>
+                                    <h2 className="text-lg font-bold text-white">
+                                        Connection Settings
+                                    </h2>
                                 </div>
                             </div>
                             <button
@@ -127,45 +167,84 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         </div>
 
                         {/* Body */}
-                        <div className="space-y-4 px-6 py-6">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-white/70">
-                                    Xirsys Ident
+                        <div className="space-y-6 px-6 py-6">
+                            {/* Provider Selection */}
+                            <div className="space-y-3">
+                                <label className="text-xs font-semibold uppercase tracking-wider text-white/40">
+                                    TURN Provider
                                 </label>
-                                <Input
-                                    value={ident}
-                                    onChange={(e) => setIdent(e.target.value)}
-                                    placeholder="e.g. your_username"
-                                    className="border-white/10 bg-white/5 text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-white/70">
-                                    Xirsys Secret
-                                </label>
-                                <Input
-                                    value={secret}
-                                    onChange={(e) => setSecret(e.target.value)}
-                                    type="password"
-                                    placeholder="e.g. your_api_secret"
-                                    className="border-white/10 bg-white/5 text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-white/70">
-                                    Xirsys Channel
-                                </label>
-                                <Input
-                                    value={channel}
-                                    onChange={(e) => setChannel(e.target.value)}
-                                    placeholder="e.g. your_channel"
-                                    className="border-white/10 bg-white/5 text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                                />
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button
+                                        onClick={() => setProvider('xirsys')}
+                                        className={`flex items-center justify-center gap-2 rounded-xl border p-3 text-sm font-medium transition-all ${
+                                            provider === 'xirsys'
+                                                ? 'border-white bg-white/10 text-white'
+                                                : 'border-white/10 bg-white/5 text-white/50 hover:bg-white/10 hover:text-white'
+                                        }`}
+                                    >
+                                        Xirsys
+                                    </button>
+                                    <button
+                                        onClick={() => setProvider('metered')}
+                                        className={`flex items-center justify-center gap-2 rounded-xl border p-3 text-sm font-medium transition-all ${
+                                            provider === 'metered'
+                                                ? 'border-white bg-white/10 text-white'
+                                                : 'border-white/10 bg-white/5 text-white/50 hover:bg-white/10 hover:text-white'
+                                        }`}
+                                    >
+                                        Metered
+                                    </button>
+                                </div>
                             </div>
 
-                            <div className="mt-2 rounded-lg bg-emerald-500/10 p-3 text-xs text-emerald-200">
-                                Note: Settings are saved locally. Connection will momentarily
-                                reconnect to apply changes.
+                            <div className="space-y-4">
+                                {provider === 'xirsys' ? (
+                                    <>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-white/70">
+                                                Ident
+                                            </label>
+                                            <Input
+                                                value={ident}
+                                                onChange={(e) => setIdent(e.target.value)}
+                                                className="border-white/10 bg-white/5 text-white focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-white/10"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-white/70">
+                                                Secret
+                                            </label>
+                                            <Input
+                                                value={secret}
+                                                onChange={(e) => setSecret(e.target.value)}
+                                                type="password"
+                                                className="border-white/10 bg-white/5 text-white focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-white/10"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-white/70">
+                                                Channel
+                                            </label>
+                                            <Input
+                                                value={channel}
+                                                onChange={(e) => setChannel(e.target.value)}
+                                                className="border-white/10 bg-white/5 text-white focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-white/10"
+                                            />
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-white/70">
+                                            API Key
+                                        </label>
+                                        <Input
+                                            value={meteredApiKey}
+                                            onChange={(e) => setMeteredApiKey(e.target.value)}
+                                            type="password"
+                                            className="border-white/10 bg-white/5 text-white focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-white/10"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -174,24 +253,24 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             <Button
                                 variant="ghost"
                                 onClick={onClose}
-                                className="text-white/70 hover:bg-white/10 hover:text-white"
+                                className="text-white/70 hover:bg-white/10 hover:text-white focus-visible:ring-white/20"
                             >
                                 Cancel
                             </Button>
                             <Button
                                 onClick={handleSave}
-                                disabled={isSaving}
-                                className="bg-primary text-primary-foreground hover:bg-primary/90"
+                                disabled={isSaving || !hasChanges}
+                                className="bg-white text-zinc-950 hover:bg-white/90 focus-visible:ring-white/20 disabled:opacity-30 disabled:hover:bg-white"
                             >
                                 {isSaving ? (
                                     <>
                                         <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                                        Saving...
+                                        Applying...
                                     </>
                                 ) : (
                                     <>
-                                        <Save className="mr-2 h-4 w-4" />
-                                        Save Changes
+                                        <Check className="mr-2 h-4 w-4" />
+                                        Apply
                                     </>
                                 )}
                             </Button>
