@@ -21,7 +21,7 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="relative mb-8 mt-1 flex w-full items-center justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-900/30 px-4 py-2 shadow-header-glass backdrop-blur-3xl md:mb-12 md:mt-2 md:rounded-full md:px-8 md:py-3"
+                className="relative mb-8 mt-1 flex w-full items-center justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-900/30 px-4 py-2 backdrop-blur-3xl md:mb-12 md:mt-2 md:rounded-full md:px-8 md:py-3"
             >
                 {/* Ambient Glow */}
                 <div className="pointer-events-none absolute left-1/2 top-0 h-1/2 w-3/4 -translate-x-1/2 rounded-full bg-primary/10 opacity-50 blur-huge" />
@@ -33,8 +33,8 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
                         whileTap={{ scale: 0.95 }}
                         className={`group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border backdrop-blur-md transition-all duration-300 md:h-10 md:w-10 ${
                             isLogPanelOpen
-                                ? 'border-white/20 bg-white/10 shadow-log-glow'
-                                : 'border-white/[0.08] bg-white/[0.03] shadow-lg hover:border-white/20 hover:bg-white/[0.08]'
+                                ? 'border-white/20 bg-white/10'
+                                : 'border-white/[0.08] bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.08]'
                         }`}
                         onClick={toggleLogPanel}
                         aria-label="Toggle Event Logs"
@@ -80,7 +80,7 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
                     <motion.div
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] shadow-lg backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] md:h-10 md:w-10"
+                        className="group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] md:h-10 md:w-10"
                         onClick={() => setIsSettingsOpen(true)}
                         aria-label="Settings"
                     >
