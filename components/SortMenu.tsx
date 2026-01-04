@@ -38,6 +38,12 @@ export function SortMenu({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    const getSortLabel = () => {
+        const label = sortBy === 'name' ? 'Name' : 'Date';
+        const order = sortOrder === 'asc' ? '↑' : '↓';
+        return `${label} ${order}`;
+    };
+
     return (
         <div className="relative" ref={menuRef}>
             <Button
@@ -46,18 +52,28 @@ export function SortMenu({
                 disabled={disabled}
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    'glass-dark h-9 gap-2 border-white/10 px-3 text-xs font-medium transition-all duration-200 hover:border-primary/20 hover:bg-primary/10',
+                    'glass-dark group h-9 gap-2 border-white/10 px-3 text-xs font-medium transition-all duration-300 hover:border-primary/30 hover:bg-primary/5',
                     isOpen
                         ? 'border-primary/30 bg-primary/10 text-primary'
-                        : 'text-muted-foreground'
+                        : 'text-muted-foreground/80 hover:text-primary'
                 )}
             >
-                <ArrowUpDown className="h-3.5 w-3.5" />
-                <span className="hidden xs:inline">Sort</span>
+                <ArrowUpDown
+                    className={cn(
+                        'h-3.5 w-3.5 transition-colors duration-300',
+                        isOpen ? 'text-primary' : 'group-hover:text-primary'
+                    )}
+                />
+                <span className="flex items-center gap-1.5">
+                    <span className="opacity-50">Sort:</span>
+                    <span className="font-semibold text-foreground/90">{getSortLabel()}</span>
+                </span>
                 <ChevronDown
                     className={cn(
-                        'h-3 w-3 transition-transform duration-200',
-                        isOpen ? 'rotate-180' : ''
+                        'h-3 w-3 opacity-50 transition-transform duration-300',
+                        isOpen
+                            ? 'rotate-180 text-primary opacity-100'
+                            : 'group-hover:text-primary group-hover:opacity-100'
                     )}
                 />
             </Button>

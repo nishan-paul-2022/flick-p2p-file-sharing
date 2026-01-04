@@ -283,7 +283,7 @@ export default function HomePage() {
                                                         initial={{ opacity: 0, y: -10 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         exit={{ opacity: 0, y: -10 }}
-                                                        className="flex items-center justify-between"
+                                                        className="flex items-center justify-between px-0.5"
                                                     >
                                                         <div className="flex items-center gap-2">
                                                             <Button
@@ -293,10 +293,10 @@ export default function HomePage() {
                                                                 disabled={
                                                                     receivedFiles.length === 0
                                                                 }
-                                                                className="glass-dark gap-2 border-white/10 hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500"
+                                                                className="glass-dark group h-9 gap-2 border-white/10 px-3 transition-all duration-300 hover:border-red-500/30 hover:bg-red-500/5 hover:text-red-500"
                                                             >
-                                                                <Trash2 className="h-4 w-4" />
-                                                                <span className="hidden sm:inline">
+                                                                <Trash2 className="h-4 w-4 text-muted-foreground/60 transition-colors duration-300 group-hover:text-red-500" />
+                                                                <span className="hidden text-xs font-medium sm:inline">
                                                                     Clear History
                                                                 </span>
                                                             </Button>
@@ -305,10 +305,10 @@ export default function HomePage() {
                                                                 size="sm"
                                                                 onClick={downloadAllReceivedFiles}
                                                                 disabled={completedCount === 0}
-                                                                className="glass-dark gap-2 border-white/10 hover:border-emerald-500/20 hover:bg-emerald-500/10 hover:text-emerald-500"
+                                                                className="glass-dark group h-9 gap-2 border-white/10 px-3 transition-all duration-300 hover:border-emerald-500/30 hover:bg-emerald-500/5 hover:text-emerald-500"
                                                             >
-                                                                <Download className="h-4 w-4" />
-                                                                <span className="hidden sm:inline">
+                                                                <Download className="h-4 w-4 text-muted-foreground/60 transition-colors duration-300 group-hover:text-emerald-500" />
+                                                                <span className="hidden text-xs font-medium sm:inline">
                                                                     Download All
                                                                 </span>
                                                             </Button>
@@ -328,17 +328,17 @@ export default function HomePage() {
                                                         initial={{ opacity: 0, y: -10 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         exit={{ opacity: 0, y: -10 }}
-                                                        className="flex items-center justify-between"
+                                                        className="flex items-center justify-between px-0.5"
                                                     >
                                                         <Button
                                                             variant="outline"
                                                             size="sm"
                                                             onClick={clearSentHistory}
                                                             disabled={outgoingFiles.length === 0}
-                                                            className="glass-dark gap-2 border-white/10 hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500"
+                                                            className="glass-dark group h-9 gap-2 border-white/10 px-3 transition-all duration-300 hover:border-red-500/30 hover:bg-red-500/5 hover:text-red-500"
                                                         >
-                                                            <Trash2 className="h-4 w-4" />
-                                                            <span className="hidden sm:inline">
+                                                            <Trash2 className="h-4 w-4 text-muted-foreground/60 transition-colors duration-300 group-hover:text-red-500" />
+                                                            <span className="hidden text-xs font-medium sm:inline">
                                                                 Clear History
                                                             </span>
                                                         </Button>
