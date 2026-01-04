@@ -130,7 +130,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         <div className="space-y-4 px-6 py-6">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-white/70">
-                                    Xirsys Identity
+                                    Xirsys Ident
                                 </label>
                                 <Input
                                     value={ident}

@@ -415,7 +415,7 @@ The system MUST provide options to:
 The system MUST configure PeerJS with:
 
 - Multiple STUN servers for redundancy (Google, Twilio)
-- TURN servers with credentials (Xirsys, fallback to public servers)
+- TURN servers with credentials (Xirsys)
 - ICE candidate pool size: 15
 - ICE transport policy: `all` (UDP, TCP, TLS)
 - Bundle policy: `max-bundle`
@@ -425,8 +425,7 @@ The system MUST configure PeerJS with:
 The system SHOULD:
 
 - Fetch fresh TURN credentials from Xirsys API on peer initialization
-- Use environment variables OR user-provided UI settings for API credentials
-- Fall back to static credentials if API fails
+- Use user-provided UI settings for API credentials
 - Log TURN server status for debugging
 
 **FR-3.5.3:** ICE State Monitoring  
@@ -655,7 +654,6 @@ The system MUST include meta tags for iOS:
 
 - Google STUN: `stun.l.google.com:19302`
 - Xirsys TURN: Dynamic credentials via API
-- Fallback: `numb.viagenie.ca`
 
 ### 4.4 Communications Interfaces
 

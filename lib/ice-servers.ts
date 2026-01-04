@@ -1,7 +1,6 @@
-/* eslint-disable no-console */
 /**
  * Dynamic ICE Server Configuration
- * Fetches fresh TURN credentials from Metered.ca API
+ * Fetches fresh TURN credentials from Xirsys API
  */
 
 import { get } from 'idb-keyval';
@@ -14,38 +13,22 @@ const BASE_STUN_SERVERS = [
     { urls: 'stun:global.stun.twilio.com:3478' },
 ];
 
-// Fallback TURN servers (if API fails)
-const FALLBACK_TURN_SERVERS = [
-    {
-        urls: 'turn:staticauth.openrelay.metered.ca:443',
-        username: 'openrelayproject',
-        credential: 'openrelayproject',
-    },
-];
-
 /**
  * Fetch fresh TURN credentials from Xirsys using your API credentials
- * Credentials are loaded from environment variables for security
- * Free tier: 500MB/month dedicated quota
+ * Credentials are loaded exclusively from IndexedDB (User Settings)
  */
 async function fetchDynamicTurnCredentials(): Promise<RTCIceServer[]> {
-    // Try Xirsys with your credentials from environment variables
-    // Note: In production, this should be done server-side to protect credentials
     try {
         let ident: string | undefined;
         let secret: string | undefined;
         let channel: string | undefined;
 
-        // 1. Try to get from IndexedDB (User Preference) - Priority 1
+        // 1. Try to get from IndexedDB (User Preference)
         if (typeof window !== 'undefined') {
             try {
                 ident = (await get('xirsys_ident')) as string | undefined;
                 secret = (await get('xirsys_secret')) as string | undefined;
                 channel = (await get('xirsys_channel')) as string | undefined;
-
-                if (ident && secret && channel) {
-                    console.log('[ICE] Used Xirsys credentials from IndexedDB (User Settings)');
-                }
             } catch (err) {
                 console.warn('[ICE] Failed to read from IndexedDB:', err);
             }
@@ -53,7 +36,7 @@ async function fetchDynamicTurnCredentials(): Promise<RTCIceServer[]> {
 
         if (!ident || !secret || !channel) {
             console.warn('[ICE] Xirsys credentials not configured in Settings');
-            throw new Error('Missing Xirsys credentials. Please configure them in Settings.');
+            return [];
         }
 
         const response = await fetch(`https://global.xirsys.net/_turn/${channel}`, {
@@ -62,35 +45,21 @@ async function fetchDynamicTurnCredentials(): Promise<RTCIceServer[]> {
                 Authorization: 'Basic ' + btoa(`${ident}:${secret}`),
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                format: 'urls',
-            }),
+            body: JSON.stringify({ format: 'urls' }),
         });
 
         if (response.ok) {
-            const text = await response.text();
-            console.log('[ICE] Xirsys raw response:', text);
-
-            if (text) {
-                const data = JSON.parse(text);
-                // Xirsys returns: {v: {iceServers: {username, urls, credential}}}
-                if (data.v && data.v.iceServers) {
-                    const servers = data.v.iceServers;
-
-                    // Convert Xirsys format to standard RTCIceServer format
-                    const iceServers: RTCIceServer[] = [
-                        {
-                            urls: servers.urls,
-                            username: servers.username,
-                            credential: servers.credential,
-                        },
-                    ];
-
-                    console.log(
-                        `[ICE] ✅ Got ${servers.urls.length} TURN/STUN URLs from Xirsys (${ident} account)`
-                    );
-                    return iceServers;
-                }
+            const data = await response.json();
+            if (data.v && data.v.iceServers) {
+                const servers = data.v.iceServers;
+                const iceServers: RTCIceServer[] = [
+                    {
+                        urls: servers.urls,
+                        username: servers.username,
+                        credential: servers.credential,
+                    },
+                ];
+                return iceServers;
             }
         } else {
             const errorText = await response.text();
@@ -100,40 +69,21 @@ async function fetchDynamicTurnCredentials(): Promise<RTCIceServer[]> {
         console.warn('[ICE] Xirsys fetch failed:', error);
     }
 
-    // Fallback: Use numb.viagenie.ca (reliable public TURN)
-    console.log('[ICE] Using fallback TURN server (numb.viagenie.ca)');
-    return [
-        {
-            urls: 'turn:numb.viagenie.ca',
-            username: 'webrtc@live.com',
-            credential: 'muazkh',
-        },
-        {
-            urls: 'turn:numb.viagenie.ca:3478?transport=tcp',
-            username: 'webrtc@live.com',
-            credential: 'muazkh',
-        },
-    ];
+    return [];
 }
 
 /**
  * Get ICE servers with dynamic TURN credentials
- * Falls back to static credentials if API fails
+ * Returns only STUN servers if the dynamic fetch fails
  */
 export async function getIceServers(): Promise<RTCIceServer[]> {
-    console.log('[ICE] Fetching dynamic TURN credentials...');
-
-    // Try to get fresh TURN credentials
     const turnServers = await fetchDynamicTurnCredentials();
 
-    if (turnServers.length > 0) {
-        console.log('[ICE] ✅ Using dynamic TURN credentials');
+    if (turnServers && turnServers.length > 0) {
         return [...BASE_STUN_SERVERS, ...turnServers];
     }
 
-    // Fallback to static credentials
-    console.log('[ICE] ⚠️ Using fallback TURN credentials');
-    return [...BASE_STUN_SERVERS, ...FALLBACK_TURN_SERVERS];
+    return BASE_STUN_SERVERS;
 }
 
 /**
