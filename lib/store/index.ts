@@ -63,6 +63,11 @@ export const usePeerStore = create<StoreState>()(
                     storageCapabilities: state.storageCapabilities,
                     logs: state.logs,
                     hasUnreadLogs: state.hasUnreadLogs,
+                    activeTab: state.activeTab,
+                    receivedSortBy: state.receivedSortBy,
+                    receivedSortOrder: state.receivedSortOrder,
+                    sentSortBy: state.sentSortBy,
+                    sentSortOrder: state.sentSortOrder,
                 }),
                 onRehydrateStorage: (state) => {
                     return () => {

@@ -5,10 +5,8 @@ import { ArrowUpDown, Check, ChevronDown } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { SortBy, SortOrder } from '@/lib/types';
 import { cn } from '@/lib/utils';
-
-export type SortBy = 'name' | 'time';
-export type SortOrder = 'asc' | 'desc';
 
 interface SortMenuProps {
     sortBy: SortBy;

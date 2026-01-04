@@ -39,3 +39,6 @@ export interface LogEntry {
     message: string;
     description?: string;
 }
+
+export type SortBy = 'name' | 'time';
+export type SortOrder = 'asc' | 'desc';

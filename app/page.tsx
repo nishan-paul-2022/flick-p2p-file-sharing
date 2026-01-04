@@ -11,7 +11,7 @@ import { FileList } from '@/components/FileList';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { LogPanel } from '@/components/LogPanel';
-import { SortBy, SortMenu, SortOrder } from '@/components/SortMenu';
+import { SortMenu } from '@/components/SortMenu';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -57,14 +57,19 @@ export default function HomePage() {
 
     const showLoading = showLoadingParam || isAppLoading || !hasHydrated;
 
-    // UX Updates State
-    const [activeTab, setActiveTab] = useState('received');
+    // UX Updates State from store
+    const activeTab = usePeerStore((state) => state.activeTab);
+    const setActiveTab = usePeerStore((state) => state.setActiveTab);
 
-    // Sorting State
-    const [receivedSortBy, setReceivedSortBy] = useState<SortBy>('time');
-    const [receivedSortOrder, setReceivedSortOrder] = useState<SortOrder>('desc');
-    const [sentSortBy, setSentSortBy] = useState<SortBy>('time');
-    const [sentSortOrder, setSentSortOrder] = useState<SortOrder>('desc');
+    // Sorting State from store
+    const receivedSortBy = usePeerStore((state) => state.receivedSortBy);
+    const setReceivedSortBy = usePeerStore((state) => state.setReceivedSortBy);
+    const receivedSortOrder = usePeerStore((state) => state.receivedSortOrder);
+    const setReceivedSortOrder = usePeerStore((state) => state.setReceivedSortOrder);
+    const sentSortBy = usePeerStore((state) => state.sentSortBy);
+    const setSentSortBy = usePeerStore((state) => state.setSentSortBy);
+    const sentSortOrder = usePeerStore((state) => state.sentSortOrder);
+    const setSentSortOrder = usePeerStore((state) => state.setSentSortOrder);
 
     // Custom hooks for complex logic
     const { hasUnreadLogs } = useLogNotification(logs, isLogPanelOpen);

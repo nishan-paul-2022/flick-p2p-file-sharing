@@ -2,7 +2,7 @@ import { DataConnection } from 'peerjs';
 import Peer from 'peerjs';
 
 import { StorageCapabilities } from '../storage-mode';
-import { ConnectionQuality, FileTransfer, LogEntry } from '../types';
+import { ConnectionQuality, FileTransfer, LogEntry, SortBy, SortOrder } from '../types';
 
 export interface ExtendedDataConnection extends DataConnection {
     dataChannel: RTCDataChannel;
@@ -49,8 +49,19 @@ export interface LogSlice {
 export interface UISlice {
     isLogPanelOpen: boolean;
     hasHydrated: boolean;
+    activeTab: string;
+    receivedSortBy: SortBy;
+    receivedSortOrder: SortOrder;
+    sentSortBy: SortBy;
+    sentSortOrder: SortOrder;
+
     toggleLogPanel: () => void;
     setHasHydrated: (val: boolean) => void;
+    setActiveTab: (tab: string) => void;
+    setReceivedSortBy: (sortBy: SortBy) => void;
+    setReceivedSortOrder: (sortOrder: SortOrder) => void;
+    setSentSortBy: (sortBy: SortBy) => void;
+    setSentSortOrder: (sortOrder: SortOrder) => void;
 }
 
 export interface StorageSlice {
