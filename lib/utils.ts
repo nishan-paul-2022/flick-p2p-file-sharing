@@ -82,3 +82,29 @@ export function formatTimestamp(timestamp: number): string {
     // Format as date
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
 }
+
+/**
+ * Format current time to a safe filename timestamp in local time with AM/PM
+ */
+export function formatFilenameTimestamp(): string {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    const options: Intl.DateTimeFormatOptions = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+    };
+
+    const timeString = now
+        .toLocaleTimeString('en-US', options)
+        .replace(/:/g, '-')
+        .replace(/\s+/g, '-')
+        .toLowerCase();
+
+    return `${year}-${month}-${day}-${timeString}`;
+}

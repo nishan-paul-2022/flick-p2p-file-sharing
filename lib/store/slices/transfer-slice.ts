@@ -4,6 +4,7 @@ import { StateCreator } from 'zustand';
 import { CHUNK_SIZE, MAX_BUFFERED_AMOUNT } from '../../constants';
 import { OPFSManager } from '../../opfs-manager';
 import { FileMetadata, FileTransfer } from '../../types';
+import { formatFilenameTimestamp } from '../../utils';
 import { opfsHandleCache } from '../cache';
 import { ExtendedDataConnection, StoreState, TransferSlice } from '../types';
 
@@ -243,8 +244,9 @@ export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice
             const url = URL.createObjectURL(content);
             const a = document.createElement('a');
             a.href = url;
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            const timestamp = formatFilenameTimestamp();
             a.download = `flick-shared-files-${timestamp}.zip`;
+
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
