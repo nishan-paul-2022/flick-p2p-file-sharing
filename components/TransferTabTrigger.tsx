@@ -5,6 +5,7 @@ import { Download, Send } from 'lucide-react';
 import { ComponentProps } from 'react';
 
 import { TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 
 interface TransferTabTriggerProps extends ComponentProps<typeof TabsTrigger> {
     value: 'received' | 'sent';
@@ -24,7 +25,10 @@ export function TransferTabTrigger({
     return (
         <TabsTrigger
             value={value}
-            className="group gap-1 rounded-lg py-2.5 font-semibold transition-all duration-300 hover:bg-white/5 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground md:gap-2 md:py-3"
+            className={cn(
+                'group gap-1 rounded-lg py-2.5 font-semibold transition-all duration-300 hover:bg-white/5 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground md:gap-2 md:py-3',
+                className
+            )}
             {...props}
         >
             <div className="flex items-center gap-1.5 md:gap-2">
