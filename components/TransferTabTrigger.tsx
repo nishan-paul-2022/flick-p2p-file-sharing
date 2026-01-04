@@ -49,26 +49,29 @@ export function TransferTabTrigger({
                     }}
                 >
                     <Icon
-                        className={`h-3.5 w-3.5 transition-colors md:h-4 md:w-4 ${
+                        className={cn(
+                            'h-3.5 w-3.5 transition-colors md:h-4 md:w-4',
                             isActiveTransfer
                                 ? 'text-primary'
                                 : 'group-data-[state=active]:text-foreground'
-                        }`}
+                        )}
                     />
                 </motion.div>
                 <span
-                    className={`text-xs transition-colors duration-300 md:text-sm ${
-                        isActiveTransfer ? 'font-medium text-primary' : ''
-                    }`}
+                    className={cn(
+                        'text-xs transition-colors duration-300 md:text-sm',
+                        isActiveTransfer && 'font-medium text-primary'
+                    )}
                 >
                     {value === 'received' ? 'Received' : 'Sent'}
                 </span>
                 <span
-                    className={`ml-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-3xs font-bold transition-all duration-300 md:ml-1 md:h-5 md:min-w-5 md:px-1.5 md:text-tiny-plus ${
+                    className={cn(
+                        'ml-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-3xs font-bold transition-all duration-300 md:ml-1 md:h-5 md:min-w-5 md:px-1.5 md:text-tiny-plus',
                         isActiveTransfer
                             ? 'bg-primary text-primary-foreground shadow-primary-glow-lg'
                             : 'border border-white/5 bg-white/5 text-muted-foreground group-data-[state=active]:border-white/20 group-data-[state=active]:bg-white/10 group-data-[state=active]:text-foreground'
-                    }`}
+                    )}
                 >
                     {fileCount}
                 </span>

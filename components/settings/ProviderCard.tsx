@@ -1,5 +1,7 @@
 import { Check } from 'lucide-react';
 
+import { cn } from '@/lib/utils';
+
 interface ProviderCardProps {
     label: string;
     active: boolean;
@@ -11,14 +13,16 @@ export function ProviderCard({ label, active, onSelect, disabled }: ProviderCard
     return (
         <div
             onClick={() => !disabled && onSelect()}
-            className={`relative cursor-pointer overflow-hidden rounded-xl border p-4 transition-all duration-300 ${
+            className={cn(
+                'relative cursor-pointer overflow-hidden rounded-xl border p-4 transition-all duration-300',
                 active
                     ? 'border-emerald-500/50 bg-emerald-500/10'
-                    : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
-            } ${disabled ? 'pointer-events-none opacity-50' : ''}`}
+                    : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10',
+                disabled && 'pointer-events-none opacity-50'
+            )}
         >
             <div className="flex items-center justify-between">
-                <span className={`font-medium ${active ? 'text-emerald-400' : 'text-white'}`}>
+                <span className={cn('font-medium', active ? 'text-emerald-400' : 'text-white')}>
                     {label}
                 </span>
                 {active && (

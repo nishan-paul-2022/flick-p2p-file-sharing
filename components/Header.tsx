@@ -9,6 +9,8 @@ import { useState } from 'react';
 const SettingsModal = dynamic(() => import('./SettingsModal').then((mod) => mod.SettingsModal), {
     ssr: false,
 });
+import { cn } from '@/lib/utils';
+
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 interface HeaderProps {
@@ -38,20 +40,22 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
                                 type="button"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                className={`group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border backdrop-blur-md transition-all duration-300 md:h-10 md:w-10 ${
+                                className={cn(
+                                    'group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border backdrop-blur-md transition-all duration-300 md:h-10 md:w-10',
                                     isLogPanelOpen
                                         ? 'border-white/20 bg-white/10'
                                         : 'border-white/[0.08] bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.08]'
-                                }`}
+                                )}
                                 onClick={toggleLogPanel}
                                 aria-label="Toggle Event Logs"
                             >
                                 <Fingerprint
-                                    className={`h-4 w-4 transition-colors duration-300 md:h-5 md:w-5 ${
+                                    className={cn(
+                                        'h-4 w-4 transition-colors duration-300 md:h-5 md:w-5',
                                         isLogPanelOpen
                                             ? 'text-white'
                                             : 'text-white/40 group-hover:text-white/80'
-                                    }`}
+                                    )}
                                 />
                                 {/* Notification Dot */}
                                 {hasUnreadLogs && (
