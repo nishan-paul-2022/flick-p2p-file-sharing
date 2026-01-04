@@ -9,8 +9,7 @@ import { FileTransferArea } from '@/components/FileTransferArea';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { LogPanel } from '@/components/LogPanel';
-import { useLogNotification } from '@/lib/hooks/useLogNotification';
-import { usePeerRestoration } from '@/lib/hooks/usePeerRestoration';
+import { useAppInitialize } from '@/lib/hooks/useAppInitialize';
 import { usePeerStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
@@ -19,9 +18,11 @@ import NotFound from './not-found';
 
 export default function HomePage() {
     const searchParams = useSearchParams();
-    const [isAppLoading, setIsAppLoading] = useState(true);
     const [showLoadingParam, setShowLoadingParam] = useState(false);
     const [showNotFoundParam, setShowNotFoundParam] = useState(false);
+
+    const { isAppLoading, hasHydrated, isLogPanelOpen, hasUnreadLogs } = useAppInitialize();
+    const toggleLogPanel = usePeerStore((state) => state.toggleLogPanel);
 
     // Handle search params only on client side to avoid hydration mismatch
     useEffect(() => {
@@ -29,42 +30,7 @@ export default function HomePage() {
         setShowNotFoundParam(searchParams.get('404') === 'true');
     }, [searchParams]);
 
-    useEffect(() => {
-        // Minimum splash screen duration for a premium feel
-        const timer = setTimeout(() => {
-            setIsAppLoading(false);
-        }, 1000);
-        return () => clearTimeout(timer);
-    }, []);
-
-    const isLogPanelOpen = usePeerStore((state) => state.isLogPanelOpen);
-    const toggleLogPanel = usePeerStore((state) => state.toggleLogPanel);
-    const logs = usePeerStore((state) => state.logs);
-    const hasHydrated = usePeerStore((state) => state.hasHydrated);
-
     const showLoading = showLoadingParam || isAppLoading || !hasHydrated;
-
-    // Custom hooks for complex logic
-    const { hasUnreadLogs } = useLogNotification(logs, isLogPanelOpen);
-    usePeerRestoration();
-
-    // Expose store and test utilities for debugging
-    useEffect(() => {
-        if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-            // Expose store for testing
-            (window as unknown as { usePeerStore: typeof usePeerStore }).usePeerStore =
-                usePeerStore;
-
-            // Expose TURN testing utility
-            import('@/lib/test-turn').then(({ testTurnServers }) => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (window as any).testTurnServers = testTurnServers;
-                console.log(
-                    '💡 Debug utilities loaded. Run testTurnServers() to test TURN servers.'
-                );
-            });
-        }
-    }, []);
 
     return (
         <AnimatePresence>
@@ -127,7 +93,7 @@ export default function HomePage() {
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: 0.2 }}
-                                    className="lg:col-span-8" // Retained the col-span but the flex logic is inside
+                                    className="lg:col-span-8"
                                 >
                                     <FileTransferArea />
                                 </motion.div>

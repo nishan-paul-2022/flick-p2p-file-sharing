@@ -1,31 +1,35 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Check, Copy, RefreshCw, Wifi, WifiOff, Zap, ZapOff } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Check, Copy, RefreshCw, Zap, ZapOff } from 'lucide-react';
+import { useEffect } from 'react';
 
+import { ConnectionStatus } from '@/components/ConnectionStatus';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { ROOM_CODE_LENGTH } from '@/lib/constants';
+import { useRoomConnection } from '@/lib/hooks/useRoomConnection';
 import { usePeerStore } from '@/lib/store';
-import { cn, copyToClipboard, generateRoomCode, isValidRoomCode } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 import { StorageModeIndicator } from './StorageModeIndicator';
 
 export function ConnectionPanel() {
-    const roomCode = usePeerStore((state) => state.roomCode);
-    const connectionQuality = usePeerStore((state) => state.connectionQuality);
-    const initializePeer = usePeerStore((state) => state.initializePeer);
-    const connectToPeer = usePeerStore((state) => state.connectToPeer);
-    const disconnect = usePeerStore((state) => state.disconnect);
+    const {
+        roomCode,
+        joinCode,
+        setJoinCode,
+        copied,
+        isJoining,
+        handleCreateRoom,
+        handleJoinRoom,
+        handleCopyCode,
+        disconnect,
+        ROOM_CODE_LENGTH,
+    } = useRoomConnection();
+
     const storageCapabilities = usePeerStore((state) => state.storageCapabilities);
     const initializeStorage = usePeerStore((state) => state.initializeStorage);
-    const addLog = usePeerStore((state) => state.addLog);
-
-    const [joinCode, setJoinCode] = useState('');
-    const [copied, setCopied] = useState(false);
-    const [isJoining, setIsJoining] = useState(false);
 
     // Initialize storage capabilities on mount
     useEffect(() => {
@@ -33,102 +37,6 @@ export function ConnectionPanel() {
             initializeStorage();
         }
     }, [storageCapabilities, initializeStorage]);
-
-    const handleCreateRoom = () => {
-        const code = generateRoomCode();
-        initializePeer(code);
-        addLog('success', 'Room created', `Room code: ${code}`);
-    };
-
-    const handleJoinRoom = async () => {
-        const code = joinCode.toUpperCase().trim();
-
-        if (!isValidRoomCode(code)) {
-            addLog('error', 'Invalid room code', 'Room code must be 6 alphanumeric characters');
-            return;
-        }
-
-        setIsJoining(true);
-        try {
-            await initializePeer(); // Initialize our own peer first and wait for ID
-            await connectToPeer(code);
-            setJoinCode('');
-        } catch {
-            // Error handling is already done in store
-        } finally {
-            setIsJoining(false);
-        }
-    };
-
-    const handleCopyCode = async () => {
-        if (!roomCode) {
-            return;
-        }
-
-        const success = await copyToClipboard(roomCode);
-        if (success) {
-            setCopied(true);
-            addLog('success', 'Copied to clipboard');
-            setTimeout(() => setCopied(false), 2000);
-        }
-    };
-
-    const getStatusIndicator = () => {
-        const config = {
-            excellent: {
-                icon: Wifi,
-                text: 'Live',
-                color: 'text-green-400',
-                bg: 'bg-green-400/10',
-                border: 'border-green-400/20',
-            },
-            good: {
-                icon: Wifi,
-                text: 'Stable',
-                color: 'text-brand-400',
-                bg: 'bg-brand-400/10',
-                border: 'border-brand-400/20',
-            },
-            poor: {
-                icon: Wifi,
-                text: 'Weak',
-                color: 'text-amber-400',
-                bg: 'bg-amber-400/10',
-                border: 'border-amber-400/20',
-            },
-            disconnected: {
-                icon: WifiOff,
-                text: 'Offline',
-                color: 'text-white/20',
-                bg: 'bg-white/5',
-                border: 'border-white/5',
-            },
-        };
-
-        const state = config[connectionQuality as keyof typeof config] || config.disconnected;
-        const Icon = state.icon;
-
-        return (
-            <div className={cn('connection-status', state.border)}>
-                <div
-                    className={cn(
-                        'flex h-6 w-6 items-center justify-center rounded-full transition-colors duration-500',
-                        state.bg
-                    )}
-                >
-                    <Icon className={cn('h-3 w-3 transition-colors duration-500', state.color)} />
-                </div>
-                <span
-                    className={cn(
-                        'whitespace-nowrap text-3xs font-black uppercase leading-none tracking-widest-lg transition-colors duration-500',
-                        state.color
-                    )}
-                >
-                    {state.text}
-                </span>
-            </div>
-        );
-    };
 
     return (
         <Card className="glass-dark overflow-hidden rounded-3xl border-primary/10 shadow-glass-lg">
@@ -138,7 +46,7 @@ export function ConnectionPanel() {
             <CardHeader className="pb-4 pt-6">
                 <div className="flex items-center justify-between">
                     <StorageModeIndicator />
-                    {getStatusIndicator()}
+                    <ConnectionStatus />
                 </div>
             </CardHeader>
 
