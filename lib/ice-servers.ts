@@ -4,6 +4,8 @@
  * Fetches fresh TURN credentials from Metered.ca API
  */
 
+import { get } from 'idb-keyval';
+
 // Base STUN servers (always available, no credentials needed)
 const BASE_STUN_SERVERS = [
     { urls: 'stun:stun.l.google.com:19302' },
@@ -30,14 +32,28 @@ async function fetchDynamicTurnCredentials(): Promise<RTCIceServer[]> {
     // Try Xirsys with your credentials from environment variables
     // Note: In production, this should be done server-side to protect credentials
     try {
-        // Get Xirsys credentials from environment variables
-        const ident = process.env.NEXT_PUBLIC_XIRSYS_IDENT;
-        const secret = process.env.NEXT_PUBLIC_XIRSYS_SECRET;
-        const channel = process.env.NEXT_PUBLIC_XIRSYS_CHANNEL;
+        let ident: string | undefined;
+        let secret: string | undefined;
+        let channel: string | undefined;
+
+        // 1. Try to get from IndexedDB (User Preference) - Priority 1
+        if (typeof window !== 'undefined') {
+            try {
+                ident = (await get('xirsys_ident')) as string | undefined;
+                secret = (await get('xirsys_secret')) as string | undefined;
+                channel = (await get('xirsys_channel')) as string | undefined;
+
+                if (ident && secret && channel) {
+                    console.log('[ICE] Used Xirsys credentials from IndexedDB (User Settings)');
+                }
+            } catch (err) {
+                console.warn('[ICE] Failed to read from IndexedDB:', err);
+            }
+        }
 
         if (!ident || !secret || !channel) {
-            console.warn('[ICE] Xirsys credentials not configured in .env file');
-            throw new Error('Missing Xirsys credentials');
+            console.warn('[ICE] Xirsys credentials not configured in Settings');
+            throw new Error('Missing Xirsys credentials. Please configure them in Settings.');
         }
 
         const response = await fetch(`https://global.xirsys.net/_turn/${channel}`, {

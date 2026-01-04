@@ -425,7 +425,7 @@ The system MUST configure PeerJS with:
 The system SHOULD:
 
 - Fetch fresh TURN credentials from Xirsys API on peer initialization
-- Use environment variables for API credentials
+- Use environment variables OR user-provided UI settings for API credentials
 - Fall back to static credentials if API fails
 - Log TURN server status for debugging
 
@@ -713,7 +713,7 @@ The system MUST include meta tags for iOS:
 
 **SEC-4:** The system MUST implement Content Security Policy headers.
 
-**SEC-5:** The system MUST NOT expose TURN credentials in client-side code (use environment variables).
+**SEC-5:** The system MUST NOT expose TURN credentials in public client-side code (use environment variables or private local storage).
 
 **SEC-6:** The system SHOULD use DTLS encryption for WebRTC data channels (automatic in WebRTC).
 

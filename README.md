@@ -210,11 +210,11 @@ cd flick-p2p-file-sharing
 npm install
 ```
 
-### 3️⃣ Environment Configuration
+### 3️⃣ Environment Configuration (Optional)
 
-**This step is CRITICAL for cross-network connections (PC-to-Mobile, Mobile-to-Mobile).**
+**Recommended Scheme:** You can skip this step and configure credentials directly in the app UI later.
 
-#### Create Environment File
+#### Create Environment File (Fallback)
 
 ```bash
 cp .env.example .env
@@ -237,16 +237,12 @@ For connections to work across different networks (mobile data, firewalls), you 
         - **Secret Key**
         - **Channel** (you can create one, e.g., "flick-app")
 
-3. **Update `.env` File**
+3. **Configure in App UI**
+    - Open Flick
+    - Click the Settings icon
+    - Enter your credentials and save
 
-    Open `.env` and replace the placeholder values:
-
-    ```env
-    # Xirsys TURN Server Credentials
-    NEXT_PUBLIC_XIRSYS_IDENT=your_actual_username
-    NEXT_PUBLIC_XIRSYS_SECRET=your_actual_secret_key
-    NEXT_PUBLIC_XIRSYS_CHANNEL=your_channel_name
-    ```
+    (Alternatively, you can manually update the `.env` file if you prefer hardcoding them for development)
 
     **Example:**
 
@@ -255,6 +251,14 @@ For connections to work across different networks (mobile data, firewalls), you 
     NEXT_PUBLIC_XIRSYS_SECRET=a1b2c3d4e5f6g7h8
     NEXT_PUBLIC_XIRSYS_CHANNEL=flick-production
     ```
+
+    **Alternative: Configure via UI**
+
+    You can also configure these credentials directly within the application:
+    1. Click the **Settings** icon (gear) in the top right corner.
+    2. Enter your Xirsys credentials.
+    3. Click "Save".
+       **Note:** These settings are stored locally in your browser (via IndexedDB) and persist across sessions. They override missing environment variables.
 
 #### Optional: Custom PeerJS Server
 
