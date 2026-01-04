@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 import { SettingsModal } from './SettingsModal';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 interface HeaderProps {
     isLogPanelOpen: boolean;
@@ -28,29 +29,36 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
 
                 {/* Left: Fingerprint Icon (Event Logs) */}
                 <div className="relative z-10 flex flex-1 justify-start">
-                    <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className={`group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border backdrop-blur-md transition-all duration-300 md:h-10 md:w-10 ${
-                            isLogPanelOpen
-                                ? 'border-white/20 bg-white/10'
-                                : 'border-white/[0.08] bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.08]'
-                        }`}
-                        onClick={toggleLogPanel}
-                        aria-label="Toggle Event Logs"
-                    >
-                        <Fingerprint
-                            className={`h-4 w-4 transition-colors duration-300 md:h-5 md:w-5 ${
-                                isLogPanelOpen
-                                    ? 'text-white'
-                                    : 'text-white/40 group-hover:text-white/80'
-                            }`}
-                        />
-                        {/* Notification Dot */}
-                        {hasUnreadLogs && (
-                            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary" />
-                        )}
-                    </motion.div>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <motion.div
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className={`group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border backdrop-blur-md transition-all duration-300 md:h-10 md:w-10 ${
+                                    isLogPanelOpen
+                                        ? 'border-white/20 bg-white/10'
+                                        : 'border-white/[0.08] bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.08]'
+                                }`}
+                                onClick={toggleLogPanel}
+                                aria-label="Toggle Event Logs"
+                            >
+                                <Fingerprint
+                                    className={`h-4 w-4 transition-colors duration-300 md:h-5 md:w-5 ${
+                                        isLogPanelOpen
+                                            ? 'text-white'
+                                            : 'text-white/40 group-hover:text-white/80'
+                                    }`}
+                                />
+                                {/* Notification Dot */}
+                                {hasUnreadLogs && (
+                                    <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary" />
+                                )}
+                            </motion.div>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" sideOffset={8}>
+                            System Logs
+                        </TooltipContent>
+                    </Tooltip>
                 </div>
 
                 {/* Center: Flick Logo */}
@@ -77,15 +85,22 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
 
                 {/* Right: Settings & Slogan */}
                 <div className="relative z-10 flex flex-1 justify-end gap-3">
-                    <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] md:h-10 md:w-10"
-                        onClick={() => setIsSettingsOpen(true)}
-                        aria-label="Settings"
-                    >
-                        <Settings className="h-4 w-4 text-white/40 transition-colors duration-300 group-hover:text-white/80 md:h-5 md:w-5" />
-                    </motion.div>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <motion.div
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] md:h-10 md:w-10"
+                                onClick={() => setIsSettingsOpen(true)}
+                                aria-label="Settings"
+                            >
+                                <Settings className="h-4 w-4 text-white/40 transition-colors duration-300 group-hover:text-white/80 md:h-5 md:w-5" />
+                            </motion.div>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" sideOffset={8}>
+                            Connection Settings
+                        </TooltipContent>
+                    </Tooltip>
                 </div>
             </motion.div>
         </>
