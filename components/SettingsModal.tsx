@@ -7,8 +7,11 @@ import { createPortal } from 'react-dom';
 
 import { ProviderType, useSettings } from '@/lib/hooks/useSettings';
 
+// Sub-components
+import { MeteredConfig } from './settings/MeteredConfig';
+import { ProviderCard } from './settings/ProviderCard';
+import { XirsysConfig } from './settings/XirsysConfig';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 
 interface SettingsModalProps {
@@ -160,80 +163,24 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
                                                 <div className="mt-4 min-h-[180px]">
                                                     <TabsContent value="xirsys">
-                                                        <motion.div
-                                                            initial={{ opacity: 0, x: -10 }}
-                                                            animate={{ opacity: 1, x: 0 }}
-                                                            className="space-y-4"
-                                                        >
-                                                            <div className="space-y-2">
-                                                                <label className="text-sm font-medium text-white/70">
-                                                                    Ident
-                                                                </label>
-                                                                <Input
-                                                                    value={ident}
-                                                                    onChange={(e) =>
-                                                                        setters.setIdent(
-                                                                            e.target.value
-                                                                        )
-                                                                    }
-                                                                    disabled={status.isSaving}
-                                                                    className="border-white/10 bg-white/5 text-white focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-white/10 disabled:opacity-50"
-                                                                />
-                                                            </div>
-                                                            <div className="space-y-2">
-                                                                <label className="text-sm font-medium text-white/70">
-                                                                    Secret
-                                                                </label>
-                                                                <Input
-                                                                    value={secret}
-                                                                    onChange={(e) =>
-                                                                        setters.setSecret(
-                                                                            e.target.value
-                                                                        )
-                                                                    }
-                                                                    type="password"
-                                                                    disabled={status.isSaving}
-                                                                    className="border-white/10 bg-white/5 text-white focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-white/10 disabled:opacity-50"
-                                                                />
-                                                            </div>
-                                                            <div className="space-y-2">
-                                                                <label className="text-sm font-medium text-white/70">
-                                                                    Channel
-                                                                </label>
-                                                                <Input
-                                                                    value={channel}
-                                                                    onChange={(e) =>
-                                                                        setters.setChannel(
-                                                                            e.target.value
-                                                                        )
-                                                                    }
-                                                                    disabled={status.isSaving}
-                                                                    className="border-white/10 bg-white/5 text-white focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-white/10 disabled:opacity-50"
-                                                                />
-                                                            </div>
-                                                        </motion.div>
+                                                        <XirsysConfig
+                                                            ident={ident}
+                                                            secret={secret}
+                                                            channel={channel}
+                                                            disabled={status.isSaving}
+                                                            onIdentChange={setters.setIdent}
+                                                            onSecretChange={setters.setSecret}
+                                                            onChannelChange={setters.setChannel}
+                                                        />
                                                     </TabsContent>
                                                     <TabsContent value="metered">
-                                                        <motion.div
-                                                            initial={{ opacity: 0, x: 10 }}
-                                                            animate={{ opacity: 1, x: 0 }}
-                                                            className="space-y-2"
-                                                        >
-                                                            <label className="text-sm font-medium text-white/70">
-                                                                API Key
-                                                            </label>
-                                                            <Input
-                                                                value={meteredApiKey}
-                                                                onChange={(e) =>
-                                                                    setters.setMeteredApiKey(
-                                                                        e.target.value
-                                                                    )
-                                                                }
-                                                                type="password"
-                                                                disabled={status.isSaving}
-                                                                className="border-white/10 bg-white/5 text-white focus-visible:border-white/20 focus-visible:ring-1 focus-visible:ring-white/10 disabled:opacity-50"
-                                                            />
-                                                        </motion.div>
+                                                        <MeteredConfig
+                                                            apiKey={meteredApiKey}
+                                                            disabled={status.isSaving}
+                                                            onApiKeyChange={
+                                                                setters.setMeteredApiKey
+                                                            }
+                                                        />
                                                     </TabsContent>
                                                 </div>
                                             </Tabs>
@@ -281,39 +228,5 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             )}
         </AnimatePresence>,
         document.body
-    );
-}
-
-function ProviderCard({
-    label,
-    active,
-    onSelect,
-    disabled,
-}: {
-    label: string;
-    active: boolean;
-    onSelect: () => void;
-    disabled: boolean;
-}) {
-    return (
-        <div
-            onClick={() => !disabled && onSelect()}
-            className={`relative cursor-pointer overflow-hidden rounded-xl border p-4 transition-all duration-300 ${
-                active
-                    ? 'border-emerald-500/50 bg-emerald-500/10'
-                    : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
-            } ${disabled ? 'pointer-events-none opacity-50' : ''}`}
-        >
-            <div className="flex items-center justify-between">
-                <span className={`font-medium ${active ? 'text-emerald-400' : 'text-white'}`}>
-                    {label}
-                </span>
-                {active && (
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-black">
-                        <Check className="h-3 w-3" strokeWidth={3} />
-                    </div>
-                )}
-            </div>
-        </div>
     );
 }
