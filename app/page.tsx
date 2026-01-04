@@ -153,9 +153,6 @@ export default function HomePage() {
                                                 <Send className="h-5 w-5 text-white/70" />
                                                 Send Files
                                             </CardTitle>
-                                            <div className="hidden rounded-full border border-white/[0.08] bg-white/[0.05] px-4 py-1.5 text-xs font-medium text-zinc-300 shadow-glass-inset backdrop-blur-md sm:block">
-                                                Drag and drop files or click to browse
-                                            </div>
                                         </CardHeader>
                                         <CardContent>
                                             <FileDropZone />
