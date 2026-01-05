@@ -1,13 +1,12 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+import { ROOM_CODE_LENGTH } from './constants';
+
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-/**
- * Format bytes to human readable string
- */
 export function formatBytes(bytes: number, decimals = 2): string {
     if (bytes === 0) {
         return '0 Bytes';
@@ -22,10 +21,7 @@ export function formatBytes(bytes: number, decimals = 2): string {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-/**
- * Generate random room code
- */
-export function generateRoomCode(length: number = 6): string {
+export function generateRoomCode(length: number = ROOM_CODE_LENGTH): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = '';
     for (let i = 0; i < length; i++) {
@@ -34,16 +30,11 @@ export function generateRoomCode(length: number = 6): string {
     return result;
 }
 
-/**
- * Validate room code format
- */
 export function isValidRoomCode(code: string): boolean {
-    return /^[A-Z0-9]{6}$/.test(code);
+    const regex = new RegExp(`^[A-Z0-9]{${ROOM_CODE_LENGTH}}$`);
+    return regex.test(code);
 }
 
-/**
- * Copy text to clipboard
- */
 export async function copyToClipboard(text: string): Promise<boolean> {
     try {
         await navigator.clipboard.writeText(text);
@@ -54,31 +45,47 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     }
 }
 
-/**
- * Format timestamp to readable string
- */
 export function formatTimestamp(timestamp: number): string {
     const date = new Date(timestamp);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
 
-    // Less than 1 minute
     if (diff < 60000) {
         return 'Just now';
     }
 
-    // Less than 1 hour
     if (diff < 3600000) {
         const minutes = Math.floor(diff / 60000);
         return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
     }
 
-    // Less than 24 hours
     if (diff < 86400000) {
         const hours = Math.floor(diff / 3600000);
         return `${hours} hour${hours > 1 ? 's' : ''} ago`;
     }
 
-    // Format as date
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+}
+
+export function formatFilenameTimestamp(): string {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    const options: Intl.DateTimeFormatOptions = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+    };
+
+    const timeString = now
+        .toLocaleTimeString('en-US', options)
+        .replace(/:/g, '-')
+        .replace(/\s+/g, '-')
+        .toLowerCase();
+
+    return `${year}-${month}-${day}-${timeString}`;
 }

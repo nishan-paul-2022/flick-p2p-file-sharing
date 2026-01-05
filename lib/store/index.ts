@@ -2,12 +2,12 @@ import { del, get, set } from 'idb-keyval';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
-import { createLogSlice } from './slices/log-slice';
-import { createPeerSlice } from './slices/peer-slice';
-import { createStorageSlice } from './slices/storage-slice';
-import { createTransferSlice } from './slices/transfer-slice';
-import { createUISlice } from './slices/ui-slice';
-import { StoreState } from './types';
+import { createLogSlice } from '@/lib/store/slices/log-slice';
+import { createPeerSlice } from '@/lib/store/slices/peer-slice';
+import { createStorageSlice } from '@/lib/store/slices/storage-slice';
+import { createTransferSlice } from '@/lib/store/slices/transfer-slice';
+import { createUISlice } from '@/lib/store/slices/ui-slice';
+import { StoreState } from '@/lib/store/types';
 
 // Custom storage adapter using IndexedDB (idb-keyval)
 const idbStorage = {
@@ -63,6 +63,11 @@ export const usePeerStore = create<StoreState>()(
                     storageCapabilities: state.storageCapabilities,
                     logs: state.logs,
                     hasUnreadLogs: state.hasUnreadLogs,
+                    activeTab: state.activeTab,
+                    receivedSortBy: state.receivedSortBy,
+                    receivedSortOrder: state.receivedSortOrder,
+                    sentSortBy: state.sentSortBy,
+                    sentSortOrder: state.sentSortOrder,
                 }),
                 onRehydrateStorage: (state) => {
                     return () => {
@@ -75,5 +80,4 @@ export const usePeerStore = create<StoreState>()(
     )
 );
 
-// Export types
-export * from './types';
+export * from '@/lib/store/types';

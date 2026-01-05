@@ -1,13 +1,9 @@
 /* eslint-disable no-console, @typescript-eslint/no-explicit-any */
-/**
- * Test TURN Server Connectivity
- * Run this in browser console to verify TURN servers are working
- */
 
 export async function testTurnServers() {
     console.log('🔍 Testing TURN server connectivity...\n');
 
-    const { getIceServers } = await import('./ice-servers');
+    const { getIceServers } = await import('@/lib/ice-servers');
     const iceServers = await getIceServers();
 
     console.log('📋 ICE Servers configured:', iceServers);
@@ -44,14 +40,13 @@ export async function testTurnServers() {
         }
     };
 
-    // Create offer to trigger ICE gathering
+    // Trigger ICE gathering
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
 
     console.log('\n⏳ Gathering ICE candidates... (wait ~10 seconds)\n');
 }
 
-// Make it available globally for easy testing
 if (typeof window !== 'undefined') {
     (window as any).testTurnServers = testTurnServers;
 }

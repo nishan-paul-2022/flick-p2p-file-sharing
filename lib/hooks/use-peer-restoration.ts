@@ -21,7 +21,6 @@ export function usePeerRestoration() {
                             setTimeout(() => connectToPeer(roomCode), 500);
                         }
                     } else {
-                        // Guest: Initialize new peer then reconnect to host
                         await initializePeer();
                         // Small delay to ensure stability before connecting
                         setTimeout(() => connectToPeer(roomCode), 500);

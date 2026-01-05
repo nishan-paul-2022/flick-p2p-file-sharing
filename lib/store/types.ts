@@ -1,8 +1,8 @@
 import { DataConnection } from 'peerjs';
 import Peer from 'peerjs';
 
-import { StorageCapabilities } from '../storage-mode';
-import { ConnectionQuality, FileTransfer, LogEntry } from '../types';
+import { StorageCapabilities } from '@/lib/storage-mode';
+import { ConnectionQuality, FileTransfer, LogEntry, SortBy, SortOrder } from '@/lib/types';
 
 export interface ExtendedDataConnection extends DataConnection {
     dataChannel: RTCDataChannel;
@@ -31,9 +31,10 @@ export interface TransferSlice {
 
     sendFile: (file: File) => Promise<void>;
     removeFile: (id: string, type: 'received' | 'outgoing') => Promise<void>;
-    clearHistory: () => Promise<void>;
     downloadFile: (transfer: FileTransfer) => Promise<void>;
     downloadAllReceivedFiles: () => Promise<void>;
+    clearReceivedHistory: () => Promise<void>;
+    clearSentHistory: () => Promise<void>;
 }
 
 export interface LogSlice {
@@ -42,14 +43,24 @@ export interface LogSlice {
 
     addLog: (type: LogEntry['type'], message: string, description?: string) => void;
     clearLogs: () => void;
-    setLogsRead: () => void;
 }
 
 export interface UISlice {
     isLogPanelOpen: boolean;
     hasHydrated: boolean;
+    activeTab: string;
+    receivedSortBy: SortBy;
+    receivedSortOrder: SortOrder;
+    sentSortBy: SortBy;
+    sentSortOrder: SortOrder;
+
     toggleLogPanel: () => void;
     setHasHydrated: (val: boolean) => void;
+    setActiveTab: (tab: string) => void;
+    setReceivedSortBy: (sortBy: SortBy) => void;
+    setReceivedSortOrder: (sortOrder: SortOrder) => void;
+    setSentSortBy: (sortBy: SortBy) => void;
+    setSentSortOrder: (sortOrder: SortOrder) => void;
 }
 
 export interface StorageSlice {
@@ -58,4 +69,3 @@ export interface StorageSlice {
 }
 
 export type StoreState = PeerSlice & TransferSlice & LogSlice & UISlice & StorageSlice;
-export type PeerState = StoreState;

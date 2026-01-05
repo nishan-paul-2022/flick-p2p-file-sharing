@@ -18,7 +18,7 @@ export default function Error({
     }, [error]);
 
     return (
-        <div className="gradient-secondary flex min-h-screen items-center justify-center p-4">
+        <div className="flex min-h-screen items-center justify-center p-4">
             <Card className="glass-dark w-full max-w-md">
                 <CardHeader>
                     <div className="mb-2 flex items-center gap-3">

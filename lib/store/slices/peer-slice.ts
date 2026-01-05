@@ -2,18 +2,84 @@
 import Peer from 'peerjs';
 import { StateCreator } from 'zustand';
 
-import { CHUNK_SIZE, CONNECTION_TIMEOUT, MAX_LOGS } from '../../constants';
-import { OPFSManager } from '../../opfs-manager';
-import { LogEntry, P2PMessage } from '../../types';
+import { CHUNK_SIZE, CONNECTION_TIMEOUT } from '@/lib/constants';
+import { OPFSManager } from '@/lib/opfs-manager';
 import {
     incomingMessageSequenceCache,
     opfsHandleCache,
     opfsWritableCache,
     opfsWriteQueueCache,
-} from '../cache';
-import { PeerSlice, StoreState } from '../types';
+} from '@/lib/store/cache';
+import { PeerSlice, StoreState } from '@/lib/store/types';
+import { P2PMessage } from '@/lib/types';
 
-// Helper to handle incoming data with dual-mode support
+const setupICEHandlers = (
+    conn: any,
+    get: () => StoreState,
+    set: (state: Partial<StoreState>) => void
+) => {
+    const peerConnection = conn.peerConnection;
+    if (!peerConnection) {
+        return;
+    }
+
+    peerConnection.oniceconnectionstatechange = () => {
+        const iceState = peerConnection.iceConnectionState;
+        console.log('[ICE] Connection state:', iceState);
+
+        switch (iceState) {
+            case 'checking':
+                get().addLog('info', 'Establishing connection...', 'NAT traversal in progress');
+                break;
+            case 'connected':
+            case 'completed':
+                get().addLog('success', 'Connection established', 'Using optimal route');
+                set({ connectionQuality: 'excellent' });
+                break;
+            case 'disconnected':
+                get().addLog('warning', 'Connection unstable', 'Attempting to reconnect...');
+                set({ connectionQuality: 'poor' });
+                break;
+            case 'failed':
+                get().addLog('error', 'Connection failed', 'NAT traversal unsuccessful');
+                set({ connectionQuality: 'disconnected' });
+                break;
+        }
+    };
+
+    peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+        if (event.candidate) {
+            const type = event.candidate.type;
+            console.log(`[ICE] Candidate gathered: ${type}`, event.candidate.candidate);
+
+            // Detect if using TURN relay
+            if (type === 'relay') {
+                get().addLog('info', 'Using relay server', 'Connection via TURN for NAT traversal');
+            }
+        }
+    };
+};
+
+const handleConnectionClose = async (
+    get: () => StoreState,
+    set: (state: Partial<StoreState>) => void
+) => {
+    for (const [id, writable] of opfsWritableCache.entries()) {
+        try {
+            await writable.close();
+        } catch (e) {
+            console.warn('Failed to close writable on connection close:', e);
+        }
+        opfsWritableCache.delete(id);
+    }
+    set({
+        isConnected: false,
+        connectionQuality: 'disconnected',
+        connection: null,
+    });
+    get().addLog('info', 'Peer disconnected');
+};
+
 const handleIncomingData = async (
     data: unknown,
     get: () => StoreState,
@@ -62,18 +128,8 @@ const handleIncomingData = async (
 
                 set((state) => ({
                     receivedFiles: [...state.receivedFiles, transfer],
-                    logs: [
-                        {
-                            id: Math.random().toString(36).substring(7),
-                            timestamp: Date.now(),
-                            type: 'info',
-                            message: 'Receiving file',
-                            description: msg.metadata.name,
-                        } as LogEntry,
-                        ...state.logs,
-                    ].slice(0, MAX_LOGS),
-                    hasUnreadLogs: !state.isLogPanelOpen,
                 }));
+                get().addLog('info', 'Receiving file', msg.metadata.name);
             } else if (msg.type === 'chunk') {
                 const transfer = receivedFiles.find((t) => t.id === msg.transferId);
                 if (!transfer) {
@@ -133,7 +189,7 @@ const handleIncomingData = async (
                             transfer.totalChunks) *
                         100;
 
-                    // Throttle RAM progress updates too
+                    // Throttle RAM progress updates
                     set((state) => {
                         const t = state.receivedFiles.find((f) => f.id === msg.transferId);
                         if (
@@ -171,31 +227,21 @@ const handleIncomingData = async (
                     }
                 }
 
-                set((state) => {
-                    const targetFile = state.receivedFiles.find((f) => f.id === msg.transferId);
-                    if (!targetFile) {
-                        return state;
-                    }
+                const targetFile = get().receivedFiles.find((f) => f.id === msg.transferId);
+                if (!targetFile) {
+                    console.warn(`Completed message for unknown transfer: ${msg.transferId}`);
+                    incomingMessageSequenceCache.delete(transferId);
+                    return;
+                }
 
-                    return {
-                        receivedFiles: state.receivedFiles.map((t) =>
-                            t.id === msg.transferId
-                                ? { ...t, status: 'completed' as const, progress: 100 }
-                                : t
-                        ),
-                        logs: [
-                            {
-                                id: Math.random().toString(36).substring(7),
-                                timestamp: Date.now(),
-                                type: 'success',
-                                message: 'File received',
-                                description: targetFile.metadata.name,
-                            } as LogEntry,
-                            ...state.logs,
-                        ].slice(0, MAX_LOGS),
-                        hasUnreadLogs: !state.isLogPanelOpen,
-                    };
-                });
+                set((state) => ({
+                    receivedFiles: state.receivedFiles.map((t) =>
+                        t.id === msg.transferId
+                            ? { ...t, status: 'completed' as const, progress: 100 }
+                            : t
+                    ),
+                }));
+                get().addLog('success', 'File received', targetFile.metadata.name);
 
                 incomingMessageSequenceCache.delete(transferId);
             }
@@ -226,23 +272,18 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
 
             const isHost = !!code;
 
-            // Fetch fresh TURN credentials dynamically
-            const { getIceServers } = await import('../../ice-servers');
+            const { getIceServers } = await import('@/lib/ice-servers');
             const iceServers = await getIceServers();
 
             const peerOptions = {
                 config: {
                     iceServers,
-                    // Optimize ICE gathering for faster connections
-                    iceCandidatePoolSize: 15, // Increased for more aggressive gathering
-                    // Use all available transport methods (UDP, TCP, TLS)
+                    iceCandidatePoolSize: 15,
                     iceTransportPolicy: 'all' as RTCIceTransportPolicy,
-                    // Bundle all media on single transport for efficiency
                     bundlePolicy: 'max-bundle' as RTCBundlePolicy,
-                    // Require RTCP multiplexing for better firewall traversal
                     rtcpMuxPolicy: 'require' as RTCRtcpMuxPolicy,
                 },
-                debug: 2, // Enable debug logs to diagnose connection issues
+                debug: 2,
             };
 
             const peer = isHost ? new Peer(code, peerOptions) : new Peer(peerOptions);
@@ -265,90 +306,12 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                     set({ isConnected: true, connectionQuality: 'excellent' });
                     get().addLog('success', 'Connected to peer', 'You can now share files');
 
-                    // Monitor ICE connection state for diagnostics
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const peerConnection = (conn as any).peerConnection;
-                    if (peerConnection) {
-                        peerConnection.oniceconnectionstatechange = () => {
-                            const iceState = peerConnection.iceConnectionState;
-                            console.log('[ICE] Connection state:', iceState);
-
-                            switch (iceState) {
-                                case 'checking':
-                                    get().addLog(
-                                        'info',
-                                        'Establishing connection...',
-                                        'NAT traversal in progress'
-                                    );
-                                    break;
-                                case 'connected':
-                                case 'completed':
-                                    get().addLog(
-                                        'success',
-                                        'Connection established',
-                                        'Using optimal route'
-                                    );
-                                    set({ connectionQuality: 'excellent' });
-                                    break;
-                                case 'disconnected':
-                                    get().addLog(
-                                        'warning',
-                                        'Connection unstable',
-                                        'Attempting to reconnect...'
-                                    );
-                                    set({ connectionQuality: 'poor' });
-                                    break;
-                                case 'failed':
-                                    get().addLog(
-                                        'error',
-                                        'Connection failed',
-                                        'NAT traversal unsuccessful'
-                                    );
-                                    set({ connectionQuality: 'disconnected' });
-                                    break;
-                            }
-                        };
-
-                        // Log ICE candidates for debugging
-                        peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
-                            if (event.candidate) {
-                                const type = event.candidate.type;
-                                console.log(
-                                    `[ICE] Candidate gathered: ${type}`,
-                                    event.candidate.candidate
-                                );
-
-                                // Detect if using TURN relay
-                                if (type === 'relay') {
-                                    get().addLog(
-                                        'info',
-                                        'Using relay server',
-                                        'Connection via TURN for NAT traversal'
-                                    );
-                                }
-                            }
-                        };
-                    }
+                    setupICEHandlers(conn, get, set);
                 });
 
                 conn.on('data', (data) => handleIncomingData(data, get, set));
 
-                conn.on('close', async () => {
-                    for (const [id, writable] of opfsWritableCache.entries()) {
-                        try {
-                            await writable.close();
-                        } catch (e) {
-                            console.warn('Failed to close writable on connection close:', e);
-                        }
-                        opfsWritableCache.delete(id);
-                    }
-                    set({
-                        isConnected: false,
-                        connectionQuality: 'disconnected',
-                        connection: null,
-                    });
-                    get().addLog('info', 'Peer disconnected');
-                });
+                conn.on('close', () => handleConnectionClose(get, set));
 
                 conn.on('error', (err) => {
                     set({ error: err.message, connectionQuality: 'poor' });
@@ -358,13 +321,13 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
             peer.on('error', (err: { type: string; message: string }) => {
                 if (err.type === 'unavailable-id') {
                     set({
-                        error: null, // Don't show this as a hard error UI
+                        error: null,
                         peerId: null,
                         peer: null,
                         isHost: false, // Revert to guest status
                     });
                     get().addLog('info', 'Room already active. Joining as guest...');
-                    resolve('ID_TAKEN'); // Resolve with specific code instead of rejecting
+                    resolve('ID_TAKEN');
                 } else {
                     set({ error: err.message });
                     get().addLog('error', 'Connection error', err.message);
@@ -401,7 +364,7 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
         try {
             const conn = peer.connect(targetCode, {
                 reliable: true,
-                serialization: 'binary', // Use binary for efficient file transfer
+                serialization: 'binary',
                 metadata: {
                     timestamp: Date.now(),
                     userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
@@ -431,70 +394,7 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                     set({ isConnected: true, connectionQuality: 'excellent' });
                     get().addLog('success', 'Connected to peer', 'You can now share files');
 
-                    // Monitor ICE connection state for diagnostics (guest side)
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const peerConnection = (conn as any).peerConnection;
-                    if (peerConnection) {
-                        peerConnection.oniceconnectionstatechange = () => {
-                            const iceState = peerConnection.iceConnectionState;
-                            console.log('[ICE] Connection state:', iceState);
-
-                            switch (iceState) {
-                                case 'checking':
-                                    get().addLog(
-                                        'info',
-                                        'Establishing connection...',
-                                        'NAT traversal in progress'
-                                    );
-                                    break;
-                                case 'connected':
-                                case 'completed':
-                                    get().addLog(
-                                        'success',
-                                        'Connection established',
-                                        'Using optimal route'
-                                    );
-                                    set({ connectionQuality: 'excellent' });
-                                    break;
-                                case 'disconnected':
-                                    get().addLog(
-                                        'warning',
-                                        'Connection unstable',
-                                        'Attempting to reconnect...'
-                                    );
-                                    set({ connectionQuality: 'poor' });
-                                    break;
-                                case 'failed':
-                                    get().addLog(
-                                        'error',
-                                        'Connection failed',
-                                        'NAT traversal unsuccessful'
-                                    );
-                                    set({ connectionQuality: 'disconnected' });
-                                    break;
-                            }
-                        };
-
-                        // Log ICE candidates for debugging
-                        peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
-                            if (event.candidate) {
-                                const type = event.candidate.type;
-                                console.log(
-                                    `[ICE] Candidate gathered: ${type}`,
-                                    event.candidate.candidate
-                                );
-
-                                // Detect if using TURN relay
-                                if (type === 'relay') {
-                                    get().addLog(
-                                        'info',
-                                        'Using relay server',
-                                        'Connection via TURN for NAT traversal'
-                                    );
-                                }
-                            }
-                        };
-                    }
+                    setupICEHandlers(conn, get, set);
                 })
                 .catch((err) => {
                     const errorMessage = err instanceof Error ? err.message : 'Failed to connect';
@@ -510,22 +410,7 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
 
             conn.on('data', (data) => handleIncomingData(data, get, set));
 
-            conn.on('close', async () => {
-                for (const [id, writable] of opfsWritableCache.entries()) {
-                    try {
-                        await writable.close();
-                    } catch (e) {
-                        console.warn('Failed to close writable on connection close:', e);
-                    }
-                    opfsWritableCache.delete(id);
-                }
-                set({
-                    isConnected: false,
-                    connectionQuality: 'disconnected',
-                    connection: null,
-                });
-                get().addLog('info', 'Peer disconnected');
-            });
+            conn.on('close', () => handleConnectionClose(get, set));
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to connect';
             set({ error: errorMessage });

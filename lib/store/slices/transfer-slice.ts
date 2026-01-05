@@ -1,11 +1,26 @@
 import JSZip from 'jszip';
 import { StateCreator } from 'zustand';
 
-import { CHUNK_SIZE, MAX_BUFFERED_AMOUNT } from '../../constants';
-import { OPFSManager } from '../../opfs-manager';
-import { FileMetadata, FileTransfer } from '../../types';
-import { opfsHandleCache } from '../cache';
-import { ExtendedDataConnection, StoreState, TransferSlice } from '../types';
+import { CHUNK_SIZE, MAX_BUFFERED_AMOUNT } from '@/lib/constants';
+import { OPFSManager } from '@/lib/opfs-manager';
+import { opfsHandleCache } from '@/lib/store/cache';
+import { ExtendedDataConnection, StoreState, TransferSlice } from '@/lib/store/types';
+import { FileMetadata, FileTransfer } from '@/lib/types';
+import { formatFilenameTimestamp } from '@/lib/utils';
+
+const getFileData = async (transfer: FileTransfer): Promise<Blob | null> => {
+    if (transfer.storageMode === 'power' && transfer.opfsPath) {
+        const handle =
+            opfsHandleCache.get(transfer.id) || (await OPFSManager.getTransferFile(transfer.id));
+        if (!handle) {
+            return null;
+        }
+        return await OPFSManager.getFileAsBlob(handle);
+    } else if (transfer.chunks) {
+        return new Blob(transfer.chunks, { type: transfer.metadata.type });
+    }
+    return null;
+};
 
 export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice> = (set, get) => ({
     receivedFiles: [],
@@ -128,7 +143,7 @@ export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice
         get().addLog('success', 'File removed from history');
     },
 
-    clearHistory: async () => {
+    clearReceivedHistory: async () => {
         const { receivedFiles } = get();
         const opfsFiles = receivedFiles.filter((f) => f.storageMode === 'power');
         for (const file of opfsFiles) {
@@ -140,26 +155,19 @@ export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice
             }
         }
 
-        set({ receivedFiles: [], outgoingFiles: [] });
-        get().addLog('success', 'History cleared', 'All transfer history has been removed');
+        set({ receivedFiles: [] });
+        get().addLog('success', 'Received history cleared');
+    },
+
+    clearSentHistory: async () => {
+        set({ outgoingFiles: [] });
+        get().addLog('success', 'Sent history cleared');
     },
 
     downloadFile: async (transfer) => {
         try {
-            let blob: Blob;
-
-            if (transfer.storageMode === 'power' && transfer.opfsPath) {
-                const handle =
-                    opfsHandleCache.get(transfer.id) ||
-                    (await OPFSManager.getTransferFile(transfer.id));
-                if (!handle) {
-                    get().addLog('error', 'File not found in storage');
-                    return;
-                }
-                blob = await OPFSManager.getFileAsBlob(handle);
-            } else if (transfer.chunks) {
-                blob = new Blob(transfer.chunks, { type: transfer.metadata.type });
-            } else {
+            const blob = await getFileData(transfer);
+            if (!blob) {
                 get().addLog('error', 'File data not available');
                 return;
             }
@@ -205,19 +213,8 @@ export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice
             const zip = new JSZip();
 
             for (const transfer of completedFiles) {
-                let data: Blob | ArrayBuffer;
-
-                if (transfer.storageMode === 'power' && transfer.opfsPath) {
-                    const handle =
-                        opfsHandleCache.get(transfer.id) ||
-                        (await OPFSManager.getTransferFile(transfer.id));
-                    if (!handle) {
-                        continue;
-                    }
-                    data = await OPFSManager.getFileAsBlob(handle);
-                } else if (transfer.chunks) {
-                    data = new Blob(transfer.chunks, { type: transfer.metadata.type });
-                } else {
+                const data = await getFileData(transfer);
+                if (!data) {
                     continue;
                 }
 
@@ -232,8 +229,9 @@ export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice
             const url = URL.createObjectURL(content);
             const a = document.createElement('a');
             a.href = url;
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            const timestamp = formatFilenameTimestamp();
             a.download = `flick-shared-files-${timestamp}.zip`;
+
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
