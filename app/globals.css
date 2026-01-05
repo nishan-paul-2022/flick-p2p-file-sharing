@@ -26,29 +26,6 @@
         --ring: 199 89% 48%;
         --radius: 0.75rem;
     }
-
-    .light {
-        --background: 210 40% 99%;
-        --foreground: 222.2 84% 4.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 222.2 84% 4.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 222.2 84% 4.9%;
-        --primary: 199 89% 48%;
-        --primary-rgb: 14, 165, 233;
-        --primary-foreground: 210 40% 98%;
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222.2 47.4% 11.2%;
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
-        --accent: 210 40% 96.1%;
-        --accent-foreground: 222.2 47.4% 11.2%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 214.3 31.8% 91.4%;
-        --input: 214.3 31.8% 91.4%;
-        --ring: 199 89% 48%;
-    }
 }
 
 @layer base {
@@ -67,7 +44,6 @@
         scroll-behavior: smooth;
     }
 
-    /* Modern Sleek Minimal Scrollbar */
     ::-webkit-scrollbar {
         @apply h-2 w-2;
     }
@@ -83,7 +59,7 @@
 
 @layer components {
     .btn-card {
-        @apply relative w-full overflow-hidden rounded-2xl border border-brand-500/10 bg-surface-dark-40 transition-all duration-500 hover:border-brand-500/30 active:scale-[0.98];
+        @apply ease-premium relative w-full overflow-hidden rounded-2xl border border-brand-500/10 bg-surface-dark-40 transition-all duration-300 hover:border-brand-500/30 active:scale-[0.98];
     }
 
     .btn-card-content {
@@ -91,21 +67,25 @@
     }
 
     .input-otp {
-        @apply h-14 rounded-xl border-white/[0.05] bg-white/[0.02] font-mono text-base tracking-widest-3xl transition-all focus-visible:border-brand-500/50 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-lg;
+        @apply ease-premium h-14 rounded-xl border-white/[0.05] bg-white/[0.02] font-mono text-base tracking-widest-3xl transition-all duration-300 focus-visible:border-brand-500/50 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-lg;
     }
 
     .connection-status {
-        @apply flex items-center gap-2 rounded-full border bg-black/40 px-2.5 py-1 transition-all duration-500 md:gap-3 md:px-3 md:py-1.5;
+        @apply ease-premium flex items-center gap-2 rounded-full border bg-black/40 px-2.5 py-1 transition-all duration-300 md:gap-3 md:px-3 md:py-1.5;
     }
 }
 
 @layer utilities {
+    .ease-premium {
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     .glass {
-        @apply border border-white/10 bg-white/5 backdrop-blur-xl;
+        @apply border border-white/10 bg-white/5 shadow-glass-sm backdrop-blur-xl;
     }
 
     .glass-dark {
-        @apply border border-white/5 bg-black/40 backdrop-blur-xl;
+        @apply border border-white/5 bg-black/40 shadow-glass-lg backdrop-blur-xl;
     }
 
     :root {
@@ -113,9 +93,6 @@
         --py-fluid: clamp(1rem, 0.5rem + 2vw, 3rem);
     }
 
-    /* Fluid Typography Utilities */
-
-    /* Fluid Layout Utilities */
     .px-fluid {
         padding-left: var(--px-fluid);
         padding-right: var(--px-fluid);
