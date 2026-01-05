@@ -1,6 +1,6 @@
-# Naming Conventions Prompt
+# 01 - Naming Conventions
 
-> **Strict naming conventions for consistent, maintainable code.**
+> **Strict naming conventions for consistent, maintainable code across all projects.**
 
 ---
 

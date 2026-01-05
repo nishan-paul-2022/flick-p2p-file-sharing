@@ -1,6 +1,6 @@
-# React Best Practices Prompt
+# 03 - React Best Practices
 
-Guidelines for writing high-quality React code.
+> **Guidelines for writing high-quality React code across all projects.**
 
 ---
 

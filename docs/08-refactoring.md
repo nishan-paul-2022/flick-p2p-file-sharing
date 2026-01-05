@@ -1,6 +1,6 @@
-# Refactoring Prompt
+# 08 - Refactoring Guide
 
-Comprehensive code cleanup and optimization checklist.
+> **Comprehensive code cleanup and optimization checklist for all projects.**
 
 ---
 

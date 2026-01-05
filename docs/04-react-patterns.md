@@ -1,6 +1,6 @@
-# React Design Patterns Prompt
+# 04 - React Design Patterns
 
-Reusable structural solutions for common React problems.
+> **Reusable structural solutions for common React problems across all projects.**
 
 ---
 

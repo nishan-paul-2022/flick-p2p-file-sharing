@@ -1,6 +1,6 @@
-# Style Prompt
+# 06 - Styling & Design System
 
-Tailwind CSS, design system, and styling conventions.
+> **Tailwind CSS, shadcn/ui, Lucide icons, and styling conventions across all projects.**
 
 ---
 
@@ -247,6 +247,63 @@ import { Input } from '@/components/ui/input'
 
 ---
 
+## Lucide Icons
+
+```tsx
+// ✅ Import icons from lucide-react
+import { Search, User, Settings, ChevronRight, X, Menu } from 'lucide-react'
+
+// ✅ Basic usage with consistent sizing
+<Search className="h-5 w-5 text-gray-400" />
+<User className="h-6 w-6 text-gray-300" />
+
+// ✅ Icon sizes (use consistent scale)
+h-4 w-4   // 16px - Small (inline text, badges)
+h-5 w-5   // 20px - Default (buttons, inputs)
+h-6 w-6   // 24px - Medium (headers, cards)
+h-8 w-8   // 32px - Large (hero sections, empty states)
+
+// ✅ Icon with button
+<Button variant="ghost" size="icon">
+  <Settings className="h-5 w-5" />
+  <span className="sr-only">Settings</span>
+</Button>
+
+// ✅ Icon with text
+<div className="flex items-center gap-2">
+  <User className="h-5 w-5 text-gray-400" />
+  <span className="text-gray-300">Profile</span>
+</div>
+
+// ✅ Interactive icon with hover
+<button className="group">
+  <X className="h-5 w-5 text-gray-400 group-hover:text-gray-100 transition" />
+</button>
+
+// ✅ Icon in input
+<div className="relative">
+  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+  <Input className="pl-10" placeholder="Search..." />
+</div>
+
+// ✅ Animated icon
+<ChevronRight className={cn(
+  "h-5 w-5 transition-transform",
+  isOpen && "rotate-90"
+)} />
+
+// ❌ Don't use inconsistent sizes
+<Search className="h-7 w-7" />  // ❌ Use standard sizes
+
+// ❌ Don't use strokeWidth unless necessary
+<Search strokeWidth={3} />  // ❌ Default is fine
+
+// ✅ Only adjust strokeWidth for emphasis
+<Search className="h-6 w-6" strokeWidth={2.5} />  // Bolder icon
+```
+
+---
+
 ## Component Patterns
 
 ```tsx
@@ -276,7 +333,7 @@ const buttonVariants = {
 
 // ✅ Input with icon
 <div className="relative">
-  <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
   <input className="pl-10 pr-4 py-2 bg-gray-900 border border-gray-800 rounded-md" />
 </div>
 ```

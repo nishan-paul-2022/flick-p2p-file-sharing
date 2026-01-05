@@ -1,6 +1,6 @@
-# TypeScript Best Practices Prompt
+# 02 - TypeScript Best Practices
 
-Strict TypeScript rules for type-safe code.
+> **Strict TypeScript rules for type-safe code across all projects.**
 
 ---
 

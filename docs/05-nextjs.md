@@ -1,6 +1,6 @@
-# Next.js Best Practices Prompt
+# 05 - Next.js Best Practices
 
-Guidelines for building high-quality Next.js applications.
+> **Guidelines for building high-quality Next.js applications across all projects.**
 
 ---
 
