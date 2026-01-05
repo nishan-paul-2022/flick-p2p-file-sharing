@@ -4,7 +4,7 @@ import { StateCreator } from 'zustand';
 import { CHUNK_SIZE, MAX_BUFFERED_AMOUNT } from '@/lib/constants';
 import { OPFSManager } from '@/lib/opfs-manager';
 import { opfsHandleCache } from '@/lib/store/cache';
-import { ExtendedDataConnection, StoreState, TransferSlice } from '@/lib/store/types';
+import { StoreState, TransferSlice } from '@/lib/store/types';
 import { FileMetadata, FileTransfer } from '@/lib/types';
 import { formatFilenameTimestamp } from '@/lib/utils';
 
@@ -72,7 +72,7 @@ export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice
                 return;
             }
 
-            const dc = (connection as unknown as ExtendedDataConnection).dataChannel;
+            const dc = connection.dataChannel;
             if (dc && dc.bufferedAmount > MAX_BUFFERED_AMOUNT) {
                 setTimeout(sendNextChunk, 50);
                 return;

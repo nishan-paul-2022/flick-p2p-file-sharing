@@ -1,12 +1,12 @@
-/* eslint-disable no-console, @typescript-eslint/no-explicit-any */
+import { logger } from '@/lib/logger';
 
 export async function testTurnServers() {
-    console.log('🔍 Testing TURN server connectivity...\n');
+    logger.info('Testing TURN server connectivity...\n');
 
     const { getIceServers } = await import('@/lib/ice-servers');
     const iceServers = await getIceServers();
 
-    console.log('📋 ICE Servers configured:', iceServers);
+    logger.info('ICE Servers configured:', iceServers);
 
     const pc = new RTCPeerConnection({ iceServers });
 
@@ -20,20 +20,20 @@ export async function testTurnServers() {
         if (event.candidate) {
             const type = event.candidate.type as 'host' | 'srflx' | 'relay';
             candidates[type]++;
-            console.log(`✅ ICE Candidate [${type}]:`, event.candidate.candidate);
+            logger.success(`ICE Candidate [${type}]:`, event.candidate.candidate);
         } else {
-            console.log('\n📊 ICE Gathering Complete:');
-            console.log(`   Host candidates: ${candidates.host}`);
-            console.log(`   Server Reflexive (STUN): ${candidates.srflx}`);
-            console.log(`   Relay (TURN): ${candidates.relay}`);
+            logger.info('\n📊 ICE Gathering Complete:');
+            logger.info(`   Host candidates: ${candidates.host}`);
+            logger.info(`   Server Reflexive (STUN): ${candidates.srflx}`);
+            logger.info(`   Relay (TURN): ${candidates.relay}`);
 
             if (candidates.relay > 0) {
-                console.log('\n✅ SUCCESS: TURN servers are working!');
-                console.log('   Your app can connect across different networks.');
+                logger.success('SUCCESS: TURN servers are working!');
+                logger.info('   Your app can connect across different networks.');
             } else {
-                console.log('\n❌ WARNING: No TURN relay candidates!');
-                console.log('   Connections may fail across different networks.');
-                console.log('   Only local/same-network connections will work.');
+                logger.warn('WARNING: No TURN relay candidates!');
+                logger.info('   Connections may fail across different networks.');
+                logger.info('   Only local/same-network connections will work.');
             }
 
             pc.close();
@@ -44,9 +44,9 @@ export async function testTurnServers() {
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
 
-    console.log('\n⏳ Gathering ICE candidates... (wait ~10 seconds)\n');
+    logger.info('\n⏳ Gathering ICE candidates... (wait ~10 seconds)\n');
 }
 
 if (typeof window !== 'undefined') {
-    (window as any).testTurnServers = testTurnServers;
+    window.testTurnServers = testTurnServers;
 }

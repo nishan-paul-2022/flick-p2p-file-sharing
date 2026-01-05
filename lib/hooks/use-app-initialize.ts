@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { usePeerRestoration } from '@/lib/hooks/use-peer-restoration';
+import { logger } from '@/lib/logger';
 import { usePeerStore } from '@/lib/store';
 
 export function useAppInitialize() {
@@ -21,16 +22,11 @@ export function useAppInitialize() {
 
     useEffect(() => {
         if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-            (window as unknown as { usePeerStore: typeof usePeerStore }).usePeerStore =
-                usePeerStore;
+            window.usePeerStore = usePeerStore;
 
             import('@/lib/test-turn').then(({ testTurnServers }) => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (window as any).testTurnServers = testTurnServers;
-                // eslint-disable-next-line no-console
-                console.log(
-                    '💡 Debug utilities loaded. Run testTurnServers() to test TURN servers.'
-                );
+                window.testTurnServers = testTurnServers;
+                logger.info('Debug utilities loaded. Run testTurnServers() to test TURN servers.');
             });
         }
     }, []);
