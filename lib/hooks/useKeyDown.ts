@@ -1,11 +1,5 @@
 import { useEffect } from 'react';
 
-/**
- * Hook that listens for specific key presses and triggers a callback.
- *
- * @param keys - The keys to listen for (e.g., ['Escape', 'Enter'])
- * @param callback - The function to call when a matching key is pressed
- */
 export function useKeyDown(keys: string[], callback: (event: KeyboardEvent) => void) {
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {

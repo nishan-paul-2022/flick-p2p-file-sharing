@@ -77,7 +77,6 @@ export default function HomePage() {
                             />
 
                             <div className="gap-fluid grid grid-cols-1 lg:grid-cols-12">
-                                {/* Connection Panel */}
                                 <motion.div
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
@@ -87,7 +86,6 @@ export default function HomePage() {
                                     <ConnectionPanel />
                                 </motion.div>
 
-                                {/* File Transfer Area */}
                                 <motion.div
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
@@ -99,7 +97,6 @@ export default function HomePage() {
                             </div>
                         </main>
 
-                        {/* Footer */}
                         <Footer />
                     </div>
 

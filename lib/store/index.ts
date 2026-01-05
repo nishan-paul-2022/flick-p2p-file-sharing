@@ -80,5 +80,4 @@ export const usePeerStore = create<StoreState>()(
     )
 );
 
-// Export types
 export * from '@/lib/store/types';

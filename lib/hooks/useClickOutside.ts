@@ -1,8 +1,5 @@
 import { RefObject, useEffect } from 'react';
 
-/**
- * Hook that alerts clicks outside of the passed ref
- */
 export function useClickOutside<T extends HTMLElement>(
     ref: RefObject<T | null>,
     handler: (event: MouseEvent | TouchEvent) => void
@@ -10,7 +7,6 @@ export function useClickOutside<T extends HTMLElement>(
     useEffect(() => {
         const listener = (event: MouseEvent | TouchEvent) => {
             const el = ref.current;
-            // Do nothing if clicking ref's element or descendent elements
             if (!el || el.contains(event.target as Node)) {
                 return;
             }

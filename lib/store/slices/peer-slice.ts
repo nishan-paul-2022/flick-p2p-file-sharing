@@ -13,7 +13,6 @@ import {
 import { PeerSlice, StoreState } from '@/lib/store/types';
 import { P2PMessage } from '@/lib/types';
 
-// Helper to handle incoming data with dual-mode support
 const handleIncomingData = async (
     data: unknown,
     get: () => StoreState,
@@ -123,7 +122,7 @@ const handleIncomingData = async (
                             transfer.totalChunks) *
                         100;
 
-                    // Throttle RAM progress updates too
+                    // Throttle RAM progress updates
                     set((state) => {
                         const t = state.receivedFiles.find((f) => f.id === msg.transferId);
                         if (
@@ -206,23 +205,18 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
 
             const isHost = !!code;
 
-            // Fetch fresh TURN credentials dynamically
             const { getIceServers } = await import('@/lib/ice-servers');
             const iceServers = await getIceServers();
 
             const peerOptions = {
                 config: {
                     iceServers,
-                    // Optimize ICE gathering for faster connections
-                    iceCandidatePoolSize: 15, // Increased for more aggressive gathering
-                    // Use all available transport methods (UDP, TCP, TLS)
+                    iceCandidatePoolSize: 15,
                     iceTransportPolicy: 'all' as RTCIceTransportPolicy,
-                    // Bundle all media on single transport for efficiency
                     bundlePolicy: 'max-bundle' as RTCBundlePolicy,
-                    // Require RTCP multiplexing for better firewall traversal
                     rtcpMuxPolicy: 'require' as RTCRtcpMuxPolicy,
                 },
-                debug: 2, // Enable debug logs to diagnose connection issues
+                debug: 2,
             };
 
             const peer = isHost ? new Peer(code, peerOptions) : new Peer(peerOptions);
@@ -245,7 +239,6 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                     set({ isConnected: true, connectionQuality: 'excellent' });
                     get().addLog('success', 'Connected to peer', 'You can now share files');
 
-                    // Monitor ICE connection state for diagnostics
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const peerConnection = (conn as any).peerConnection;
                     if (peerConnection) {
@@ -289,7 +282,6 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                             }
                         };
 
-                        // Log ICE candidates for debugging
                         peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
                             if (event.candidate) {
                                 const type = event.candidate.type;
@@ -338,13 +330,13 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
             peer.on('error', (err: { type: string; message: string }) => {
                 if (err.type === 'unavailable-id') {
                     set({
-                        error: null, // Don't show this as a hard error UI
+                        error: null,
                         peerId: null,
                         peer: null,
                         isHost: false, // Revert to guest status
                     });
                     get().addLog('info', 'Room already active. Joining as guest...');
-                    resolve('ID_TAKEN'); // Resolve with specific code instead of rejecting
+                    resolve('ID_TAKEN');
                 } else {
                     set({ error: err.message });
                     get().addLog('error', 'Connection error', err.message);
@@ -381,7 +373,7 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
         try {
             const conn = peer.connect(targetCode, {
                 reliable: true,
-                serialization: 'binary', // Use binary for efficient file transfer
+                serialization: 'binary',
                 metadata: {
                     timestamp: Date.now(),
                     userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
@@ -411,7 +403,6 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                     set({ isConnected: true, connectionQuality: 'excellent' });
                     get().addLog('success', 'Connected to peer', 'You can now share files');
 
-                    // Monitor ICE connection state for diagnostics (guest side)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const peerConnection = (conn as any).peerConnection;
                     if (peerConnection) {
@@ -455,7 +446,6 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                             }
                         };
 
-                        // Log ICE candidates for debugging
                         peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
                             if (event.candidate) {
                                 const type = event.candidate.type;

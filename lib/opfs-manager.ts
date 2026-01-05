@@ -1,14 +1,6 @@
-/**
- * OPFS (Origin Private File System) Manager
- * Handles file operations in the browser's private file system
- */
-
 export class OPFSManager {
     private static TRANSFER_DIR = 'flick-transfers';
 
-    /**
-     * Get the root directory handle
-     */
     private static async getRootDirectory(): Promise<FileSystemDirectoryHandle> {
         if (!navigator.storage?.getDirectory) {
             throw new Error('OPFS not supported');
@@ -16,35 +8,23 @@ export class OPFSManager {
         return await navigator.storage.getDirectory();
     }
 
-    /**
-     * Get or create the transfers directory
-     */
     private static async getTransfersDirectory(): Promise<FileSystemDirectoryHandle> {
         const root = await this.getRootDirectory();
         return await root.getDirectoryHandle(this.TRANSFER_DIR, { create: true });
     }
 
-    /**
-     * Create a new file for a transfer
-     */
     static async createTransferFile(transferId: string): Promise<FileSystemFileHandle> {
         const transfersDir = await this.getTransfersDirectory();
         const fileName = `${transferId}.bin`;
         return await transfersDir.getFileHandle(fileName, { create: true });
     }
 
-    /**
-     * Get a writable stream for a file
-     */
     static async getWritableStream(
         fileHandle: FileSystemFileHandle
     ): Promise<FileSystemWritableFileStream> {
         return await fileHandle.createWritable({ keepExistingData: true });
     }
 
-    /**
-     * Write a chunk to a file at a specific offset using an existing writable
-     */
     static async writeChunkWithWritable(
         writable: FileSystemWritableFileStream,
         chunkData: ArrayBuffer,
@@ -63,9 +43,6 @@ export class OPFSManager {
         }
     }
 
-    /**
-     * Write a chunk to a file at a specific offset (one-off)
-     */
     static async writeChunk(
         fileHandle: FileSystemFileHandle,
         chunkData: ArrayBuffer,
@@ -79,9 +56,6 @@ export class OPFSManager {
         }
     }
 
-    /**
-     * Get a file handle by transfer ID
-     */
     static async getTransferFile(transferId: string): Promise<FileSystemFileHandle | null> {
         try {
             const transfersDir = await this.getTransfersDirectory();
@@ -93,9 +67,6 @@ export class OPFSManager {
         }
     }
 
-    /**
-     * Delete a transfer file
-     */
     static async deleteTransferFile(transferId: string): Promise<void> {
         try {
             const transfersDir = await this.getTransfersDirectory();
@@ -106,16 +77,10 @@ export class OPFSManager {
         }
     }
 
-    /**
-     * Get file as Blob for download
-     */
     static async getFileAsBlob(fileHandle: FileSystemFileHandle): Promise<File> {
         return await fileHandle.getFile();
     }
 
-    /**
-     * Check if OPFS is available
-     */
     static isAvailable(): boolean {
         return !!(window.FileSystemWritableFileStream && navigator.storage?.getDirectory);
     }

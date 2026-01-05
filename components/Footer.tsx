@@ -6,7 +6,6 @@ export function Footer() {
     return (
         <footer className="relative mt-10 overflow-hidden border-t border-white/[0.05] py-4">
             <div className="container relative mx-auto max-w-6xl px-4">
-                {/* Minimal Bottom Bar */}
                 <div className="flex flex-wrap items-center justify-center gap-2 pt-0 text-2xs font-bold uppercase tracking-widest-xl">
                     <a
                         href="https://kaiverse.vercel.app"

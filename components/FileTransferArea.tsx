@@ -16,8 +16,6 @@ export function FileTransferArea() {
     const activeTab = usePeerStore((state) => state.activeTab);
     const setActiveTab = usePeerStore((state) => state.setActiveTab);
 
-    // Sorting State is now handled inside TransferActionsBar
-
     const isReceiving = receivedFiles.some((f) => f.status === 'transferring');
     const isSending = outgoingFiles.some((f) => f.status === 'transferring');
 
@@ -28,7 +26,6 @@ export function FileTransferArea() {
 
     return (
         <div className="flex flex-col gap-6 lg:col-span-8">
-            {/* Upload Zone */}
             <Card className="glass-dark border-primary/20">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
                     <CardTitle className="flex items-center gap-2">
@@ -41,7 +38,6 @@ export function FileTransferArea() {
                 </CardContent>
             </Card>
 
-            {/* File Lists */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="glass-dark grid h-auto w-full grid-cols-2 rounded-xl border-white/10 p-1">
                     <TransferTabTrigger
@@ -56,7 +52,6 @@ export function FileTransferArea() {
                     />
                 </TabsList>
 
-                {/* Actions Bar */}
                 <div className="mt-2 min-h-[40px]">
                     <TransferActionsBar
                         type={activeTab as 'received' | 'sent'}

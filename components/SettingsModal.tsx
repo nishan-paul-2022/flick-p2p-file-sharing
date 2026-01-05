@@ -59,13 +59,11 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
                     role="presentation"
                 >
-                    {/* Backdrop */}
                     <div
                         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                         aria-hidden="true"
                     />
 
-                    {/* Modal */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -76,7 +74,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         aria-modal="true"
                         aria-labelledby="settings-title"
                     >
-                        {/* Header */}
                         <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-4 py-4 sm:px-6">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -100,7 +97,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             </button>
                         </div>
 
-                        {/* Body */}
                         <div className="relative min-h-[200px] overflow-y-auto px-4 py-4 sm:min-h-[300px] sm:px-6 sm:py-6">
                             <AnimatePresence>
                                 {status.isLoading ? (
@@ -120,7 +116,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                         animate={{ opacity: 1 }}
                                         className="space-y-6"
                                     >
-                                        {/* Active Provider Selection */}
                                         <div className="space-y-3">
                                             <div className="flex items-center justify-between">
                                                 <label className="text-xs font-semibold uppercase tracking-wider text-white/40">
@@ -143,10 +138,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                             </div>
                                         </div>
 
-                                        {/* Divider */}
                                         <div className="h-px w-full bg-white/10" />
 
-                                        {/* Configuration Tabs */}
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between">
                                                 <label className="text-xs font-semibold uppercase tracking-wider text-white/40">
@@ -206,8 +199,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                 )}
                             </AnimatePresence>
                         </div>
-
-                        {/* Footer */}
                         <div className="flex shrink-0 items-center justify-end gap-3 border-t border-white/10 bg-white/5 px-4 py-4 sm:px-6">
                             <Button
                                 variant="ghost"

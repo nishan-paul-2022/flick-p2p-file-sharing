@@ -1,8 +1,3 @@
-/**
- * Storage Mode Detection and Management
- * Detects browser capabilities and determines optimal storage strategy
- */
-
 export type StorageMode = 'power' | 'compatibility';
 
 export interface StorageCapabilities {
@@ -11,17 +6,13 @@ export interface StorageCapabilities {
     browserInfo: string;
 }
 
-/**
- * Detect if browser supports OPFS (Origin Private File System)
- */
 async function detectOPFSSupport(): Promise<boolean> {
     try {
-        // Check for required APIs
         if (!window.FileSystemWritableFileStream || !navigator.storage?.getDirectory) {
             return false;
         }
 
-        // Test actual OPFS access (some browsers report support but fail in practice)
+        // Verify OPFS with a test file as some browsers report false positives
         const root = await navigator.storage.getDirectory();
         await root.getFileHandle('__flick_test__', { create: true });
         await root.removeEntry('__flick_test__');
@@ -33,9 +24,6 @@ async function detectOPFSSupport(): Promise<boolean> {
     }
 }
 
-/**
- * Get browser information for debugging
- */
 function getBrowserInfo(): string {
     const ua = navigator.userAgent;
 
@@ -55,24 +43,13 @@ function getBrowserInfo(): string {
     return 'Unknown';
 }
 
-/**
- * Detect storage capabilities and return optimal configuration
- */
 export async function detectStorageCapabilities(): Promise<StorageCapabilities> {
     const supportsOPFS = await detectOPFSSupport();
     const browserInfo = getBrowserInfo();
 
-    if (supportsOPFS) {
-        return {
-            mode: 'power',
-            supportsOPFS: true,
-            browserInfo,
-        };
-    }
-
     return {
-        mode: 'compatibility',
-        supportsOPFS: false,
+        mode: supportsOPFS ? 'power' : 'compatibility',
+        supportsOPFS,
         browserInfo,
     };
 }

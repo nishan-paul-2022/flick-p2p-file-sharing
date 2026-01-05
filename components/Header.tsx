@@ -34,7 +34,6 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
                 {/* Ambient Glow */}
                 <div className="pointer-events-none absolute left-1/2 top-0 h-1/2 w-3/4 -translate-x-1/2 rounded-full bg-primary/10 opacity-50 blur-huge" />
 
-                {/* Left: Fingerprint Icon (Event Logs) */}
                 <div className="relative z-10 flex flex-1 justify-start">
                     <Tooltip>
                         <TooltipTrigger asChild>
@@ -59,7 +58,6 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
                                             : 'text-white/40 group-hover:text-white/80'
                                     )}
                                 />
-                                {/* Notification Dot */}
                                 {hasUnreadLogs && (
                                     <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary" />
                                 )}
@@ -71,7 +69,6 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
                     </Tooltip>
                 </div>
 
-                {/* Center: Flick Logo */}
                 <div className="relative z-10 mx-2 flex flex-1 justify-center">
                     <div className="flex items-center gap-2 md:gap-3">
                         <motion.div
@@ -93,7 +90,6 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
                     </div>
                 </div>
 
-                {/* Right: Settings & Slogan */}
                 <div className="relative z-10 flex flex-1 justify-end gap-3">
                     <Tooltip>
                         <TooltipTrigger asChild>

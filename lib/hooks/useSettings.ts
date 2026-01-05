@@ -14,14 +14,12 @@ export interface SettingsState {
 }
 
 export function useSettings(isOpen: boolean, onClose: () => void) {
-    // Form State
     const [provider, setProvider] = useState<ProviderType>('xirsys');
     const [ident, setIdent] = useState('');
     const [secret, setSecret] = useState('');
     const [channel, setChannel] = useState('');
     const [meteredApiKey, setMeteredApiKey] = useState('');
 
-    // UI State
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [initialSettings, setInitialSettings] = useState<SettingsState>({
@@ -32,7 +30,6 @@ export function useSettings(isOpen: boolean, onClose: () => void) {
         meteredApiKey: '',
     });
 
-    // Load settings when modal opens
     useEffect(() => {
         if (isOpen) {
             const loadSettings = async () => {
@@ -80,15 +77,13 @@ export function useSettings(isOpen: boolean, onClose: () => void) {
                 set('xirsys_secret', secret),
                 set('xirsys_channel', channel),
                 set('metered_api_key', meteredApiKey),
-                new Promise((resolve) => setTimeout(resolve, 800)), // UX delay
+                new Promise((resolve) => setTimeout(resolve, 800)), // Artificial delay for better UX
             ]);
 
-            // Clean up existing connection
             if (store.peer) {
                 store.peer.destroy();
             }
 
-            // Re-initialize
             await store.initializePeer(store.roomCode || undefined);
 
             store.addLog('success', 'Settings Saved', 'Connection refreshed with new credentials');

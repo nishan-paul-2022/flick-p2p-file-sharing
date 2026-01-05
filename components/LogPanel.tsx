@@ -46,12 +46,6 @@ export const LogPanel: React.FC = () => {
         <AnimatePresence>
             {isLogPanelOpen && (
                 <>
-                    {/* Backdrop - optional, keeping it subtle or removing for "non-modal" feel. 
-                        User said "not modal", so maybe no backdrop blocking interactions? 
-                        But we need to close it somehow if clicking outside? 
-                        For now, let's just have the sidebar. */}
-
-                    {/* Invisible backdrop to handle click-outside closing on mobile only */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -68,7 +62,6 @@ export const LogPanel: React.FC = () => {
                         className="fixed inset-y-0 left-0 z-[60] flex w-72 flex-col border-r border-white/10 bg-zinc-950/95 shadow-2xl backdrop-blur-3xl xs:w-80 lg:w-96"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Header */}
                         <div className="flex flex-shrink-0 items-center justify-between border-b border-white/10 bg-white/[0.02] px-6 pb-4 pt-[calc(var(--py-fluid)+0.25rem+0.5rem)] md:pb-6 md:pt-[calc(var(--py-fluid)+0.5rem+0.75rem)]">
                             <div className="flex items-center gap-3">
                                 <Activity className="h-5 w-5 text-primary md:h-6 md:w-6" />
@@ -97,7 +90,6 @@ export const LogPanel: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Logs List */}
                         <div
                             ref={scrollRef}
                             className="flex-1 space-y-3 overflow-y-auto p-4 font-mono"
@@ -116,7 +108,6 @@ export const LogPanel: React.FC = () => {
                                         animate={{ opacity: 1, y: 0 }}
                                         className="group relative pb-1 pl-4"
                                     >
-                                        {/* Timeline line */}
                                         <div className="absolute bottom-0 left-0 top-2 w-px bg-white/5 group-last:bottom-auto group-last:h-0.5" />
                                         <div className="absolute -left-0.5 top-2.5 h-1 w-1 rounded-full bg-white/20 shadow-log-dot-glow transition-colors group-hover:bg-primary/50" />
 
@@ -145,7 +136,6 @@ export const LogPanel: React.FC = () => {
                             )}
                         </div>
 
-                        {/* Footer Status */}
                         <div className="flex flex-shrink-0 items-center justify-between border-t border-white/5 bg-white/[0.02] px-6 py-3 text-2xs text-white/20">
                             <span>Flick - P2P File Sharing</span>
                             <span>v0.1.0</span>
