@@ -11,8 +11,8 @@ import { ProviderCard } from '@/components/settings/ProviderCard';
 import { XirsysConfig } from '@/components/settings/XirsysConfig';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useKeyDown } from '@/lib/hooks/useKeyDown';
-import { ProviderType, useSettings } from '@/lib/hooks/useSettings';
+import { useKeyDown } from '@/lib/hooks/use-key-down';
+import { ProviderType, useSettings } from '@/lib/hooks/use-settings';
 
 interface SettingsModalProps {
     isOpen: boolean;

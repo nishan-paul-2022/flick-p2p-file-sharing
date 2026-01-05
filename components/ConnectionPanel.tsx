@@ -9,7 +9,7 @@ import { StorageModeIndicator } from '@/components/StorageModeIndicator';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useRoomConnection } from '@/lib/hooks/useRoomConnection';
+import { useRoomConnection } from '@/lib/hooks/use-room-connection';
 import { usePeerStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
 

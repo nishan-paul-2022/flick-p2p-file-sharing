@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { usePeerRestoration } from '@/lib/hooks/usePeerRestoration';
+import { usePeerRestoration } from '@/lib/hooks/use-peer-restoration';
 import { usePeerStore } from '@/lib/store';
 
 export function useAppInitialize() {

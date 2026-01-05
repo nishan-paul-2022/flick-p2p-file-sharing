@@ -5,8 +5,8 @@ import { ArrowUpDown, Check, ChevronDown } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { useClickOutside } from '@/lib/hooks/useClickOutside';
-import { useKeyDown } from '@/lib/hooks/useKeyDown';
+import { useClickOutside } from '@/lib/hooks/use-click-outside';
+import { useKeyDown } from '@/lib/hooks/use-key-down';
 import { SortBy, SortOrder } from '@/lib/types';
 import { cn } from '@/lib/utils';
 

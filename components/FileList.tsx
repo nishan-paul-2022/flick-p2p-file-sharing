@@ -5,7 +5,7 @@ import { File } from 'lucide-react';
 
 import { FileListItem } from '@/components/FileListItem';
 import { Card, CardContent } from '@/components/ui/card';
-import { useFileSorting } from '@/lib/hooks/useFileSorting';
+import { useFileSorting } from '@/lib/hooks/use-file-sorting';
 import { usePeerStore } from '@/lib/store';
 import { FileTransfer } from '@/lib/types';
 

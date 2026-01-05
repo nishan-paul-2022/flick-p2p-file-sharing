@@ -11,7 +11,7 @@ import { FileTransferArea } from '@/components/FileTransferArea';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { LogPanel } from '@/components/LogPanel';
-import { useAppInitialize } from '@/lib/hooks/useAppInitialize';
+import { useAppInitialize } from '@/lib/hooks/use-app-initialize';
 import { usePeerStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
