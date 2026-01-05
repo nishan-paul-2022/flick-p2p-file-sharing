@@ -1,12 +1,12 @@
 import JSZip from 'jszip';
 import { StateCreator } from 'zustand';
 
-import { CHUNK_SIZE, MAX_BUFFERED_AMOUNT } from '../../constants';
-import { OPFSManager } from '../../opfs-manager';
-import { FileMetadata, FileTransfer } from '../../types';
-import { formatFilenameTimestamp } from '../../utils';
-import { opfsHandleCache } from '../cache';
-import { ExtendedDataConnection, StoreState, TransferSlice } from '../types';
+import { CHUNK_SIZE, MAX_BUFFERED_AMOUNT } from '@/lib/constants';
+import { OPFSManager } from '@/lib/opfs-manager';
+import { opfsHandleCache } from '@/lib/store/cache';
+import { ExtendedDataConnection, StoreState, TransferSlice } from '@/lib/store/types';
+import { FileMetadata, FileTransfer } from '@/lib/types';
+import { formatFilenameTimestamp } from '@/lib/utils';
 
 export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice> = (set, get) => ({
     receivedFiles: [],

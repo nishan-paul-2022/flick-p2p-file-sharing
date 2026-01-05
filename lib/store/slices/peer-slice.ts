@@ -2,16 +2,16 @@
 import Peer from 'peerjs';
 import { StateCreator } from 'zustand';
 
-import { CHUNK_SIZE, CONNECTION_TIMEOUT } from '../../constants';
-import { OPFSManager } from '../../opfs-manager';
-import { P2PMessage } from '../../types';
+import { CHUNK_SIZE, CONNECTION_TIMEOUT } from '@/lib/constants';
+import { OPFSManager } from '@/lib/opfs-manager';
 import {
     incomingMessageSequenceCache,
     opfsHandleCache,
     opfsWritableCache,
     opfsWriteQueueCache,
-} from '../cache';
-import { PeerSlice, StoreState } from '../types';
+} from '@/lib/store/cache';
+import { PeerSlice, StoreState } from '@/lib/store/types';
+import { P2PMessage } from '@/lib/types';
 
 // Helper to handle incoming data with dual-mode support
 const handleIncomingData = async (
@@ -207,7 +207,7 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
             const isHost = !!code;
 
             // Fetch fresh TURN credentials dynamically
-            const { getIceServers } = await import('../../ice-servers');
+            const { getIceServers } = await import('@/lib/ice-servers');
             const iceServers = await getIceServers();
 
             const peerOptions = {

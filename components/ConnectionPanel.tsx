@@ -5,14 +5,13 @@ import { Check, Copy, RefreshCw, Zap, ZapOff } from 'lucide-react';
 import { useEffect } from 'react';
 
 import { ConnectionStatus } from '@/components/ConnectionStatus';
+import { StorageModeIndicator } from '@/components/StorageModeIndicator';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useRoomConnection } from '@/lib/hooks/useRoomConnection';
 import { usePeerStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
-
-import { StorageModeIndicator } from './StorageModeIndicator';
 
 export function ConnectionPanel() {
     const {

@@ -7,7 +7,7 @@
 export async function testTurnServers() {
     console.log('🔍 Testing TURN server connectivity...\n');
 
-    const { getIceServers } = await import('./ice-servers');
+    const { getIceServers } = await import('@/lib/ice-servers');
     const iceServers = await getIceServers();
 
     console.log('📋 ICE Servers configured:', iceServers);

@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import Loading from '@/app/loading';
+import NotFound from '@/app/not-found';
 import { ConnectionPanel } from '@/components/ConnectionPanel';
 import { FileTransferArea } from '@/components/FileTransferArea';
 import { Footer } from '@/components/Footer';
@@ -12,9 +14,6 @@ import { LogPanel } from '@/components/LogPanel';
 import { useAppInitialize } from '@/lib/hooks/useAppInitialize';
 import { usePeerStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
-
-import Loading from './loading';
-import NotFound from './not-found';
 
 export default function HomePage() {
     const searchParams = useSearchParams();

@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 
-import { StoreState, UISlice } from '../types';
+import { StoreState, UISlice } from '@/lib/store/types';
 
 export const createUISlice: StateCreator<StoreState, [], [], UISlice> = (set) => ({
     isLogPanelOpen: false,

@@ -1,8 +1,8 @@
 import { DataConnection } from 'peerjs';
 import Peer from 'peerjs';
 
-import { StorageCapabilities } from '../storage-mode';
-import { ConnectionQuality, FileTransfer, LogEntry, SortBy, SortOrder } from '../types';
+import { StorageCapabilities } from '@/lib/storage-mode';
+import { ConnectionQuality, FileTransfer, LogEntry, SortBy, SortOrder } from '@/lib/types';
 
 export interface ExtendedDataConnection extends DataConnection {
     dataChannel: RTCDataChannel;

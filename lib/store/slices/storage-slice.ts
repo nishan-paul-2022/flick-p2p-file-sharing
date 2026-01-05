@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
 
-import { detectStorageCapabilities } from '../../storage-mode';
-import { StorageSlice, StoreState } from '../types';
+import { detectStorageCapabilities } from '@/lib/storage-mode';
+import { StorageSlice, StoreState } from '@/lib/store/types';
 
 export const createStorageSlice: StateCreator<StoreState, [], [], StorageSlice> = (set, get) => ({
     storageCapabilities: null,

@@ -5,15 +5,14 @@ import { Check, Loader2, RefreshCw, Settings, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+// Sub-components
+import { MeteredConfig } from '@/components/settings/MeteredConfig';
+import { ProviderCard } from '@/components/settings/ProviderCard';
+import { XirsysConfig } from '@/components/settings/XirsysConfig';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useKeyDown } from '@/lib/hooks/useKeyDown';
 import { ProviderType, useSettings } from '@/lib/hooks/useSettings';
-
-// Sub-components
-import { MeteredConfig } from './settings/MeteredConfig';
-import { ProviderCard } from './settings/ProviderCard';
-import { XirsysConfig } from './settings/XirsysConfig';
-import { Button } from './ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 
 interface SettingsModalProps {
     isOpen: boolean;

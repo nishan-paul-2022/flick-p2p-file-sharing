@@ -1,8 +1,8 @@
 import { StateCreator } from 'zustand';
 
-import { MAX_LOGS } from '../../constants';
-import { LogEntry } from '../../types';
-import { LogSlice, StoreState } from '../types';
+import { MAX_LOGS } from '@/lib/constants';
+import { LogSlice, StoreState } from '@/lib/store/types';
+import { LogEntry } from '@/lib/types';
 
 export const createLogSlice: StateCreator<StoreState, [], [], LogSlice> = (set) => ({
     logs: [],

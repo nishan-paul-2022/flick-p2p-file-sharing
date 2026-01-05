@@ -6,12 +6,14 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useState } from 'react';
 
-const SettingsModal = dynamic(() => import('./SettingsModal').then((mod) => mod.SettingsModal), {
-    ssr: false,
-});
+const SettingsModal = dynamic(
+    () => import('@/components/SettingsModal').then((mod) => mod.SettingsModal),
+    {
+        ssr: false,
+    }
+);
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 interface HeaderProps {
     isLogPanelOpen: boolean;
