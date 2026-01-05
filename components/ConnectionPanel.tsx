@@ -93,8 +93,8 @@ export function ConnectionPanel() {
                                 value={joinCode}
                                 onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                                 onKeyDown={(e) => e.key === 'Enter' && handleJoinRoom()}
-                                maxLength={6}
-                                aria-label="Enter 6-character room code"
+                                maxLength={ROOM_CODE_LENGTH}
+                                aria-label={`Enter ${ROOM_CODE_LENGTH}-character room code`}
                                 className="input-otp pl-12 pr-24"
                             />
                             <div className="absolute inset-y-2 right-2">

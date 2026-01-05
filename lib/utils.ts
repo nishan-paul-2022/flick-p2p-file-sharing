@@ -1,6 +1,8 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+import { ROOM_CODE_LENGTH } from './constants';
+
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
@@ -19,7 +21,7 @@ export function formatBytes(bytes: number, decimals = 2): string {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-export function generateRoomCode(length: number = 6): string {
+export function generateRoomCode(length: number = ROOM_CODE_LENGTH): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = '';
     for (let i = 0; i < length; i++) {
@@ -29,7 +31,8 @@ export function generateRoomCode(length: number = 6): string {
 }
 
 export function isValidRoomCode(code: string): boolean {
-    return /^[A-Z0-9]{6}$/.test(code);
+    const regex = new RegExp(`^[A-Z0-9]{${ROOM_CODE_LENGTH}}$`);
+    return regex.test(code);
 }
 
 export async function copyToClipboard(text: string): Promise<boolean> {

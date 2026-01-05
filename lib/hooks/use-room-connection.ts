@@ -25,7 +25,11 @@ export function useRoomConnection() {
         const code = joinCode.toUpperCase().trim();
 
         if (!isValidRoomCode(code)) {
-            addLog('error', 'Invalid room code', 'Room code must be 6 alphanumeric characters');
+            addLog(
+                'error',
+                'Invalid room code',
+                `Room code must be ${ROOM_CODE_LENGTH} alphanumeric characters`
+            );
             return;
         }
 

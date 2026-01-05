@@ -8,6 +8,20 @@ import { ExtendedDataConnection, StoreState, TransferSlice } from '@/lib/store/t
 import { FileMetadata, FileTransfer } from '@/lib/types';
 import { formatFilenameTimestamp } from '@/lib/utils';
 
+const getFileData = async (transfer: FileTransfer): Promise<Blob | null> => {
+    if (transfer.storageMode === 'power' && transfer.opfsPath) {
+        const handle =
+            opfsHandleCache.get(transfer.id) || (await OPFSManager.getTransferFile(transfer.id));
+        if (!handle) {
+            return null;
+        }
+        return await OPFSManager.getFileAsBlob(handle);
+    } else if (transfer.chunks) {
+        return new Blob(transfer.chunks, { type: transfer.metadata.type });
+    }
+    return null;
+};
+
 export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice> = (set, get) => ({
     receivedFiles: [],
     outgoingFiles: [],
@@ -152,20 +166,8 @@ export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice
 
     downloadFile: async (transfer) => {
         try {
-            let blob: Blob;
-
-            if (transfer.storageMode === 'power' && transfer.opfsPath) {
-                const handle =
-                    opfsHandleCache.get(transfer.id) ||
-                    (await OPFSManager.getTransferFile(transfer.id));
-                if (!handle) {
-                    get().addLog('error', 'File not found in storage');
-                    return;
-                }
-                blob = await OPFSManager.getFileAsBlob(handle);
-            } else if (transfer.chunks) {
-                blob = new Blob(transfer.chunks, { type: transfer.metadata.type });
-            } else {
+            const blob = await getFileData(transfer);
+            if (!blob) {
                 get().addLog('error', 'File data not available');
                 return;
             }
@@ -211,19 +213,8 @@ export const createTransferSlice: StateCreator<StoreState, [], [], TransferSlice
             const zip = new JSZip();
 
             for (const transfer of completedFiles) {
-                let data: Blob | ArrayBuffer;
-
-                if (transfer.storageMode === 'power' && transfer.opfsPath) {
-                    const handle =
-                        opfsHandleCache.get(transfer.id) ||
-                        (await OPFSManager.getTransferFile(transfer.id));
-                    if (!handle) {
-                        continue;
-                    }
-                    data = await OPFSManager.getFileAsBlob(handle);
-                } else if (transfer.chunks) {
-                    data = new Blob(transfer.chunks, { type: transfer.metadata.type });
-                } else {
+                const data = await getFileData(transfer);
+                if (!data) {
                     continue;
                 }
 

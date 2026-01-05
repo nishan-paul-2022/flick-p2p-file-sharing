@@ -1,9 +1,6 @@
 import { useMemo } from 'react';
 
-import { FileTransfer } from '@/lib/types';
-
-type SortBy = 'name' | 'time';
-type SortOrder = 'asc' | 'desc';
+import { FileTransfer, SortBy, SortOrder } from '@/lib/types';
 
 export function useFileSorting(files: FileTransfer[], sortBy: SortBy, sortOrder: SortOrder) {
     const sortedFiles = useMemo(() => {
