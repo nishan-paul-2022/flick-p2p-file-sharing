@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { FileListItem } from '@/components/FileListItem';
+import { FileListItem } from '@/components/transfer/FileListItem';
 import { FileTransfer } from '@/lib/types';
 
 describe('FileListItem', () => {

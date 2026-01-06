@@ -12,7 +12,10 @@ import {
 } from '@/lib/store/cache';
 import { ExtendedDataConnection, PeerSlice, StoreState } from '@/lib/store/types';
 import { P2PMessage } from '@/lib/types';
-
+/**
+ * Sets up ICE connection state and candidate handlers for an active connection.
+ * Detects TURN relay usage and updates connection quality status.
+ */
 const setupICEHandlers = (
     conn: ExtendedDataConnection,
     get: () => StoreState,
@@ -84,6 +87,10 @@ const handleConnectionClose = async (
     get().addLog('info', 'Peer disconnected');
 };
 
+/**
+ * Handles incoming data from a peer connection including metadata, file chunks, and completion signals.
+ * Uses a sequential cache to ensure messages for the same transfer are processed in order.
+ */
 const handleIncomingData = async (
     data: unknown,
     get: () => StoreState,
@@ -267,6 +274,10 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
 
     setRoomCode: (code) => set({ roomCode: code }),
 
+    /**
+     * Initializes a new PeerJS instance.
+     * @param code Optional room code if initializing as a host.
+     */
     initializePeer: async (code) => {
         return new Promise(async (resolve, reject) => {
             const { peer: existingPeer } = get();
@@ -356,6 +367,10 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
         });
     },
 
+    /**
+     * Establishes a connection to a remote peer.
+     * @param targetCode The room code of the peer to connect to.
+     */
     connectToPeer: async (targetCode) => {
         const { peer } = get();
         if (!peer) {

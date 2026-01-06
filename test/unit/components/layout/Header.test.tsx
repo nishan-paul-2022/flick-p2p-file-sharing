@@ -1,10 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { Header } from '@/components/Header';
+import { Header } from '@/components/layout/Header';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
-vi.mock('@/components/SettingsModal', () => ({
+vi.mock('@/components/settings/SettingsModal', () => ({
     SettingsModal: ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) =>
         isOpen ? (
             <div data-testid="settings-modal">
