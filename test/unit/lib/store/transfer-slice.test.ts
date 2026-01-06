@@ -73,6 +73,9 @@ describe('transfer-slice', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        vi.spyOn(console, 'log').mockImplementation(() => {});
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'warn').mockImplementation(() => {});
     });
 
     describe('removeFile', () => {
@@ -247,6 +250,216 @@ describe('transfer-slice', () => {
                 'ZIP archive downloaded',
                 '1 files'
             );
+        });
+
+        it('should handle no completed files to download', async () => {
+            useStore = createTestStore({
+                receivedFiles: [{ id: '1', status: 'transferring' } as unknown as FileTransfer],
+            });
+
+            await useStore.getState().downloadAllReceivedFiles();
+
+            expect(useStore.getState().addLog).toHaveBeenCalledWith(
+                'error',
+                'No completed files to download'
+            );
+        });
+
+        it('should handle ZIP creation failure', async () => {
+            const transfer: FileTransfer = {
+                id: '1',
+                metadata: { name: 'test.txt', type: 'text/plain', size: 4, timestamp: Date.now() },
+                chunks: [new Uint8Array([1]).buffer],
+                storageMode: 'compatibility',
+                status: 'completed',
+                progress: 100,
+                totalChunks: 1,
+            };
+
+            useStore = createTestStore({
+                receivedFiles: [transfer],
+            });
+
+            const JSZipMock = (await import('jszip')).default;
+            (JSZipMock as unknown as Mock).mockImplementationOnce(function (this: {
+                file: Mock;
+                generateAsync: Mock;
+            }) {
+                this.file = vi.fn();
+                this.generateAsync = vi.fn().mockRejectedValue(new Error('Zip fail'));
+            });
+
+            await useStore.getState().downloadAllReceivedFiles();
+
+            expect(useStore.getState().addLog).toHaveBeenCalledWith(
+                'error',
+                'Failed to create ZIP archive'
+            );
+        });
+    });
+
+    describe('General Errors', () => {
+        it('should handle sendFile read error', async () => {
+            const mockSend = vi.fn();
+            useStore = createTestStore({
+                connection: {
+                    send: mockSend,
+                    dataChannel: { bufferedAmount: 0 },
+                } as unknown as DataConnection,
+                isConnected: true,
+            });
+
+            const file = new File(['test'], 'test.txt');
+            // Mock arrayBuffer on the prototype since slice() creates new blobs
+            const arrayBufferSpy = vi
+                .spyOn(Blob.prototype, 'arrayBuffer')
+                .mockRejectedValueOnce(new Error('Read error'));
+
+            await useStore.getState().sendFile(file);
+
+            await waitFor(() => {
+                expect(useStore.getState().addLog).toHaveBeenCalledWith(
+                    'error',
+                    'Transfer failed',
+                    'Error reading file'
+                );
+            });
+
+            arrayBufferSpy.mockRestore();
+        });
+
+        it('should handle OPFS deletion errors gracefully', async () => {
+            const { OPFSManager } = await import('@/lib/opfs-manager');
+            (OPFSManager.deleteTransferFile as Mock).mockRejectedValue(new Error('FS Lock'));
+
+            useStore = createTestStore({
+                receivedFiles: [
+                    { id: '1', storageMode: 'power', opfsPath: '1.bin' } as unknown as FileTransfer,
+                ],
+            });
+
+            await useStore.getState().removeFile('1', 'received');
+
+            expect(useStore.getState().receivedFiles).toHaveLength(0);
+            expect(useStore.getState().addLog).toHaveBeenCalledWith(
+                'success',
+                'File removed from history'
+            );
+        });
+
+        it('should handle null blob in downloadFile', async () => {
+            const transfer = {
+                id: '1',
+                status: 'completed',
+                metadata: { name: 'test.txt' },
+                storageMode: 'power',
+            };
+            useStore = createTestStore({
+                receivedFiles: [transfer as unknown as FileTransfer],
+            });
+
+            const { OPFSManager } = await import('@/lib/opfs-manager');
+            (OPFSManager.getTransferFile as Mock).mockResolvedValue(null);
+
+            await useStore.getState().downloadFile(useStore.getState().receivedFiles[0]);
+
+            expect(useStore.getState().addLog).toHaveBeenCalledWith(
+                'error',
+                'File data not available'
+            );
+        });
+
+        it('should update downloaded state on successful downloadFile', async () => {
+            const transfer = {
+                id: '1',
+                status: 'completed',
+                metadata: { name: 'test.txt' },
+                chunks: [new Uint8Array([1]).buffer],
+                storageMode: 'compatibility',
+            };
+            useStore = createTestStore({
+                receivedFiles: [transfer as unknown as FileTransfer],
+            });
+
+            await useStore.getState().downloadFile(useStore.getState().receivedFiles[0]);
+
+            expect(useStore.getState().receivedFiles[0].downloaded).toBe(true);
+        });
+
+        it('should continue if data is null in downloadAllReceivedFiles', async () => {
+            const transfer1 = {
+                id: '1',
+                status: 'completed',
+                metadata: { name: 'fail.txt' },
+                storageMode: 'power',
+            };
+            const transfer2 = {
+                id: '2',
+                status: 'completed',
+                metadata: { name: 'ok.txt' },
+                chunks: [new Uint8Array([1]).buffer],
+                storageMode: 'compatibility',
+            };
+
+            useStore = createTestStore({
+                receivedFiles: [
+                    transfer1 as unknown as FileTransfer,
+                    transfer2 as unknown as FileTransfer,
+                ],
+            });
+
+            const { OPFSManager } = await import('@/lib/opfs-manager');
+            // Mock getTransferFile to return null for transfer1 (id: '1')
+            (OPFSManager.getTransferFile as Mock).mockImplementation((id: string) => {
+                if (id === '1') {
+                    return null;
+                }
+                return { getFile: vi.fn().mockResolvedValue(new File([], 'ok.txt')) };
+            });
+
+            await useStore.getState().downloadAllReceivedFiles();
+
+            expect(useStore.getState().receivedFiles[1].downloaded).toBe(true);
+        });
+
+        it('should wait for data channel drain (backpressure)', async () => {
+            const mockSend = vi.fn();
+            const dataChannel = {
+                bufferedAmount: 2 * 1024 * 1024, // 2MB (> 1MB limit)
+                addEventListener: vi.fn().mockImplementation((event, cb) => {
+                    if (event === 'bufferedamountlow') {
+                        setTimeout(cb, 50);
+                    }
+                }),
+            };
+            useStore = createTestStore({
+                connection: { send: mockSend, dataChannel } as unknown as DataConnection,
+                isConnected: true,
+            });
+
+            const file = new File([new ArrayBuffer(128 * 1024)], 'large.dat');
+
+            vi.useFakeTimers();
+            const sendPromise = useStore.getState().sendFile(file);
+
+            await vi.advanceTimersByTimeAsync(100);
+
+            await sendPromise;
+            expect(mockSend).toHaveBeenCalled();
+            vi.useRealTimers();
+        });
+
+        it('should handle sendFile when dataChannel is missing', async () => {
+            const mockSend = vi.fn();
+            useStore = createTestStore({
+                connection: { send: mockSend } as unknown as DataConnection,
+                isConnected: true,
+            });
+
+            const file = new File(['test'], 'test.txt');
+            await useStore.getState().sendFile(file);
+
+            expect(mockSend).toHaveBeenCalled();
         });
     });
 });
