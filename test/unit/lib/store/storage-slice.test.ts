@@ -4,20 +4,22 @@ import { create } from 'zustand';
 import { createStorageSlice } from '@/lib/store/slices/storage-slice';
 import { StoreState } from '@/lib/store/types';
 
-// Mock dependency
 vi.mock('@/lib/storage-mode', () => ({
     detectStorageCapabilities: vi.fn(),
 }));
 
-import { detectStorageCapabilities } from '@/lib/storage-mode';
+import { detectStorageCapabilities, StorageCapabilities } from '@/lib/storage-mode';
 
 const createTestStore = () => {
     return create<StoreState>(
         (set, get, api) =>
             ({
-                // Mock addLog dependency
                 addLog: vi.fn(),
-                ...createStorageSlice(set, get, api),
+                ...createStorageSlice(
+                    set as unknown as never,
+                    get as unknown as never,
+                    api as unknown as never
+                ),
             }) as unknown as StoreState
     );
 };
@@ -35,12 +37,11 @@ describe('storage-slice', () => {
     });
 
     it('should initialize storage and update capabilities', async () => {
-        const mockCaps = {
+        const mockCaps: StorageCapabilities = {
             mode: 'power',
-            available: 1000,
             supportsOPFS: true,
-            browserInfo: {},
-        } as any;
+            browserInfo: 'Chrome',
+        };
         vi.mocked(detectStorageCapabilities).mockResolvedValue(mockCaps);
 
         await useStore.getState().initializeStorage();

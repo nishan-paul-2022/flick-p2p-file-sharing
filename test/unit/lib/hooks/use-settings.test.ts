@@ -3,13 +3,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useSettings } from '@/lib/hooks/use-settings';
 
-// Mock idb-keyval
 vi.mock('idb-keyval', () => ({
     get: vi.fn(),
     set: vi.fn().mockResolvedValue(undefined),
 }));
 
-// Mock store
 const mockInitializePeer = vi.fn().mockResolvedValue(undefined);
 const mockDestroy = vi.fn();
 const mockAddLog = vi.fn();
@@ -30,12 +28,11 @@ import { get, set } from 'idb-keyval';
 describe('useSettings', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        // Default get mock to return null/undefined
         vi.mocked(get).mockResolvedValue(undefined);
     });
 
     it('should load settings on open', async () => {
-        vi.mocked(get).mockImplementation((key: any) => {
+        vi.mocked(get).mockImplementation((key: unknown) => {
             if (key === 'turn_provider') {
                 return Promise.resolve('metered');
             }
@@ -47,7 +44,6 @@ describe('useSettings', () => {
 
         const { result } = renderHook(() => useSettings(true, vi.fn()));
 
-        // Initially loading
         expect(result.current.status.isLoading).toBe(true);
 
         await waitFor(() => {
@@ -80,7 +76,6 @@ describe('useSettings', () => {
 
         await waitFor(() => expect(result.current.status.isLoading).toBe(false));
 
-        // At start (defaults), no changes
         expect(result.current.status.hasChanges).toBe(false);
 
         act(() => {
@@ -106,7 +101,6 @@ describe('useSettings', () => {
 
         expect(result.current.status.isValid).toBe(true);
 
-        // Switch to metered
         act(() => {
             result.current.setters.setProvider('metered');
         });
@@ -127,7 +121,6 @@ describe('useSettings', () => {
 
         await waitFor(() => expect(result.current.status.isLoading).toBe(false));
 
-        // Make changes to make it valid
         act(() => {
             result.current.setters.setIdent('valid');
             result.current.setters.setSecret('valid');
@@ -140,7 +133,7 @@ describe('useSettings', () => {
 
         expect(set).toHaveBeenCalled();
         expect(mockDestroy).toHaveBeenCalled();
-        expect(mockInitializePeer).toHaveBeenCalledWith('123'); // Room code from mock store
+        expect(mockInitializePeer).toHaveBeenCalledWith('123');
         expect(mockAddLog).toHaveBeenCalledWith('success', expect.any(String), expect.any(String));
         expect(onCloseSpy).toHaveBeenCalled();
         expect(result.current.status.isSaving).toBe(false);

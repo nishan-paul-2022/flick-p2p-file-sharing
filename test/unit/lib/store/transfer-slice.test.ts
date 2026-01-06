@@ -5,12 +5,11 @@ import { createTransferSlice } from '@/lib/store/slices/transfer-slice';
 import { StoreState } from '@/lib/store/types';
 import { FileTransfer } from '@/lib/types';
 
-// GLOBALS MOCKING
 const mockURL = {
     createObjectURL: vi.fn(),
     revokeObjectURL: vi.fn(),
 };
-global.URL = mockURL as unknown as typeof URL;
+vi.stubGlobal('URL', mockURL);
 
 const mockAnchor = {
     href: '',
@@ -18,7 +17,6 @@ const mockAnchor = {
     click: vi.fn(),
     style: {},
 };
-// Use spyOn to allow restoration
 vi.spyOn(document, 'createElement').mockReturnValue(mockAnchor as unknown as HTMLElement);
 vi.spyOn(document.body, 'appendChild').mockImplementation(
     () => mockAnchor as unknown as HTMLElement
@@ -46,7 +44,6 @@ vi.mock('jszip', () => {
     };
 });
 
-// CACHE MOCK
 vi.mock('@/lib/store/cache', () => ({
     opfsHandleCache: {
         get: vi.fn(),
@@ -95,16 +92,16 @@ describe('transfer-slice', () => {
     describe('downloadFile', () => {
         it('should handle download for memory file', async () => {
             useStore = createTestStore();
-            const transfer = {
+            const transfer: Partial<FileTransfer> = {
                 id: '1',
-                metadata: { name: 'test.txt', type: 'text/plain' },
-                chunks: [new Blob(['content'])],
+                metadata: { name: 'test.txt', type: 'text/plain', size: 7, timestamp: Date.now() },
+                chunks: [new TextEncoder().encode('content').buffer],
                 storageMode: 'compatibility',
             };
 
             mockURL.createObjectURL.mockReturnValue('blob:url');
 
-            await useStore.getState().downloadFile(transfer as unknown as FileTransfer);
+            await useStore.getState().downloadFile(transfer as FileTransfer);
 
             expect(mockURL.createObjectURL).toHaveBeenCalled();
             expect(mockAnchor.click).toHaveBeenCalled();
@@ -122,13 +119,14 @@ describe('transfer-slice', () => {
                 throw new Error('fail');
             });
 
-            const transfer = {
+            const transfer: Partial<FileTransfer> = {
                 id: '1',
-                metadata: { name: 'test.txt' },
-                chunks: [new Blob(['content'])],
+                metadata: { name: 'test.txt', type: 'text/plain', size: 7, timestamp: Date.now() },
+                chunks: [new TextEncoder().encode('content').buffer],
+                storageMode: 'compatibility',
             };
 
-            await useStore.getState().downloadFile(transfer as unknown as FileTransfer);
+            await useStore.getState().downloadFile(transfer as FileTransfer);
             expect(useStore.getState().addLog).toHaveBeenCalledWith(
                 'error',
                 'Download failed',

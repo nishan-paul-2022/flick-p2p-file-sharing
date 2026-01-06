@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FileDropZone } from '@/components/FileDropZone';
 
-// Define the shape of our store state for TypeScript
 interface StoreState {
     isConnected: boolean;
     sendFile: (file: File) => Promise<void>;
@@ -11,10 +10,8 @@ interface StoreState {
     addLog: (type: string, title: string, message: string) => void;
 }
 
-// Create a safe mock for usePeerStore that we can control
 const mockUsePeerStore = vi.fn();
 
-// Mock the absolute path import
 vi.mock('@/lib/store', () => ({
     usePeerStore: (selector: (state: StoreState) => unknown) => mockUsePeerStore(selector),
 }));
@@ -28,7 +25,6 @@ describe('FileDropZone Component', () => {
         addLog: vi.fn(),
     };
 
-    // Helper to setup the store mock implementation
     const setupStore = (overrides: Partial<StoreState> = {}) => {
         const state = { ...defaultState, ...overrides };
         mockUsePeerStore.mockImplementation((selector: (s: StoreState) => unknown) =>
@@ -146,7 +142,6 @@ describe('FileDropZone Component', () => {
 
         const file = new File(['test'], 'test.txt');
 
-        // Try trigger change
         await act(async () => {
             fireEvent.change(input, { target: { files: [file] } });
         });

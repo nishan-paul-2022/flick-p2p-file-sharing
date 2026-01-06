@@ -5,7 +5,6 @@ import { create } from 'zustand';
 import { createPeerSlice } from '@/lib/store/slices/peer-slice';
 import { StoreState } from '@/lib/store/types';
 
-// Mock dependencies
 const mockPeerInstance = {
     on: vi.fn(),
     connect: vi.fn(),
@@ -71,7 +70,6 @@ describe('peer-slice', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        // Reset and setup default behavior
         mockPeerInstance.on.mockReset();
         mockPeerInstance.on.mockImplementation((event, callback) => {
             if (event === 'open') {
@@ -87,7 +85,6 @@ describe('peer-slice', () => {
 
     describe('initializePeer', () => {
         it('should initialize peer and handle open event', async () => {
-            // Setup mock to trigger 'open' immediately
             mockPeerInstance.on.mockImplementation((event, callback) => {
                 if (event === 'open') {
                     callback('my-id');
@@ -126,12 +123,9 @@ describe('peer-slice', () => {
 
     describe('connectToPeer', () => {
         it('should connect to peer successfully', async () => {
-            // Mock peer initialization first
-            useStore.setState({ peer: mockPeerInstance as unknown as any });
+            useStore.setState({ peer: mockPeerInstance as unknown as StoreState['peer'] });
 
             mockPeerInstance.connect.mockReturnValue(mockConnection);
-
-            // Trigger connection open
             mockConnection.on.mockImplementation((event, callback) => {
                 if (event === 'open') {
                     callback();
@@ -155,8 +149,8 @@ describe('peer-slice', () => {
     describe('disconnect', () => {
         it('should clean up connection and peer', async () => {
             useStore.setState({
-                peer: mockPeerInstance as unknown as any,
-                connection: mockConnection as unknown as any,
+                peer: mockPeerInstance as unknown as StoreState['peer'],
+                connection: mockConnection as unknown as StoreState['connection'],
                 isConnected: true,
                 peerId: 'me',
                 roomCode: 'room',

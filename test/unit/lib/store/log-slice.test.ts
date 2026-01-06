@@ -5,7 +5,6 @@ import { MAX_LOGS } from '@/lib/constants';
 import { createLogSlice } from '@/lib/store/slices/log-slice';
 import { StoreState } from '@/lib/store/types';
 
-// Helper to create a store with just the log slice
 const createTestStore = () => {
     return create<StoreState>(
         (set, get, api) =>
@@ -43,19 +42,13 @@ describe('log-slice', () => {
     });
 
     it('should respect MAX_LOGS limit', () => {
-        // Add more than MAX_LOGS
-        // Assuming MAX_LOGS is small or we loop.
-        // If MAX_LOGS is large (e.g. 50), we can loop.
-
-        // Ideally we import MAX_LOGS.
-
         for (let i = 0; i < MAX_LOGS + 10; i++) {
             useStore.getState().addLog('info', `Log ${i}`);
         }
 
         const state = useStore.getState();
         expect(state.logs.length).toBeLessThanOrEqual(MAX_LOGS);
-        expect(state.logs[0].message).toBe(`Log ${MAX_LOGS + 9}`); // Most recent should be first
+        expect(state.logs[0].message).toBe(`Log ${MAX_LOGS + 9}`);
     });
 
     it('should not mark unread if panel is open', () => {

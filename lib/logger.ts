@@ -1,13 +1,8 @@
-/**
- * Simple logger utility for industry-standard logging
- * Only logs to console in development environment to keep production clean
- */
-
 type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'success';
 
-const isDev = process.env.NODE_ENV === 'development';
-
 const log = (level: LogLevel, ...args: unknown[]) => {
+    const isDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
+
     if (!isDev && level !== 'error' && level !== 'warn') {
         return;
     }

@@ -4,7 +4,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { Header } from '@/components/Header';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
-// Mock dynamic import of SettingsModal
 vi.mock('@/components/SettingsModal', () => ({
     SettingsModal: ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) =>
         isOpen ? (
@@ -14,7 +13,6 @@ vi.mock('@/components/SettingsModal', () => ({
         ) : null,
 }));
 
-// Mock Lucide icons
 vi.mock('lucide-react', () => ({
     Fingerprint: () => <svg data-testid="icon-fingerprint" />,
     Settings: () => <svg data-testid="icon-settings" />,
@@ -22,23 +20,42 @@ vi.mock('lucide-react', () => ({
 
 // Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', async () => {
-    const actual = await vi.importActual('framer-motion');
+    const actual = (await vi.importActual('framer-motion')) as Record<string, unknown>;
+    const mockComponent = (tag: string) => {
+        const Component = ({
+            children,
+            whileHover: _wh,
+            whileTap: _wt,
+            initial: _i,
+            animate: _a,
+            exit: _e,
+            transition: _t,
+            variants: _v,
+            layout: _l,
+            onAnimationStart: _oa,
+            onAnimationComplete: _oc,
+            onUpdate: _ou,
+            ...props
+        }: { children?: React.ReactNode } & Record<string, unknown>) => {
+            const Tag = tag as React.ElementType;
+            return <Tag {...props}>{children}</Tag>;
+        };
+        Component.displayName = `mock-motion-${tag}`;
+        return Component;
+    };
+
     return {
         ...actual,
         motion: {
-            div: ({
-                children,
-                ...props
-            }: { children: React.ReactNode } & React.HTMLAttributes<HTMLDivElement>) => (
-                <div {...props}>{children}</div>
-            ),
-            button: ({
-                children,
-                ...props
-            }: { children: React.ReactNode } & React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-                <button {...props}>{children}</button>
-            ),
+            div: mockComponent('div'),
+            button: mockComponent('button'),
+            span: mockComponent('span'),
+            p: mockComponent('p'),
+            nav: mockComponent('nav'),
+            header: mockComponent('header'),
+            footer: mockComponent('footer'),
         },
+        AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
     };
 });
 
@@ -73,7 +90,6 @@ describe('Header Component', () => {
 
     it('shows unread logs indicator when hasUnreadLogs is true', () => {
         const { rerender, container } = renderHeader();
-        // Should not see indicator initially
         expect(container.querySelector('.bg-primary.absolute')).toBeNull();
 
         rerender(
@@ -81,7 +97,6 @@ describe('Header Component', () => {
                 <Header {...defaultProps} hasUnreadLogs={true} />
             </TooltipProvider>
         );
-        // Should see indicator (span with bg-primary)
         expect(container.querySelector('.bg-primary.absolute')).toBeInTheDocument();
     });
 

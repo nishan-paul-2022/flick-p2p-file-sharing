@@ -14,10 +14,12 @@ const createTestStore = () => {
             'isLogPanelOpen' | 'hasUnreadLogs' | 'toggleLogPanel' | 'activeTab' | 'setActiveTab'
         >
     >((set, get, api) => {
-        // We only implement the UI slice part here.
-        // Cast set/get/api to any to avoid having to mock the entire StoreState tree which is complex
         return {
-            ...createUISlice(set as unknown as any, get as unknown as any, api as unknown as any),
+            ...createUISlice(
+                set as unknown as never,
+                get as unknown as never,
+                api as unknown as never
+            ),
         } as unknown as StoreState;
     });
 };

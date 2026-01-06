@@ -35,33 +35,33 @@ describe('useFileSorting', () => {
     it('should sort by name ascending', () => {
         const { result } = renderHook(() => useFileSorting(mockFiles, 'name', 'asc'));
 
-        expect(result.current[0].id).toBe('2'); // a.txt
-        expect(result.current[1].id).toBe('1'); // b.txt
-        expect(result.current[2].id).toBe('3'); // C.txt (case insensitive)
+        expect(result.current[0].id).toBe('2');
+        expect(result.current[1].id).toBe('1');
+        expect(result.current[2].id).toBe('3');
     });
 
     it('should sort by name descending', () => {
         const { result } = renderHook(() => useFileSorting(mockFiles, 'name', 'desc'));
 
-        expect(result.current[0].id).toBe('3'); // C.txt
-        expect(result.current[1].id).toBe('1'); // b.txt
-        expect(result.current[2].id).toBe('2'); // a.txt
+        expect(result.current[0].id).toBe('3');
+        expect(result.current[1].id).toBe('1');
+        expect(result.current[2].id).toBe('2');
     });
 
     it('should sort by time ascending', () => {
         const { result } = renderHook(() => useFileSorting(mockFiles, 'time', 'asc'));
 
-        expect(result.current[0].id).toBe('3'); // 500
-        expect(result.current[1].id).toBe('1'); // 1000
-        expect(result.current[2].id).toBe('2'); // 2000
+        expect(result.current[0].id).toBe('3');
+        expect(result.current[1].id).toBe('1');
+        expect(result.current[2].id).toBe('2');
     });
 
     it('should sort by time descending', () => {
         const { result } = renderHook(() => useFileSorting(mockFiles, 'time', 'desc'));
 
-        expect(result.current[0].id).toBe('2'); // 2000
-        expect(result.current[1].id).toBe('1'); // 1000
-        expect(result.current[2].id).toBe('3'); // 500
+        expect(result.current[0].id).toBe('2');
+        expect(result.current[1].id).toBe('1');
+        expect(result.current[2].id).toBe('3');
     });
 
     it('should handle empty file list', () => {
@@ -91,9 +91,8 @@ describe('useFileSorting', () => {
 
         const firstResult = result.current;
 
-        // Rerender with same props
         rerender({ files: mockFiles, sortBy: 'name', sortOrder: 'asc' });
 
-        expect(result.current).toBe(firstResult); // Reference equality check
+        expect(result.current).toBe(firstResult);
     });
 });

@@ -72,14 +72,14 @@ describe('lib/utils', () => {
         });
 
         it('should reject incorrect lengths', () => {
-            expect(isValidRoomCode('ABC')).toBe(false); // Too short (assuming default is > 3)
+            expect(isValidRoomCode('ABC')).toBe(false);
             expect(isValidRoomCode('A'.repeat(ROOM_CODE_LENGTH + 1))).toBe(false);
         });
 
         it('should reject invalid characters', () => {
             const validLen = 'A'.repeat(ROOM_CODE_LENGTH - 1);
             expect(isValidRoomCode(validLen + '!')).toBe(false);
-            expect(isValidRoomCode(validLen + 'a')).toBe(false); // Lowercase
+            expect(isValidRoomCode(validLen + 'a')).toBe(false);
         });
     });
 
@@ -149,7 +149,6 @@ describe('lib/utils', () => {
 
     describe('formatFilenameTimestamp', () => {
         it('should format filename friendly timestamp', () => {
-            // Mock date
             const mockDate = new Date(2023, 0, 15, 14, 30, 45);
             vi.useFakeTimers();
             vi.setSystemTime(mockDate);

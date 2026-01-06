@@ -9,7 +9,6 @@ describe('useClickOutside', () => {
         const handler = vi.fn();
         const ref = createRef<HTMLDivElement>();
 
-        // Mock the element being in the document
         const element = document.createElement('div');
         document.body.appendChild(element);
 
@@ -17,7 +16,6 @@ describe('useClickOutside', () => {
 
         renderHook(() => useClickOutside(ref, handler));
 
-        // Click outside (on body)
         const event = new MouseEvent('mousedown', { bubbles: true });
         document.dispatchEvent(event);
 
@@ -38,7 +36,6 @@ describe('useClickOutside', () => {
 
         renderHook(() => useClickOutside(ref, handler));
 
-        // Click inside
         const event = new MouseEvent('mousedown', { bubbles: true });
         // Simulating the event target being the element (contains check logic)
         Object.defineProperty(event, 'target', { value: element });
