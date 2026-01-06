@@ -3,8 +3,8 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { Footer } from '@/components/Footer';
 
-// Mock Next.js Image component
 vi.mock('next/image', () => ({
+    /* eslint-disable-next-line @next/next/no-img-element */
     default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
 }));
 

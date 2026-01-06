@@ -1,6 +1,6 @@
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { StoreState } from './store/types';
+import { StoreState } from '@/lib/store/types';
 
 declare global {
     interface Window {
