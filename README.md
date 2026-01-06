@@ -208,6 +208,12 @@ cd flick-p2p-file-sharing
 
 # Install all dependencies
 npm install
+
+# Install Playwright browsers (Required for E2E tests)
+npx playwright install
+
+# For Linux users only (installs system dependencies)
+npx playwright install-deps
 ```
 
 ### 3️⃣ Configure Xirsys TURN Server (Required)

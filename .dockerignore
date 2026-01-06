@@ -10,3 +10,20 @@ README.md
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Testing
+test/
+vitest.config.ts
+playwright.config.ts
+playwright-report/
+test-results/
+coverage/
+
+# Tools & Configs
+.husky/
+.vscode/
+.prettier*
+.commitlint*
+eslint.config.mjs
+Makefile
+tsconfig.tsbuildinfo
