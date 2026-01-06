@@ -600,6 +600,35 @@ describe('peer-slice', () => {
                 expect.any(String)
             );
         });
+
+        it('should handle connection close event', async () => {
+            let closeCallback: (() => void) | undefined;
+            mockPeerInstance.on.mockImplementation((event, callback) => {
+                if (event === 'connection') {
+                    const mockIncomingConn = {
+                        on: (ev: string, cb: () => void) => {
+                            if (ev === 'close') {
+                                closeCallback = cb;
+                            }
+                        },
+                        peerConnection: {},
+                    };
+                    callback(mockIncomingConn as unknown as DataConnection);
+                }
+                if (event === 'open') {
+                    callback('host-id');
+                }
+            });
+
+            await useStore.getState().initializePeer('room-123');
+
+            if (closeCallback) {
+                await closeCallback();
+            }
+
+            expect(useStore.getState().isConnected).toBe(false);
+            expect(useStore.getState().addLog).toHaveBeenCalledWith('info', 'Peer disconnected');
+        });
     });
 
     describe('Storage Edge Cases', () => {

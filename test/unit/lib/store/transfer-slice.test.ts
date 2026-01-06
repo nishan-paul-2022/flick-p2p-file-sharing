@@ -461,5 +461,38 @@ describe('transfer-slice', () => {
 
             expect(mockSend).toHaveBeenCalled();
         });
+
+        it('should clear received history and handle OPFS errors', async () => {
+            const { OPFSManager } = await import('@/lib/opfs-manager');
+            (OPFSManager.deleteTransferFile as Mock).mockRejectedValueOnce(
+                new Error('Delete error')
+            );
+
+            useStore = createTestStore({
+                receivedFiles: [
+                    { id: '1', storageMode: 'power' } as unknown as FileTransfer,
+                    { id: '2', storageMode: 'memory' } as unknown as FileTransfer,
+                ],
+            });
+
+            await useStore.getState().clearReceivedHistory();
+
+            expect(useStore.getState().receivedFiles).toHaveLength(0);
+            expect(OPFSManager.deleteTransferFile).toHaveBeenCalledWith('1');
+            expect(useStore.getState().addLog).toHaveBeenCalledWith(
+                'success',
+                'Received history cleared'
+            );
+        });
+
+        it('should handle removeFile for outgoing files', async () => {
+            useStore = createTestStore({
+                outgoingFiles: [{ id: 'out-1' } as unknown as FileTransfer],
+            });
+
+            await useStore.getState().removeFile('out-1', 'outgoing');
+
+            expect(useStore.getState().outgoingFiles).toHaveLength(0);
+        });
     });
 });

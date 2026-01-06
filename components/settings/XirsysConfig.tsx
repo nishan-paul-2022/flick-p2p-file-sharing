@@ -28,8 +28,11 @@ export function XirsysConfig({
             className="space-y-4"
         >
             <div className="space-y-2">
-                <label className="text-sm font-medium text-white/70">Ident</label>
+                <label htmlFor="xirsys-ident" className="text-sm font-medium text-white/70">
+                    Ident
+                </label>
                 <Input
+                    id="xirsys-ident"
                     value={ident}
                     onChange={(e) => onIdentChange(e.target.value)}
                     disabled={disabled}
@@ -37,8 +40,11 @@ export function XirsysConfig({
                 />
             </div>
             <div className="space-y-2">
-                <label className="text-sm font-medium text-white/70">Secret</label>
+                <label htmlFor="xirsys-secret" className="text-sm font-medium text-white/70">
+                    Secret
+                </label>
                 <Input
+                    id="xirsys-secret"
                     value={secret}
                     onChange={(e) => onSecretChange(e.target.value)}
                     type="password"
@@ -47,8 +53,11 @@ export function XirsysConfig({
                 />
             </div>
             <div className="space-y-2">
-                <label className="text-sm font-medium text-white/70">Channel</label>
+                <label htmlFor="xirsys-channel" className="text-sm font-medium text-white/70">
+                    Channel
+                </label>
                 <Input
+                    id="xirsys-channel"
                     value={channel}
                     onChange={(e) => onChannelChange(e.target.value)}
                     disabled={disabled}

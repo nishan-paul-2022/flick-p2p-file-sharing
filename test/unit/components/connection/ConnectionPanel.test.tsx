@@ -118,7 +118,7 @@ describe('ConnectionPanel', () => {
         expect(mockUseRoomConnection.disconnect).toHaveBeenCalled();
     });
 
-    it('shows loading spinner when joining', () => {
+    it('shows loading spinner when joining', async () => {
         vi.mocked(useRoomConnection).mockReturnValue({
             ...mockUseRoomConnection,
             isJoining: true,
@@ -126,8 +126,7 @@ describe('ConnectionPanel', () => {
         });
 
         render(<ConnectionPanel />);
-        expect(
-            screen.getByRole('button', { name: /Join room/i }).querySelector('.animate-spin')
-        ).toBeInTheDocument();
+        const joinButton = screen.getByRole('button', { name: /Join room/i });
+        expect(joinButton.querySelector('.animate-spin')).toBeInTheDocument();
     });
 });

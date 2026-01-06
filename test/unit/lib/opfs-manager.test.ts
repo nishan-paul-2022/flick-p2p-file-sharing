@@ -115,4 +115,39 @@ describe('OPFSManager', () => {
         );
         expect(result).toBe(mockBlob);
     });
+
+    it('getRootDirectory should throw if OPFS is not supported', async () => {
+        const originalStorage = navigator.storage;
+        Object.defineProperty(navigator, 'storage', {
+            value: { getDirectory: undefined },
+            configurable: true,
+        });
+
+        await expect(
+            (OPFSManager as unknown as { getRootDirectory: () => Promise<void> }).getRootDirectory()
+        ).rejects.toThrow('OPFS not supported');
+
+        Object.defineProperty(navigator, 'storage', { value: originalStorage, configurable: true });
+    });
+
+    it('writeChunkWithWritable should rethrow unknown errors', async () => {
+        mockWritable.seek.mockRejectedValue(new Error('Fatal error'));
+        await expect(
+            OPFSManager.writeChunkWithWritable(
+                mockWritable as unknown as FileSystemWritableFileStream,
+                new ArrayBuffer(1),
+                0
+            )
+        ).rejects.toThrow('Fatal error');
+    });
+
+    it('deleteTransferFile should warn on error', async () => {
+        mockRootHandle.getDirectoryHandle.mockRejectedValue(new Error('FS Lock'));
+        const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+        await OPFSManager.deleteTransferFile('fail-id');
+
+        expect(consoleSpy).toHaveBeenCalled();
+        consoleSpy.mockRestore();
+    });
 });

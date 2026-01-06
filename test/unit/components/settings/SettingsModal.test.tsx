@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { SettingsModal } from '@/components/settings/SettingsModal';
@@ -15,19 +16,29 @@ vi.mock('@/lib/hooks/use-key-down', () => ({
 
 // Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', () => {
-    const motion = {
-        div: ({
-            children,
-            _whileHover,
-            _whileTap,
-            ...props
-        }: {
-            children: React.ReactNode;
-            [key: string]: unknown;
-        }) => <div {...(props as React.HTMLAttributes<HTMLDivElement>)}>{children}</div>,
-    };
+    const MockMotion = ({
+        children,
+        className,
+        // Strip animation props
+        initial: _initial,
+        animate: _animate,
+        exit: _exit,
+        whileHover: _whileHover,
+        whileTap: _whileTap,
+        transition: _transition,
+        ...props
+    }: { children?: React.ReactNode; className?: string } & Record<string, unknown>) => (
+        <div className={className} {...props}>
+            {children}
+        </div>
+    );
+
     return {
-        motion,
+        motion: {
+            div: MockMotion,
+            span: MockMotion,
+            button: MockMotion,
+        },
         AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
     };
 });
@@ -125,5 +136,56 @@ describe('SettingsModal', () => {
         render(<SettingsModal isOpen={true} onClose={mockOnClose} />);
         const applyButton = screen.getByText('Apply').closest('button');
         expect(applyButton?.disabled).toBe(true);
+    });
+
+    it('should call setProvider when clicking a provider card', () => {
+        const setProvider = vi.fn();
+        (useSettings as Mock).mockReturnValue({
+            ...defaultUseSettingsReturn,
+            setters: { ...defaultUseSettingsReturn.setters, setProvider },
+        });
+
+        render(<SettingsModal isOpen={true} onClose={mockOnClose} />);
+
+        // Get the provider card specifically (not the tab)
+        // One way is to find the label and get its parent div
+        const meteredLabels = screen.getAllByText('Metered');
+        const meteredCard = meteredLabels.find(
+            (el) => el.closest('div')?.onclick || el.parentElement?.onclick
+        );
+
+        if (meteredCard) {
+            fireEvent.click(meteredCard);
+            expect(setProvider).toHaveBeenCalledWith('metered');
+        } else {
+            // Alternative: find by text and filter out the role="tab"
+            const meteredLabel = meteredLabels.find((l) => l.getAttribute('role') !== 'tab');
+            if (meteredLabel) {
+                fireEvent.click(meteredLabel);
+                expect(setProvider).toHaveBeenCalledWith('metered');
+            } else {
+                throw new Error('Metered card not found');
+            }
+        }
+    });
+
+    it('should handle tab selection changes', async () => {
+        const user = userEvent.setup();
+        render(<SettingsModal isOpen={true} onClose={mockOnClose} />);
+
+        const triggers = screen.getAllByRole('tab');
+        const meteredTab = triggers.find((t) => t.textContent === 'Metered');
+
+        if (meteredTab) {
+            await user.click(meteredTab);
+
+            // Check if Metered tab is now active via attribute
+            expect(meteredTab.getAttribute('data-state')).toBe('active');
+
+            // Verify content switch
+            expect(screen.getByText(/API Key/i)).toBeInTheDocument();
+        } else {
+            throw new Error('Metered tab trigger not found');
+        }
     });
 });

@@ -15,8 +15,11 @@ export function MeteredConfig({ apiKey, disabled, onApiKeyChange }: MeteredConfi
             animate={{ opacity: 1, x: 0 }}
             className="space-y-2"
         >
-            <label className="text-sm font-medium text-white/70">API Key</label>
+            <label htmlFor="metered-api-key" className="text-sm font-medium text-white/70">
+                API Key
+            </label>
             <Input
+                id="metered-api-key"
                 value={apiKey}
                 onChange={(e) => onApiKeyChange(e.target.value)}
                 type="password"
