@@ -60,18 +60,22 @@ const setupICEHandlers = (
     };
 };
 
-const handleConnectionClose = async (
-    get: () => StoreState,
-    set: (state: Partial<StoreState>) => void
-) => {
+const closeAllOpfsWritables = async () => {
     for (const [id, writable] of opfsWritableCache.entries()) {
         try {
             await writable.close();
         } catch (e) {
-            console.warn('Failed to close writable on connection close:', e);
+            console.warn('Failed to close writable:', e);
         }
         opfsWritableCache.delete(id);
     }
+};
+
+const handleConnectionClose = async (
+    get: () => StoreState,
+    set: (state: Partial<StoreState>) => void
+) => {
+    await closeAllOpfsWritables();
     set({
         isConnected: false,
         connectionQuality: 'disconnected',
@@ -420,14 +424,7 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
 
     disconnect: async () => {
         const { connection, peer } = get();
-        for (const [id, writable] of opfsWritableCache.entries()) {
-            try {
-                await writable.close();
-            } catch (e) {
-                console.warn('Failed to close writable on disconnect:', e);
-            }
-            opfsWritableCache.delete(id);
-        }
+        await closeAllOpfsWritables();
 
         if (connection) {
             connection.close();

@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 const SettingsModal = dynamic(
-    () => import('@/components/SettingsModal').then((mod) => mod.SettingsModal),
+    () => import('@/components/settings/SettingsModal').then((mod) => mod.SettingsModal),
     {
         ssr: false,
     }

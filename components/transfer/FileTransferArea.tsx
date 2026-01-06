@@ -2,10 +2,10 @@
 
 import { Send } from 'lucide-react';
 
-import { FileDropZone } from '@/components/FileDropZone';
-import { FileList } from '@/components/FileList';
-import { TransferActionsBar } from '@/components/TransferActionsBar';
-import { TransferTabTrigger } from '@/components/TransferTabTrigger';
+import { FileDropZone } from '@/components/transfer/FileDropZone';
+import { FileList } from '@/components/transfer/FileList';
+import { TransferActionsBar } from '@/components/transfer/TransferActionsBar';
+import { TransferTabTrigger } from '@/components/transfer/TransferTabTrigger';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList } from '@/components/ui/tabs';
 import { usePeerStore } from '@/lib/store';
