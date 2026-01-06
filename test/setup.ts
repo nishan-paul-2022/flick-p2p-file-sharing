@@ -23,3 +23,16 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
     unobserve: vi.fn(),
     disconnect: vi.fn(),
 }));
+
+// Polyfill Blob.arrayBuffer for testing environment if needed
+if (typeof Blob !== 'undefined' && !Blob.prototype.arrayBuffer) {
+    Blob.prototype.arrayBuffer = function () {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                resolve(reader.result as ArrayBuffer);
+            };
+            reader.readAsArrayBuffer(this);
+        });
+    };
+}

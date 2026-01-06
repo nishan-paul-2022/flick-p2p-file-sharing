@@ -1,4 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { waitFor } from '@testing-library/react';
+import type { DataConnection } from 'peerjs';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { create } from 'zustand';
 
 import { createTransferSlice } from '@/lib/store/slices/transfer-slice';
@@ -37,10 +39,10 @@ vi.mock('@/lib/opfs-manager', () => ({
 // Mock JSZip
 vi.mock('jszip', () => {
     return {
-        default: vi.fn().mockImplementation(() => ({
-            file: vi.fn(),
-            generateAsync: vi.fn().mockResolvedValue(new Blob(['zip data'])),
-        })),
+        default: vi.fn().mockImplementation(function (this: { file: Mock; generateAsync: Mock }) {
+            this.file = vi.fn();
+            this.generateAsync = vi.fn().mockResolvedValue(new Blob(['zip data']));
+        }),
     };
 });
 
@@ -150,6 +152,101 @@ describe('transfer-slice', () => {
             });
             await useStore.getState().clearSentHistory();
             expect(useStore.getState().outgoingFiles).toEqual([]);
+        });
+    });
+
+    describe('sendFile', () => {
+        it('should chunk and send file', async () => {
+            const mockSend = vi.fn();
+            useStore = createTestStore({
+                connection: {
+                    send: mockSend,
+                    dataChannel: { bufferedAmount: 0 },
+                } as unknown as DataConnection,
+                isConnected: true,
+            });
+
+            const file = new File(['hello world'], 'hello.txt', { type: 'text/plain' });
+            // Polyfill arrayBuffer for jsdom if needed
+            if (!file.arrayBuffer) {
+                file.arrayBuffer = async () => new TextEncoder().encode('hello world').buffer;
+            }
+
+            await useStore.getState().sendFile(file);
+
+            // Wait for async sendNextChunk
+            await waitFor(() => {
+                expect(useStore.getState().outgoingFiles[0].status).toBe('completed');
+            });
+
+            // Should send metadata first
+            expect(mockSend).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    type: 'metadata',
+                })
+            );
+
+            // Should send at least one chunk
+            expect(mockSend).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    type: 'chunk',
+                    chunkIndex: 0,
+                })
+            );
+
+            // Should send complete
+            expect(mockSend).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    type: 'complete',
+                })
+            );
+        });
+
+        it('should not send if not connected', async () => {
+            useStore = createTestStore({
+                connection: null,
+                isConnected: false,
+            });
+
+            const file = new File(['test'], 'test.txt');
+            await useStore.getState().sendFile(file);
+
+            expect(useStore.getState().addLog).toHaveBeenCalledWith(
+                'error',
+                'Not connected to peer'
+            );
+            expect(useStore.getState().outgoingFiles).toHaveLength(0);
+        });
+    });
+
+    describe('downloadAllReceivedFiles', () => {
+        it('should create and download a zip file', async () => {
+            const transfer: FileTransfer = {
+                id: '1',
+                metadata: { name: 'test.txt', type: 'text/plain', size: 4, timestamp: Date.now() },
+                chunks: [new Uint8Array([1, 2, 3, 4]).buffer],
+                storageMode: 'compatibility',
+                status: 'completed',
+                progress: 100,
+                totalChunks: 1,
+            };
+
+            useStore = createTestStore({
+                receivedFiles: [transfer],
+            });
+
+            mockURL.createObjectURL.mockReturnValue('blob:zip');
+
+            await useStore.getState().downloadAllReceivedFiles();
+
+            expect(mockURL.createObjectURL).toHaveBeenCalled();
+            expect(mockAnchor.click).toHaveBeenCalled();
+            expect(mockAnchor.download).toContain('.zip');
+            expect(useStore.getState().addLog).toHaveBeenCalledWith(
+                'success',
+                'ZIP archive downloaded',
+                '1 files'
+            );
         });
     });
 });

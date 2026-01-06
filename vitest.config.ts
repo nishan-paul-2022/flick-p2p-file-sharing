@@ -9,5 +9,20 @@ export default defineConfig({
         setupFiles: ['./test/setup.ts'],
         globals: true,
         exclude: ['**/test/e2e/**', 'node_modules/**'],
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'json', 'html'],
+            exclude: [
+                'node_modules/**',
+                'test/**',
+                '**/*.d.ts',
+                '**/*.test.{ts,tsx}',
+                'app/layout.tsx',
+                'app/page.tsx',
+                'app/loading.tsx',
+                'app/not-found.tsx',
+                'app/error.tsx',
+            ],
+        },
     },
 });

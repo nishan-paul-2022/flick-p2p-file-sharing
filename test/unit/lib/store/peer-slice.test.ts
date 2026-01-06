@@ -1,11 +1,21 @@
 import { waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { DataConnection, Peer } from 'peerjs';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { create } from 'zustand';
 
 import { createPeerSlice } from '@/lib/store/slices/peer-slice';
 import { StoreState } from '@/lib/store/types';
+import { P2PMessage } from '@/lib/types';
 
-const mockPeerInstance = {
+interface MockPeerInstance {
+    on: Mock;
+    connect: Mock;
+    reconnect: Mock;
+    destroy: Mock;
+    id: string;
+}
+
+const mockPeerInstance: MockPeerInstance = {
     on: vi.fn(),
     connect: vi.fn(),
     reconnect: vi.fn(),
@@ -27,13 +37,11 @@ const mockConnection = {
     },
 };
 
-vi.mock('peerjs', () => {
-    return {
-        default: vi.fn().mockImplementation(function () {
-            return mockPeerInstance;
-        }),
-    };
-});
+vi.mock('peerjs', () => ({
+    default: vi.fn().mockImplementation(function mockPeer() {
+        return mockPeerInstance;
+    }),
+}));
 
 vi.mock('@/lib/ice-servers', () => ({
     getIceServers: vi.fn().mockResolvedValue([{ urls: 'stun:stun.l.google.com:19302' }]),
@@ -123,7 +131,7 @@ describe('peer-slice', () => {
 
     describe('connectToPeer', () => {
         it('should connect to peer successfully', async () => {
-            useStore.setState({ peer: mockPeerInstance as unknown as StoreState['peer'] });
+            useStore.setState({ peer: mockPeerInstance as unknown as Peer });
 
             mockPeerInstance.connect.mockReturnValue(mockConnection);
             mockConnection.on.mockImplementation((event, callback) => {
@@ -149,8 +157,8 @@ describe('peer-slice', () => {
     describe('disconnect', () => {
         it('should clean up connection and peer', async () => {
             useStore.setState({
-                peer: mockPeerInstance as unknown as StoreState['peer'],
-                connection: mockConnection as unknown as StoreState['connection'],
+                peer: mockPeerInstance as unknown as Peer,
+                connection: mockConnection as unknown as DataConnection,
                 isConnected: true,
                 peerId: 'me',
                 roomCode: 'room',
@@ -163,6 +171,145 @@ describe('peer-slice', () => {
             expect(useStore.getState().peer).toBeNull();
             expect(useStore.getState().isConnected).toBe(false);
             expect(useStore.getState().roomCode).toBeNull();
+        });
+    });
+
+    describe('Event Handling', () => {
+        it('should handle incoming peer connections', async () => {
+            let connectionCallback: ((conn: DataConnection) => void) | undefined;
+            mockPeerInstance.on.mockImplementation((event, callback) => {
+                if (event === 'connection') {
+                    connectionCallback = callback;
+                }
+                if (event === 'open') {
+                    callback('host-id');
+                }
+            });
+
+            await useStore.getState().initializePeer('room-123');
+
+            expect(connectionCallback).toBeDefined();
+
+            const mockIncomingConn = {
+                on: vi.fn(),
+                peerConnection: {
+                    oniceconnectionstatechange: null,
+                    onicecandidate: null,
+                },
+            };
+
+            if (connectionCallback) {
+                connectionCallback(mockIncomingConn as unknown as DataConnection);
+            }
+            expect(useStore.getState().connection).toBe(mockIncomingConn);
+        });
+
+        it('should handle incoming data (metadata)', async () => {
+            let dataCallback: ((data: P2PMessage) => void) | undefined;
+            mockPeerInstance.on.mockImplementation((event, callback) => {
+                if (event === 'connection') {
+                    const mockIncomingConn = {
+                        on: (ev: string, cb: (data?: unknown) => void) => {
+                            if (ev === 'data') {
+                                dataCallback = cb as (data: P2PMessage) => void;
+                            }
+                        },
+                        peerConnection: {},
+                    };
+                    callback(mockIncomingConn as unknown as DataConnection);
+                }
+                if (event === 'open') {
+                    callback('host-id');
+                }
+            });
+
+            await useStore.getState().initializePeer('room-123');
+
+            const metadataMsg: P2PMessage = {
+                type: 'metadata',
+                transferId: 'tx-1',
+                metadata: {
+                    name: 'test.png',
+                    type: 'image/png',
+                    size: 1024,
+                    timestamp: Date.now(),
+                },
+                totalChunks: 10,
+            };
+
+            if (dataCallback) {
+                await dataCallback(metadataMsg);
+            }
+
+            const received = useStore.getState().receivedFiles;
+            expect(received).toHaveLength(1);
+            expect(received[0].id).toBe('tx-1');
+            expect(received[0].status).toBe('transferring');
+        });
+
+        it('should handle incoming data (chunks and completion)', async () => {
+            let dataCallback: ((data: P2PMessage) => void) | undefined;
+            mockPeerInstance.on.mockImplementation((event, callback) => {
+                if (event === 'connection') {
+                    const mockIncomingConn = {
+                        on: (ev: string, cb: (data?: unknown) => void) => {
+                            if (ev === 'data') {
+                                dataCallback = cb as (data: P2PMessage) => void;
+                            }
+                            if (ev === 'open') {
+                                cb();
+                            }
+                        },
+                        peerConnection: {},
+                    };
+                    callback(mockIncomingConn as unknown as DataConnection);
+                }
+                if (event === 'open') {
+                    callback('host-id');
+                }
+            });
+
+            await useStore.getState().initializePeer('room-123');
+
+            if (!dataCallback) {
+                return;
+            }
+
+            // 1. Send metadata
+            await dataCallback({
+                type: 'metadata',
+                transferId: 'tx-2',
+                metadata: {
+                    name: 'file.dat',
+                    size: 100,
+                    type: 'application/octet-stream',
+                    timestamp: Date.now(),
+                },
+                totalChunks: 1,
+            });
+
+            // 2. Send chunk
+            await dataCallback({
+                type: 'chunk',
+                transferId: 'tx-2',
+                chunkIndex: 0,
+                data: new Uint8Array([1, 2, 3]).buffer,
+            });
+
+            expect(useStore.getState().receivedFiles[0].progress).toBe(100);
+
+            // 3. Send complete
+            await dataCallback({
+                type: 'complete',
+                transferId: 'tx-2',
+            });
+
+            expect(useStore.getState().receivedFiles[0].status).toBe('completed');
+            expect(useStore.getState().addLog).toHaveBeenCalledWith(
+                'success',
+                'File received',
+                'file.dat'
+            );
         });
     });
 });

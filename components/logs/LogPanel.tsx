@@ -84,6 +84,7 @@ export const LogPanel: React.FC = () => {
                                     size="icon"
                                     onClick={toggleLogPanel}
                                     className="h-8 w-8 text-white/40 transition-colors hover:bg-white/5 hover:text-white"
+                                    aria-label="Close log panel"
                                 >
                                     <X className="h-4 w-4" />
                                 </Button>
