@@ -6,11 +6,11 @@ import { useEffect, useState } from 'react';
 
 import Loading from '@/app/loading';
 import NotFound from '@/app/not-found';
-import { ConnectionPanel } from '@/components/ConnectionPanel';
-import { FileTransferArea } from '@/components/FileTransferArea';
-import { Footer } from '@/components/Footer';
-import { Header } from '@/components/Header';
-import { LogPanel } from '@/components/LogPanel';
+import { ConnectionPanel } from '@/components/connection/ConnectionPanel';
+import { Footer } from '@/components/layout/Footer';
+import { Header } from '@/components/layout/Header';
+import { LogPanel } from '@/components/logs/LogPanel';
+import { FileTransferArea } from '@/components/transfer/FileTransferArea';
 import { useAppInitialize } from '@/lib/hooks/use-app-initialize';
 import { usePeerStore } from '@/lib/store';
 import { cn } from '@/lib/utils';

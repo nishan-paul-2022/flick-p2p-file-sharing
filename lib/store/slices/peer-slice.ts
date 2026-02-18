@@ -1,8 +1,8 @@
-/* eslint-disable no-console */
 import Peer from 'peerjs';
 import { StateCreator } from 'zustand';
 
 import { CHUNK_SIZE, CONNECTION_TIMEOUT } from '@/lib/constants';
+import { logger } from '@/lib/logger';
 import { OPFSManager } from '@/lib/opfs-manager';
 import {
     incomingMessageSequenceCache,
@@ -10,11 +10,14 @@ import {
     opfsWritableCache,
     opfsWriteQueueCache,
 } from '@/lib/store/cache';
-import { PeerSlice, StoreState } from '@/lib/store/types';
+import { ExtendedDataConnection, PeerSlice, StoreState } from '@/lib/store/types';
 import { P2PMessage } from '@/lib/types';
-
+/**
+ * Sets up ICE connection state and candidate handlers for an active connection.
+ * Detects TURN relay usage and updates connection quality status.
+ */
 const setupICEHandlers = (
-    conn: any,
+    conn: ExtendedDataConnection,
     get: () => StoreState,
     set: (state: Partial<StoreState>) => void
 ) => {
@@ -25,7 +28,7 @@ const setupICEHandlers = (
 
     peerConnection.oniceconnectionstatechange = () => {
         const iceState = peerConnection.iceConnectionState;
-        console.log('[ICE] Connection state:', iceState);
+        logger.debug('ICE Connection state:', iceState);
 
         switch (iceState) {
             case 'checking':
@@ -50,7 +53,7 @@ const setupICEHandlers = (
     peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
         if (event.candidate) {
             const type = event.candidate.type;
-            console.log(`[ICE] Candidate gathered: ${type}`, event.candidate.candidate);
+            logger.debug(`ICE Candidate gathered: ${type}`, event.candidate.candidate);
 
             // Detect if using TURN relay
             if (type === 'relay') {
@@ -60,18 +63,22 @@ const setupICEHandlers = (
     };
 };
 
-const handleConnectionClose = async (
-    get: () => StoreState,
-    set: (state: Partial<StoreState>) => void
-) => {
+const closeAllOpfsWritables = async () => {
     for (const [id, writable] of opfsWritableCache.entries()) {
         try {
             await writable.close();
         } catch (e) {
-            console.warn('Failed to close writable on connection close:', e);
+            console.warn('Failed to close writable:', e);
         }
         opfsWritableCache.delete(id);
     }
+};
+
+const handleConnectionClose = async (
+    get: () => StoreState,
+    set: (state: Partial<StoreState>) => void
+) => {
+    await closeAllOpfsWritables();
     set({
         isConnected: false,
         connectionQuality: 'disconnected',
@@ -80,6 +87,10 @@ const handleConnectionClose = async (
     get().addLog('info', 'Peer disconnected');
 };
 
+/**
+ * Handles incoming data from a peer connection including metadata, file chunks, and completion signals.
+ * Uses a sequential cache to ensure messages for the same transfer are processed in order.
+ */
 const handleIncomingData = async (
     data: unknown,
     get: () => StoreState,
@@ -263,6 +274,10 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
 
     setRoomCode: (code) => set({ roomCode: code }),
 
+    /**
+     * Initializes a new PeerJS instance.
+     * @param code Optional room code if initializing as a host.
+     */
     initializePeer: async (code) => {
         return new Promise(async (resolve, reject) => {
             const { peer: existingPeer } = get();
@@ -300,13 +315,13 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                     activeConnection.close();
                 }
 
-                set({ connection: conn });
+                set({ connection: conn as ExtendedDataConnection });
 
                 conn.on('open', () => {
                     set({ isConnected: true, connectionQuality: 'excellent' });
                     get().addLog('success', 'Connected to peer', 'You can now share files');
 
-                    setupICEHandlers(conn, get, set);
+                    setupICEHandlers(conn as ExtendedDataConnection, get, set);
                 });
 
                 conn.on('data', (data) => handleIncomingData(data, get, set));
@@ -352,6 +367,10 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
         });
     },
 
+    /**
+     * Establishes a connection to a remote peer.
+     * @param targetCode The room code of the peer to connect to.
+     */
     connectToPeer: async (targetCode) => {
         const { peer } = get();
         if (!peer) {
@@ -370,7 +389,7 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                     userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
                 },
             });
-            set({ connection: conn });
+            set({ connection: conn as ExtendedDataConnection });
 
             const timeoutPromise = new Promise((_, reject) => {
                 setTimeout(
@@ -394,7 +413,7 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
                     set({ isConnected: true, connectionQuality: 'excellent' });
                     get().addLog('success', 'Connected to peer', 'You can now share files');
 
-                    setupICEHandlers(conn, get, set);
+                    setupICEHandlers(conn as ExtendedDataConnection, get, set);
                 })
                 .catch((err) => {
                     const errorMessage = err instanceof Error ? err.message : 'Failed to connect';
@@ -420,14 +439,7 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
 
     disconnect: async () => {
         const { connection, peer } = get();
-        for (const [id, writable] of opfsWritableCache.entries()) {
-            try {
-                await writable.close();
-            } catch (e) {
-                console.warn('Failed to close writable on disconnect:', e);
-            }
-            opfsWritableCache.delete(id);
-        }
+        await closeAllOpfsWritables();
 
         if (connection) {
             connection.close();

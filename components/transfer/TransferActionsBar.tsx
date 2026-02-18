@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Download, Trash2 } from 'lucide-react';
 
-import { SortMenu } from '@/components/SortMenu';
+import { SortMenu } from '@/components/transfer/SortMenu';
 import { Button } from '@/components/ui/button';
 import { usePeerStore } from '@/lib/store';
 import { FileTransfer } from '@/lib/types';

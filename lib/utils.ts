@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import { ROOM_CODE_LENGTH } from './constants';
+import { ROOM_CODE_LENGTH } from '@/lib/constants';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));

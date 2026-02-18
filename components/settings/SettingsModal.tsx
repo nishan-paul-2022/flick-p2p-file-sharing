@@ -65,11 +65,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     />
 
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                        transition={{ type: 'spring', stiffness: 450, damping: 40 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="relative flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/90 shadow-2xl backdrop-blur-xl sm:max-h-[90vh]"
+                        className="glass-dark relative flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-3xl"
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="settings-title"
@@ -200,36 +201,40 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             </AnimatePresence>
                         </div>
                         <div className="flex shrink-0 items-center justify-end gap-3 border-t border-white/10 bg-white/5 px-4 py-4 sm:px-6">
-                            <Button
-                                variant="ghost"
-                                onClick={onClose}
-                                disabled={status.isSaving}
-                                className="h-11 px-6 text-white/70 transition-all duration-300 hover:bg-white/10 hover:text-white focus-visible:ring-white/20"
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={handleSave}
-                                disabled={
-                                    status.isSaving ||
-                                    !status.hasChanges ||
-                                    status.isLoading ||
-                                    !status.isValid
-                                }
-                                className="h-11 bg-white px-6 text-zinc-950 transition-all duration-300 hover:scale-[1.02] hover:bg-white focus-visible:ring-white/20 active:scale-100 disabled:opacity-30 disabled:hover:scale-100 disabled:hover:bg-white"
-                            >
-                                {status.isSaving ? (
-                                    <>
-                                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                                        Applying...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Check className="mr-2 h-4 w-4" />
-                                        Apply
-                                    </>
-                                )}
-                            </Button>
+                            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                                <Button
+                                    variant="ghost"
+                                    onClick={onClose}
+                                    disabled={status.isSaving}
+                                    className="h-11 px-6 text-white/70 transition-all duration-300 hover:bg-white/10 hover:text-white focus-visible:ring-white/20"
+                                >
+                                    Cancel
+                                </Button>
+                            </motion.div>
+                            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                                <Button
+                                    onClick={handleSave}
+                                    disabled={
+                                        status.isSaving ||
+                                        !status.hasChanges ||
+                                        status.isLoading ||
+                                        !status.isValid
+                                    }
+                                    className="h-11 bg-white px-6 text-zinc-950 transition-all duration-300 hover:bg-white focus-visible:ring-white/20 disabled:opacity-30"
+                                >
+                                    {status.isSaving ? (
+                                        <>
+                                            <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                                            Applying...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Check className="mr-2 h-4 w-4" />
+                                            Apply
+                                        </>
+                                    )}
+                                </Button>
+                            </motion.div>
                         </div>
                     </motion.div>
                 </motion.div>

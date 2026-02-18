@@ -7,6 +7,27 @@ import React, { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { usePeerStore } from '@/lib/store';
 
+const getIcon = (type: string) => {
+    switch (type) {
+        case 'success':
+            return <CheckCircle2 className="h-4 w-4 text-emerald-500/80" />;
+        case 'warning':
+            return <AlertTriangle className="h-4 w-4 text-amber-500/80" />;
+        case 'error':
+            return <XCircle className="h-4 w-4 text-rose-500/80" />;
+        default:
+            return <Info className="h-4 w-4 text-sky-500/80" />;
+    }
+};
+
+const formatTime = (ts: number) => {
+    return new Date(ts).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+    });
+};
+
 export const LogPanel: React.FC = () => {
     const logs = usePeerStore((state) => state.logs);
     const clearLogs = usePeerStore((state) => state.clearLogs);
@@ -20,27 +41,6 @@ export const LogPanel: React.FC = () => {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [logs, isLogPanelOpen]);
-
-    const getIcon = (type: string) => {
-        switch (type) {
-            case 'success':
-                return <CheckCircle2 className="h-4 w-4 text-emerald-500/80" />;
-            case 'warning':
-                return <AlertTriangle className="h-4 w-4 text-amber-500/80" />;
-            case 'error':
-                return <XCircle className="h-4 w-4 text-rose-500/80" />;
-            default:
-                return <Info className="h-4 w-4 text-sky-500/80" />;
-        }
-    };
-
-    const formatTime = (ts: number) => {
-        return new Date(ts).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-        });
-    };
 
     return (
         <AnimatePresence>
@@ -84,6 +84,7 @@ export const LogPanel: React.FC = () => {
                                     size="icon"
                                     onClick={toggleLogPanel}
                                     className="h-8 w-8 text-white/40 transition-colors hover:bg-white/5 hover:text-white"
+                                    aria-label="Close log panel"
                                 >
                                     <X className="h-4 w-4" />
                                 </Button>

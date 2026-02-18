@@ -3,7 +3,7 @@ import '@/app/globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 
-import { ThemeProvider } from '@/components/ThemeProvider';
+import { ThemeProvider } from '@/components/layout/ThemeProvider';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
 const inter = Inter({

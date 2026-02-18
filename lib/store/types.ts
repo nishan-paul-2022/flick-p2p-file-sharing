@@ -6,11 +6,12 @@ import { ConnectionQuality, FileTransfer, LogEntry, SortBy, SortOrder } from '@/
 
 export interface ExtendedDataConnection extends DataConnection {
     dataChannel: RTCDataChannel;
+    peerConnection: RTCPeerConnection;
 }
 
 export interface PeerSlice {
     peer: Peer | null;
-    connection: DataConnection | null;
+    connection: ExtendedDataConnection | null;
     peerId: string | null;
     roomCode: string | null;
     isHost: boolean;

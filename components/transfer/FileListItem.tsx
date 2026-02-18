@@ -16,6 +16,7 @@ import {
     Trash2,
     XCircle,
 } from 'lucide-react';
+import { memo } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -29,61 +30,63 @@ interface FileListItemProps {
     onRemove: (id: string) => void;
 }
 
-export function FileListItem({ transfer, type, onDownload, onRemove }: FileListItemProps) {
-    const getFileIcon = (name: string, mimeType: string) => {
-        const ext = name.split('.').pop()?.toLowerCase();
+const getFileIcon = (name: string, mimeType: string) => {
+    const ext = name.split('.').pop()?.toLowerCase();
 
-        if (
-            mimeType.startsWith('image/') ||
-            ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'].includes(ext || '')
-        ) {
-            return { icon: FileImage, color: 'text-purple-400' };
-        }
-        if (
-            mimeType.startsWith('video/') ||
-            ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv'].includes(ext || '')
-        ) {
-            return { icon: FileVideo, color: 'text-rose-400' };
-        }
-        if (
-            mimeType.startsWith('audio/') ||
-            ['mp3', 'wav', 'ogg', 'm4a', 'flac'].includes(ext || '')
-        ) {
-            return { icon: FileAudio, color: 'text-amber-400' };
-        }
-        if (mimeType === 'application/pdf' || ext === 'pdf') {
-            return { icon: FileText, color: 'text-orange-500' };
-        }
-        if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext || '')) {
-            return { icon: FileArchive, color: 'text-yellow-400' };
-        }
-        if (
-            ['js', 'ts', 'jsx', 'tsx', 'html', 'css', 'py', 'go', 'rs', 'json', 'md'].includes(
-                ext || ''
-            )
-        ) {
-            return { icon: FileCode, color: 'text-blue-400' };
-        }
-        if (['xlsx', 'xls', 'csv', 'ods'].includes(ext || '')) {
-            return { icon: FileSpreadsheet, color: 'text-emerald-400' };
-        }
+    if (
+        mimeType.startsWith('image/') ||
+        ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'].includes(ext || '')
+    ) {
+        return { icon: FileImage, color: 'text-purple-400' };
+    }
+    if (
+        mimeType.startsWith('video/') ||
+        ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv'].includes(ext || '')
+    ) {
+        return { icon: FileVideo, color: 'text-rose-400' };
+    }
+    if (mimeType.startsWith('audio/') || ['mp3', 'wav', 'ogg', 'm4a', 'flac'].includes(ext || '')) {
+        return { icon: FileAudio, color: 'text-amber-400' };
+    }
+    if (mimeType === 'application/pdf' || ext === 'pdf') {
+        return { icon: FileText, color: 'text-orange-500' };
+    }
+    if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext || '')) {
+        return { icon: FileArchive, color: 'text-yellow-400' };
+    }
+    if (
+        ['js', 'ts', 'jsx', 'tsx', 'html', 'css', 'py', 'go', 'rs', 'json', 'md'].includes(
+            ext || ''
+        )
+    ) {
+        return { icon: FileCode, color: 'text-blue-400' };
+    }
+    if (['xlsx', 'xls', 'csv', 'ods'].includes(ext || '')) {
+        return { icon: FileSpreadsheet, color: 'text-emerald-400' };
+    }
 
-        return { icon: File, color: 'text-muted-foreground' };
-    };
+    return { icon: File, color: 'text-muted-foreground' };
+};
 
-    const getStatusIcon = (status: FileTransfer['status']) => {
-        switch (status) {
-            case 'completed':
-                return <CheckCircle2 className="h-5 w-5 text-emerald-500" />;
-            case 'failed':
-                return <XCircle className="h-5 w-5 text-rose-500" />;
-            case 'transferring':
-                return <Clock className="h-5 w-5 text-sky-400" />;
-            default:
-                return <Clock className="h-5 w-5 text-muted-foreground" />;
-        }
-    };
+const getStatusIcon = (status: FileTransfer['status']) => {
+    switch (status) {
+        case 'completed':
+            return <CheckCircle2 className="h-5 w-5 text-emerald-500" />;
+        case 'failed':
+            return <XCircle className="h-5 w-5 text-rose-500" />;
+        case 'transferring':
+            return <Clock className="h-5 w-5 text-sky-400" />;
+        default:
+            return <Clock className="h-5 w-5 text-muted-foreground" />;
+    }
+};
 
+export const FileListItem = memo(function FileListItem({
+    transfer,
+    type,
+    onDownload,
+    onRemove,
+}: FileListItemProps) {
     const { icon: FileIcon, color: iconColor } = getFileIcon(
         transfer.metadata.name,
         transfer.metadata.type
@@ -177,4 +180,4 @@ export function FileListItem({ transfer, type, onDownload, onRemove }: FileListI
             </Card>
         </motion.div>
     );
-}
+});
