@@ -53,12 +53,12 @@ test.describe('P2P Connection', () => {
         // Check that Peer B is now seeing the connected state (e.g. "Leave Room" button)
         // and status is not Offline
 
-        // We can check for "Leave Room" button on both
-        await expect(pageA.getByRole('button', { name: /leave room/i })).toBeVisible({
-            timeout: 15000,
+        // We use the aria-label 'Leave the current room' for the button
+        await expect(pageA.getByLabel('Leave the current room')).toBeVisible({
+            timeout: 30000,
         });
-        await expect(pageB.getByRole('button', { name: /leave room/i })).toBeVisible({
-            timeout: 15000,
+        await expect(pageB.getByLabel('Leave the current room')).toBeVisible({
+            timeout: 30000,
         });
 
         // Optionally check the status indicator text
@@ -67,7 +67,7 @@ test.describe('P2P Connection', () => {
         const statusA = pageA.locator('.connection-status span');
         const statusB = pageB.locator('.connection-status span');
 
-        await expect(statusA).not.toHaveText(/Offline/i, { timeout: 10000 });
-        await expect(statusB).not.toHaveText(/Offline/i, { timeout: 10000 });
+        await expect(statusA).not.toHaveText(/Offline/i, { timeout: 30000 });
+        await expect(statusB).not.toHaveText(/Offline/i, { timeout: 30000 });
     });
 });

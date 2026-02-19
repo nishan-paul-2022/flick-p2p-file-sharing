@@ -27,13 +27,11 @@ test.describe('Settings Integration', () => {
         // Assuming generic input or we can use the label if present.
         // Since I don't see MeteredConfig source, I'll guess placeholder or use a locator strategy
         // that targets the visible input in the modal.
-        const apiKeyInput = page.locator('input[type="text"]').first();
-        // Wait, Xirsys has 3 inputs. Metered has 1.
-        // When Metered is selected, Xirsys inputs might be hidden/removed.
-        // Let's use a more robust locator if possible.
-        // However, since we clicked "Metered", the Tabs component should switch to Metered content.
+        // 4. Enter API Key
+        // MeteredConfig uses id="metered-api-key" and type="password"
+        const apiKeyInput = page.locator('#metered-api-key');
+        await expect(apiKeyInput).toBeVisible();
 
-        // Let's use `fill` with a test value
         const testApiKey = 'test-metered-api-key-123';
         await apiKeyInput.fill(testApiKey);
 
@@ -42,26 +40,18 @@ test.describe('Settings Integration', () => {
         await expect(applyBtn).toBeEnabled();
         await applyBtn.click();
 
-        // 6. Wait for saving to complete (modal might close or button state changes)
-        // The modal `onClose` is not called automatically on save in the code I saw?
-        // Wait, `handleSave` is called. Code: `onClick={handleSave}`.
-        // The user might need to close it manually or it closes on success?
-        // Let's check `useSettings` logic... but I can't see `use-settings.ts`.
-        // Assuming it stays open or closes. Let's content ourselves with "saving finished".
-        await expect(applyBtn).not.toBeDisabled(); // or check for success state
-
-        // Close modal if it's still open
-        const closeBtn = page.locator('button').filter({ has: page.locator('svg.lucide-x') });
-        if (await closeBtn.isVisible()) {
-            await closeBtn.click();
-        }
+        // 6. Wait for modal to close automatically after saving
+        // SettingsModal calls onClose() after handleSave finishes
+        await expect(page.getByRole('dialog')).toBeHidden({ timeout: 15000 });
 
         // 7. Reload and Verify
         await page.reload();
-        await settingsBtn.click();
+        await page.getByLabel('Settings').click();
 
-        // Verify Metered is still selected and value persists
-        // We need to make sure the input has the value
-        await expect(apiKeyInput).toHaveValue(testApiKey);
+        // Wait for modal to load and verify Metered is selected and value persists
+        // We need to click Metered again if it defaulted to Xirsys, but wait,
+        // if it persisted, it should SHOW Metered.
+        await expect(page.getByText('Metered', { exact: true }).first()).toBeVisible();
+        await expect(page.locator('#metered-api-key')).toHaveValue(testApiKey);
     });
 });
