@@ -30,6 +30,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     });
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
     }, []);
 
