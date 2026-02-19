@@ -33,7 +33,7 @@ export function LandingCTA({ onEnterApp }: LandingCTAProps) {
                     Launch Application
                 </button>
 
-                <p className="mt-8 text-xs font-medium uppercase tracking-widest text-muted-foreground/40">
+                <p className="mt-8 text-xs font-medium uppercase tracking-widest text-white">
                     Free. Private. Unlimited.
                 </p>
             </motion.div>

@@ -6,7 +6,7 @@ import { FileUp, Laptop, Share2, ShieldCheck, Smartphone } from 'lucide-react';
 const steps = [
     {
         title: 'Create a Room',
-        desc: 'Device A generates a secure 6-char code',
+        desc: 'Device A generates a secure code',
         icon: Laptop,
     },
     {
@@ -74,7 +74,7 @@ export function WorkflowAnimation() {
                                 }}
                                 className="flex h-20 w-20 items-center justify-center rounded-3xl border border-white/[0.08] bg-zinc-900/50 shadow-glass-lg backdrop-blur-sm transition-colors group-hover:border-primary/50"
                             >
-                                <step.icon className="h-8 w-8 text-primary/70" />
+                                <step.icon className="h-8 w-8 text-primary" />
                             </motion.div>
 
                             {/* Animated progress indicator - Subtle */}
@@ -102,9 +102,9 @@ export function WorkflowAnimation() {
                         className="relative flex h-24 w-16 items-center justify-center rounded-2xl border-4 border-zinc-800 bg-zinc-950 shadow-2xl"
                     >
                         <div className="absolute top-2 h-1 w-1 rounded-full bg-zinc-800" />
-                        <Laptop className="h-6 w-6 text-primary/30" />
+                        <Laptop className="h-6 w-6 text-primary" />
                     </motion.div>
-                    <span className="absolute top-[calc(100%+1rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-primary/40">
+                    <span className="absolute top-[calc(100%+1rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-primary">
                         Sender
                     </span>
                 </div>
@@ -140,9 +140,9 @@ export function WorkflowAnimation() {
                         className="relative flex h-24 w-16 items-center justify-center rounded-2xl border-4 border-zinc-800 bg-zinc-950 shadow-2xl"
                     >
                         <div className="absolute top-2 h-1 w-1 rounded-full bg-zinc-800" />
-                        <Smartphone className="h-6 w-6 text-primary/30" />
+                        <Smartphone className="h-6 w-6 text-primary" />
                     </motion.div>
-                    <span className="absolute top-[calc(100%+1rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-primary/40">
+                    <span className="absolute top-[calc(100%+1rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-primary">
                         Receiver
                     </span>
                 </div>

@@ -52,10 +52,8 @@ export function Hero({ onEnterApp }: HeroProps) {
                     transition={{ duration: 0.6, delay: 0.2 }}
                     className="mb-8 text-6xl font-black leading-[0.95] tracking-tighter md:text-8xl lg:text-9xl"
                 >
-                    UNLIMITED
-                    <br />
                     <span className="bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">
-                        SHARING.
+                        SHARE UNLIMITED
                     </span>
                 </motion.h1>
 
@@ -105,10 +103,7 @@ export function Hero({ onEnterApp }: HeroProps) {
                         { icon: Share2, label: 'No Backend' },
                         { icon: Laptop, label: 'Cross Platform' },
                     ].map((item, i) => (
-                        <div
-                            key={i}
-                            className="group flex flex-col items-center gap-3 text-muted-foreground/40 transition-colors hover:text-primary/60"
-                        >
+                        <div key={i} className="flex flex-col items-center gap-3 text-foreground">
                             <item.icon className="h-5 w-5" />
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
                                 {item.label}
