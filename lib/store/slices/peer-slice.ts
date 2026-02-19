@@ -278,92 +278,95 @@ export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set
      * Initializes a new PeerJS instance.
      * @param code Optional room code if initializing as a host.
      */
-    initializePeer: async (code) => {
-        return new Promise(async (resolve, reject) => {
-            const { peer: existingPeer } = get();
-            if (existingPeer) {
-                existingPeer.destroy();
-            }
-
-            const isHost = !!code;
-
-            const { getIceServers } = await import('@/lib/ice-servers');
-            const iceServers = await getIceServers();
-
-            const peerOptions = {
-                config: {
-                    iceServers,
-                    iceCandidatePoolSize: 15,
-                    iceTransportPolicy: 'all' as RTCIceTransportPolicy,
-                    bundlePolicy: 'max-bundle' as RTCBundlePolicy,
-                    rtcpMuxPolicy: 'require' as RTCRtcpMuxPolicy,
-                },
-                debug: 2,
-            };
-
-            const peer = isHost ? new Peer(code, peerOptions) : new Peer(peerOptions);
-
-            peer.on('open', (id) => {
-                set({ peerId: id, error: null });
-                get().addLog('success', 'Peer initialized', `Your ID: ${id}`);
-                resolve(id);
-            });
-
-            peer.on('connection', (conn) => {
-                const { connection: activeConnection } = get();
-                if (activeConnection) {
-                    activeConnection.close();
+    initializePeer: (code) => {
+        return new Promise((resolve, reject) => {
+            const init = async () => {
+                const { peer: existingPeer } = get();
+                if (existingPeer) {
+                    existingPeer.destroy();
                 }
 
-                set({ connection: conn as ExtendedDataConnection });
+                const isHost = !!code;
 
-                conn.on('open', () => {
-                    set({ isConnected: true, connectionQuality: 'excellent' });
-                    get().addLog('success', 'Connected to peer', 'You can now share files');
+                const { getIceServers } = await import('@/lib/ice-servers');
+                const iceServers = await getIceServers();
 
-                    setupICEHandlers(conn as ExtendedDataConnection, get, set);
+                const peerOptions = {
+                    config: {
+                        iceServers,
+                        iceCandidatePoolSize: 15,
+                        iceTransportPolicy: 'all' as RTCIceTransportPolicy,
+                        bundlePolicy: 'max-bundle' as RTCBundlePolicy,
+                        rtcpMuxPolicy: 'require' as RTCRtcpMuxPolicy,
+                    },
+                    debug: 2,
+                };
+
+                const peer = isHost ? new Peer(code, peerOptions) : new Peer(peerOptions);
+
+                peer.on('open', (id) => {
+                    set({ peerId: id, error: null });
+                    get().addLog('success', 'Peer initialized', `Your ID: ${id}`);
+                    resolve(id);
                 });
 
-                conn.on('data', (data) => handleIncomingData(data, get, set));
+                peer.on('connection', (conn) => {
+                    const { connection: activeConnection } = get();
+                    if (activeConnection) {
+                        activeConnection.close();
+                    }
 
-                conn.on('close', () => handleConnectionClose(get, set));
+                    set({ connection: conn as ExtendedDataConnection });
 
-                conn.on('error', (err) => {
-                    set({ error: err.message, connectionQuality: 'poor' });
-                });
-            });
+                    conn.on('open', () => {
+                        set({ isConnected: true, connectionQuality: 'excellent' });
+                        get().addLog('success', 'Connected to peer', 'You can now share files');
 
-            peer.on('error', (err: { type: string; message: string }) => {
-                if (err.type === 'unavailable-id') {
-                    set({
-                        error: null,
-                        peerId: null,
-                        peer: null,
-                        isHost: false, // Revert to guest status
+                        setupICEHandlers(conn as ExtendedDataConnection, get, set);
                     });
-                    get().addLog('info', 'Room already active. Joining as guest...');
-                    resolve('ID_TAKEN');
-                } else {
-                    set({ error: err.message });
-                    get().addLog('error', 'Connection error', err.message);
-                    reject(err);
-                }
-            });
 
-            peer.on('disconnected', () => {
-                get().addLog('warning', 'Connection lost. Reconnecting...');
-                peer.reconnect();
-            });
+                    conn.on('data', (data) => handleIncomingData(data, get, set));
 
-            peer.on('close', () => {
-                set({
-                    peer: null,
-                    peerId: null,
-                    isConnected: false,
+                    conn.on('close', () => handleConnectionClose(get, set));
+
+                    conn.on('error', (err) => {
+                        set({ error: err.message, connectionQuality: 'poor' });
+                    });
                 });
-            });
 
-            set({ peer, isHost, error: null, ...(code && { roomCode: code }) });
+                peer.on('error', (err: { type: string; message: string }) => {
+                    if (err.type === 'unavailable-id') {
+                        set({
+                            error: null,
+                            peerId: null,
+                            peer: null,
+                            isHost: false, // Revert to guest status
+                        });
+                        get().addLog('info', 'Room already active. Joining as guest...');
+                        resolve('ID_TAKEN');
+                    } else {
+                        set({ error: err.message });
+                        get().addLog('error', 'Connection error', err.message);
+                        reject(err);
+                    }
+                });
+
+                peer.on('disconnected', () => {
+                    get().addLog('warning', 'Connection lost. Reconnecting...');
+                    peer.reconnect();
+                });
+
+                peer.on('close', () => {
+                    set({
+                        peer: null,
+                        peerId: null,
+                        isConnected: false,
+                    });
+                });
+
+                set({ peer, isHost, error: null, ...(code && { roomCode: code }) });
+            };
+            init();
         });
     },
 
