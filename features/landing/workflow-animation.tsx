@@ -104,7 +104,7 @@ export function WorkflowAnimation() {
                         <div className="absolute top-2 h-1 w-1 rounded-full bg-zinc-800" />
                         <Laptop className="h-6 w-6 text-primary" />
                     </motion.div>
-                    <span className="absolute top-[calc(100%+1rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-primary">
+                    <span className="absolute top-[calc(100%+1rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-white">
                         Sender
                     </span>
                 </div>
@@ -142,7 +142,7 @@ export function WorkflowAnimation() {
                         <div className="absolute top-2 h-1 w-1 rounded-full bg-zinc-800" />
                         <Smartphone className="h-6 w-6 text-primary" />
                     </motion.div>
-                    <span className="absolute top-[calc(100%+1rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-primary">
+                    <span className="absolute top-[calc(100%+1rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-white">
                         Receiver
                     </span>
                 </div>

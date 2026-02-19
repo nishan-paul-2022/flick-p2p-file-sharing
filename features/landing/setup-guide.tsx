@@ -29,15 +29,6 @@ export function SetupGuide() {
         <section className="relative overflow-hidden px-4 py-24">
             <div className="relative mx-auto max-w-6xl">
                 <div className="mb-16 text-center">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary"
-                    >
-                        <Settings className="h-4 w-4" />
-                        Infrastructure Setup
-                    </motion.div>
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
