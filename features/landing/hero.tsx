@@ -46,16 +46,6 @@ export function Hero({ onEnterApp }: HeroProps) {
                     </span>
                 </motion.div>
 
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
-                    className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-zinc-900/30 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary/80 backdrop-blur-3xl"
-                >
-                    <span className="flex h-2 w-2 animate-pulse rounded-full bg-primary" />
-                    Secure P2P Protocol v2.5
-                </motion.div>
-
                 <motion.h1
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}

@@ -90,7 +90,6 @@ export default function AppPage() {
 
                     <LogPanel />
 
-                    {/* Return to Landing link */}
                     <Link
                         href="/"
                         className="fixed bottom-4 left-4 z-50 rounded-full border border-white/10 bg-surface-900/50 p-2 text-white/30 transition-colors hover:text-white"
