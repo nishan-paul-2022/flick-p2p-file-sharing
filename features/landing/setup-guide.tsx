@@ -22,7 +22,12 @@ const providers = [
         id: 'xirsys',
         name: 'Xirsys',
         desc: 'Enterprise WebRTC Infrastructure',
-        steps: ['Sign up at xirsys.com', 'Create a Channel', 'Copy Ident & Secret'],
+        steps: [
+            'Sign up at xirsys.com',
+            'Create a Channel',
+            'Copy Ident & Secret',
+            'Add to Flick settings',
+        ],
         icon: Globe,
         color: 'text-blue-400',
         borderColor: 'border-blue-500/30',
@@ -34,7 +39,7 @@ const providers = [
         id: 'metered',
         name: 'Metered',
         desc: 'Global TURN/STUN Network',
-        steps: ['Create Metered account', 'Get API Key', 'Add to Flick settings'],
+        steps: ['Sign up at metered.ca', 'Get API Key', 'Add to Flick settings'],
         icon: Zap,
         color: 'text-amber-400',
         borderColor: 'border-amber-500/30',
@@ -49,7 +54,7 @@ export function SetupGuide() {
     const [isConfigured, setIsConfigured] = useState(false);
     const [animatingStep, setAnimatingStep] = useState(-1);
 
-    const stepsCount = activeProvider.id === 'xirsys' ? 3 : 2;
+    const stepsCount = activeProvider.id === 'xirsys' ? 4 : 3;
     const lastStepIndex = stepsCount - 1;
     const isDemoRunning = animatingStep >= 0 && animatingStep < lastStepIndex;
 
@@ -132,7 +137,7 @@ export function SetupGuide() {
                                             href={activeProvider.link}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary hover:underline"
+                                            className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary"
                                         >
                                             Portal <ExternalLink className="h-3 w-3" />
                                         </a>
@@ -262,16 +267,6 @@ export function SetupGuide() {
                                                             ? activeProvider.keys.ident
                                                             : ''}
                                                     </span>
-                                                    {animatingStep === 0 && !isConfigured && (
-                                                        <motion.div
-                                                            animate={{ opacity: [1, 0] }}
-                                                            transition={{
-                                                                repeat: Infinity,
-                                                                duration: 0.8,
-                                                            }}
-                                                            className="ml-1 h-4 w-0.5 bg-primary"
-                                                        />
-                                                    )}
                                                 </div>
                                             </div>
                                             <div className="space-y-3">
@@ -284,16 +279,6 @@ export function SetupGuide() {
                                                             ? activeProvider.keys.secret
                                                             : ''}
                                                     </span>
-                                                    {animatingStep === 1 && !isConfigured && (
-                                                        <motion.div
-                                                            animate={{ opacity: [1, 0] }}
-                                                            transition={{
-                                                                repeat: Infinity,
-                                                                duration: 0.8,
-                                                            }}
-                                                            className="ml-1 h-4 w-0.5 bg-primary"
-                                                        />
-                                                    )}
                                                 </div>
                                             </div>
                                             <div className="space-y-3">
@@ -306,16 +291,6 @@ export function SetupGuide() {
                                                             ? activeProvider.keys.channel
                                                             : ''}
                                                     </span>
-                                                    {animatingStep === 2 && !isConfigured && (
-                                                        <motion.div
-                                                            animate={{ opacity: [1, 0] }}
-                                                            transition={{
-                                                                repeat: Infinity,
-                                                                duration: 0.8,
-                                                            }}
-                                                            className="ml-1 h-4 w-0.5 bg-primary"
-                                                        />
-                                                    )}
                                                     <MousePointer2 className="absolute -right-4 top-10 h-5 w-5 text-primary opacity-0 transition-opacity group-hover:opacity-100" />
                                                 </div>
                                             </div>
@@ -331,16 +306,6 @@ export function SetupGuide() {
                                                         ? activeProvider.keys.secret
                                                         : ''}
                                                 </span>
-                                                {animatingStep === 1 && !isConfigured && (
-                                                    <motion.div
-                                                        animate={{ opacity: [1, 0] }}
-                                                        transition={{
-                                                            repeat: Infinity,
-                                                            duration: 0.8,
-                                                        }}
-                                                        className="ml-1 h-4 w-0.5 bg-primary"
-                                                    />
-                                                )}
                                             </div>
                                         </div>
                                     )}
@@ -351,7 +316,7 @@ export function SetupGuide() {
                             <div className="absolute bottom-0 left-0 flex w-full items-center justify-end gap-4 bg-[#111111]/80 px-8 py-6 backdrop-blur-md">
                                 <span className="text-sm font-medium text-white/60">Cancel</span>
                                 <div
-                                    className={`flex cursor-not-allowed items-center gap-2 rounded-xl px-8 py-3 font-bold transition-all ${
+                                    className={`flex cursor-default items-center gap-2 rounded-xl px-8 py-3 font-bold transition-all ${
                                         isTypingComplete
                                             ? 'bg-white text-black shadow-lg shadow-white/10'
                                             : 'bg-white/10 text-white/40'
