@@ -1,15 +1,11 @@
-'use client';
+import { LandingPageClient } from '@/components/landing/LandingPageClient';
 
-import { useRouter } from 'next/navigation';
-
-import { LandingPage } from '@/components/landing/LandingPage';
-
+/**
+ * Root page — Server Component.
+ * Navigation logic is delegated to a dedicated client component so this file
+ * stays free of 'use client' following Next.js's "push client boundary to
+ * the leaves" best practice.
+ */
 export default function RootPage() {
-    const router = useRouter();
-
-    const handleEnterApp = () => {
-        router.push('/app');
-    };
-
-    return <LandingPage onEnterApp={handleEnterApp} />;
+    return <LandingPageClient />;
 }

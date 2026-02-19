@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, Loader2, RefreshCw, Settings, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 
 // Sub-components
@@ -18,9 +18,16 @@ interface SettingsModalProps {
     onClose: () => void;
 }
 
+const subscribe = () => () => {};
+
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const { formState, setters, status, handleSave } = useSettings(isOpen, onClose);
-    const [mounted, setMounted] = useState(false);
+
+    const isClient = useSyncExternalStore(
+        subscribe,
+        () => true,
+        () => false
+    );
 
     // Handle Escape key
     useKeyDown(['Escape'], () => {
@@ -29,12 +36,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         }
     });
 
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setMounted(true);
-    }, []);
-
-    if (!mounted) {
+    if (!isClient) {
         return null;
     }
 

@@ -2,10 +2,11 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Activity, AlertTriangle, CheckCircle2, Info, Trash2, X, XCircle } from 'lucide-react';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { usePeerStore } from '@/lib/store';
+import { formatLogTimestamp } from '@/lib/utils';
 
 const getIcon = (type: string) => {
     switch (type) {
@@ -20,15 +21,7 @@ const getIcon = (type: string) => {
     }
 };
 
-const formatTime = (ts: number) => {
-    return new Date(ts).toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-    });
-};
-
-export const LogPanel: React.FC = () => {
+export function LogPanel() {
     const logs = usePeerStore((state) => state.logs);
     const clearLogs = usePeerStore((state) => state.clearLogs);
     const isLogPanelOpen = usePeerStore((state) => state.isLogPanelOpen);
@@ -117,7 +110,7 @@ export const LogPanel: React.FC = () => {
                                                 <div className="flex items-center gap-2">
                                                     {getIcon(log.type)}
                                                     <span className="text-2xs text-white/30">
-                                                        {formatTime(log.timestamp)}
+                                                        {formatLogTimestamp(log.timestamp)}
                                                     </span>
                                                 </div>
                                             </div>
@@ -146,4 +139,4 @@ export const LogPanel: React.FC = () => {
             )}
         </AnimatePresence>
     );
-};
+}

@@ -2,20 +2,19 @@
 
 import { motion } from 'framer-motion';
 import { Shield, Zap } from 'lucide-react';
-import { useEffect } from 'react';
 
 import { usePeerStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
+/**
+ * Displays the current storage mode (Power / Safe).
+ *
+ * This component is purely presentational — it reads storageCapabilities from
+ * the store but does NOT trigger initialization. Initialization is handled
+ * once, at the parent level (ConnectionPanel), avoiding duplicate effect calls.
+ */
 export function StorageModeIndicator() {
     const storageCapabilities = usePeerStore((state) => state.storageCapabilities);
-    const initializeStorage = usePeerStore((state) => state.initializeStorage);
-
-    useEffect(() => {
-        if (!storageCapabilities) {
-            initializeStorage();
-        }
-    }, [storageCapabilities, initializeStorage]);
 
     if (!storageCapabilities) {
         return null;

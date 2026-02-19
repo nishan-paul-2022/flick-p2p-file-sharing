@@ -89,3 +89,14 @@ export function formatFilenameTimestamp(): string {
 
     return `${year}-${month}-${day}-${timeString}`;
 }
+
+/**
+ * Formats a Unix timestamp as HH:MM:SS suitable for log panel display.
+ */
+export function formatLogTimestamp(ts: number): string {
+    return new Date(ts).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+    });
+}

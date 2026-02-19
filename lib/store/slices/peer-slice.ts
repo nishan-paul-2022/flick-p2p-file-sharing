@@ -12,6 +12,7 @@ import {
 } from '@/lib/store/cache';
 import { ExtendedDataConnection, PeerSlice, StoreState } from '@/lib/store/types';
 import { P2PMessage } from '@/lib/types';
+
 /**
  * Sets up ICE connection state and candidate handlers for an active connection.
  * Detects TURN relay usage and updates connection quality status.

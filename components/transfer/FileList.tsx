@@ -7,12 +7,12 @@ import { FileListItem } from '@/components/transfer/FileListItem';
 import { Card, CardContent } from '@/components/ui/card';
 import { useFileSorting } from '@/lib/hooks/use-file-sorting';
 import { usePeerStore } from '@/lib/store';
-import { FileTransfer } from '@/lib/types';
+import { FileTransfer, SortBy, SortOrder } from '@/lib/types';
 
 interface FileListProps {
     type: 'received' | 'sent';
-    sortBy: 'name' | 'time';
-    sortOrder: 'asc' | 'desc';
+    sortBy: SortBy;
+    sortOrder: SortOrder;
 }
 
 export function FileList({ type, sortBy, sortOrder }: FileListProps) {

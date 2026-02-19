@@ -14,6 +14,12 @@ export interface SettingsState {
 }
 
 export function useSettings(isOpen: boolean, onClose: () => void) {
+    // Actions are stable Zustand references — safe to subscribe at hook level
+    const peer = usePeerStore((state) => state.peer);
+    const initializePeer = usePeerStore((state) => state.initializePeer);
+    const roomCode = usePeerStore((state) => state.roomCode);
+    const addLog = usePeerStore((state) => state.addLog);
+
     const [provider, setProvider] = useState<ProviderType>('xirsys');
     const [ident, setIdent] = useState('');
     const [secret, setSecret] = useState('');
@@ -68,7 +74,6 @@ export function useSettings(isOpen: boolean, onClose: () => void) {
 
     const handleSave = async () => {
         setIsSaving(true);
-        const store = usePeerStore.getState();
 
         try {
             await Promise.all([
@@ -80,13 +85,13 @@ export function useSettings(isOpen: boolean, onClose: () => void) {
                 new Promise((resolve) => setTimeout(resolve, 800)), // Artificial delay for better UX
             ]);
 
-            if (store.peer) {
-                store.peer.destroy();
+            if (peer) {
+                peer.destroy();
             }
 
-            await store.initializePeer(store.roomCode || undefined);
+            await initializePeer(roomCode || undefined);
 
-            store.addLog('success', 'Settings Saved', 'Connection refreshed with new credentials');
+            addLog('success', 'Settings Saved', 'Connection refreshed with new credentials');
 
             setInitialSettings({
                 provider,
@@ -99,7 +104,7 @@ export function useSettings(isOpen: boolean, onClose: () => void) {
             onClose();
         } catch (error) {
             console.error('Failed to save settings:', error);
-            store.addLog('error', 'Settings Error', 'Failed to save configuration');
+            addLog('error', 'Settings Error', 'Failed to save configuration');
         } finally {
             setIsSaving(false);
         }

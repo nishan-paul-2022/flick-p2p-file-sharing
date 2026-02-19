@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Laptop, Share2, Shield, Zap } from 'lucide-react';
 import Image from 'next/image';
+import { useCallback } from 'react';
 
 import { Button } from '@/components/ui/button';
 
@@ -11,6 +12,12 @@ interface HeroProps {
 }
 
 export function Hero({ onEnterApp }: HeroProps) {
+    const handleScrollToHowItWorks = useCallback(() => {
+        if (typeof window !== 'undefined') {
+            window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+        }
+    }, []);
+
     return (
         <section className="relative flex min-h-[95vh] flex-col items-center justify-center overflow-hidden px-4">
             {/* Minimalist Ambient Glow - Matching App Header style */}
@@ -95,9 +102,7 @@ export function Hero({ onEnterApp }: HeroProps) {
                         size="lg"
                         variant="outline"
                         className="h-16 rounded-2xl border-white/10 bg-white/[0.03] px-10 text-lg font-bold backdrop-blur-md transition-all hover:bg-white/[0.08]"
-                        onClick={() =>
-                            window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })
-                        }
+                        onClick={handleScrollToHowItWorks}
                     >
                         How it works
                     </Button>
