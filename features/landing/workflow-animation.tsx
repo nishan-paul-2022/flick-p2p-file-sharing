@@ -93,9 +93,6 @@ export function WorkflowAnimation() {
 
             {/* Visual File Transfer Demo - Matching App style */}
             <div className="relative mt-24 flex h-64 w-full items-center justify-between overflow-hidden rounded-[2.5rem] border border-white/[0.08] bg-zinc-900/20 px-12 backdrop-blur-md md:px-24">
-                {/* Background Glow */}
-                <div className="pointer-events-none absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-primary/5 blur-[100px]" />
-
                 {/* Device A */}
                 <motion.div
                     initial={{ x: -20, opacity: 0 }}
@@ -134,7 +131,7 @@ export function WorkflowAnimation() {
                             }}
                             className="absolute top-1/2 -translate-y-1/2"
                         >
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 shadow-[0_0_20px_rgba(14,165,233,0.1)]">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 transition-all">
                                 <FileUp className="h-5 w-5 text-primary/80" />
                             </div>
                         </motion.div>

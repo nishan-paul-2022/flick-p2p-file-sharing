@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowRight, Laptop, Share2, Shield, Zap } from 'lucide-react';
+import { Laptop, Share2, Shield, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback } from 'react';
 
@@ -20,10 +20,6 @@ export function Hero({ onEnterApp }: HeroProps) {
 
     return (
         <section className="relative flex min-h-[95vh] flex-col items-center justify-center overflow-hidden px-4">
-            {/* Minimalist Ambient Glow - Matching App Header style */}
-            <div className="pointer-events-none absolute top-0 h-[500px] w-full bg-primary/5 opacity-50 blur-huge" />
-            <div className="pointer-events-none absolute bottom-0 right-0 h-[400px] w-[400px] bg-primary/5 opacity-30 blur-huge" />
-
             <div className="relative z-10 mx-auto max-w-5xl text-center">
                 {/* Official Logo Integration */}
                 <motion.div
@@ -37,7 +33,6 @@ export function Hero({ onEnterApp }: HeroProps) {
                         transition={{ duration: 0.8, ease: 'easeInOut' }}
                         className="relative"
                     >
-                        <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl" />
                         <Image
                             src="/icon.svg"
                             alt="Flick Logo"
@@ -93,10 +88,9 @@ export function Hero({ onEnterApp }: HeroProps) {
                     <Button
                         size="lg"
                         onClick={onEnterApp}
-                        className="group h-16 rounded-2xl bg-primary px-10 text-lg font-bold text-white shadow-[0_0_40px_rgba(14,165,233,0.2)] transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90 active:scale-95"
+                        className="group h-16 rounded-2xl bg-primary px-10 text-lg font-bold text-white transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90 active:scale-95"
                     >
                         Start Sharing Now
-                        <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Button>
                     <Button
                         size="lg"

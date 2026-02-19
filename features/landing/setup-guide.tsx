@@ -27,8 +27,6 @@ const providers = [
 export function SetupGuide() {
     return (
         <section className="relative overflow-hidden px-4 py-24">
-            <div className="pointer-events-none absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-primary/5 blur-[120px]" />
-
             <div className="relative mx-auto max-w-6xl">
                 <div className="mb-16 text-center">
                     <motion.div
@@ -71,8 +69,6 @@ export function SetupGuide() {
                                 transition={{ delay: idx * 0.2 }}
                                 className="group relative overflow-hidden rounded-[2.5rem] border border-white/[0.08] bg-zinc-900/30 p-8 backdrop-blur-3xl transition-all duration-500 hover:border-primary/30"
                             >
-                                <div className="absolute -right-24 -top-24 h-48 w-48 bg-primary/5 blur-[80px] transition-all duration-500 group-hover:bg-primary/10" />
-
                                 <div className="relative z-10">
                                     <div className="mb-8 flex items-center justify-between">
                                         <div
@@ -148,7 +144,7 @@ export function SetupGuide() {
                                     </div>
                                 </div>
 
-                                <Button className="w-full rounded-xl bg-primary py-6 font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary/90">
+                                <Button className="w-full rounded-xl bg-primary py-6 font-bold text-white transition-all hover:bg-primary/90">
                                     Save Configuration
                                 </Button>
 
