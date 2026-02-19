@@ -77,9 +77,9 @@ export function WorkflowAnimation() {
                                 <step.icon className="h-8 w-8 text-primary" />
                             </motion.div>
 
-                            {/* Animated progress indicator - Subtle */}
+                            {/* Rotating border accent */}
                             <motion.div
-                                className="absolute -inset-2 rounded-[2rem] border-2 border-primary/10 border-t-primary/40"
+                                className="absolute -inset-2 rounded-[2rem] border-2 border-primary/10"
                                 animate={{ rotate: 360 }}
                                 transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
                             />
