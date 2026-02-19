@@ -1,13 +1,13 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { FileUp, Laptop, Share2, ShieldCheck, Smartphone } from 'lucide-react';
+import { FileUp, Monitor, Share2, ShieldCheck, Smartphone } from 'lucide-react';
 
 const steps = [
     {
         title: 'Create a Room',
         desc: 'Device A generates a secure code',
-        icon: Laptop,
+        icon: Monitor,
     },
     {
         title: 'Connect',
@@ -93,18 +93,22 @@ export function WorkflowAnimation() {
 
             {/* Visual File Transfer Demo - Matching App style */}
             <div className="relative mt-24 flex h-64 w-full items-center justify-between overflow-hidden rounded-[2.5rem] border border-white/[0.08] bg-zinc-900/20 px-12 backdrop-blur-md md:px-24">
-                {/* Device A */}
+                {/* Device A - Computer */}
                 <div className="relative z-10 flex flex-col items-center">
                     <motion.div
                         initial={{ x: -20, opacity: 0 }}
                         whileInView={{ x: 0, opacity: 1 }}
                         viewport={{ once: true }}
-                        className="relative flex h-24 w-16 items-center justify-center rounded-2xl border-4 border-zinc-800 bg-zinc-950 shadow-2xl"
+                        className="relative flex h-20 w-28 items-center justify-center rounded-xl border-4 border-zinc-800 bg-zinc-950 shadow-2xl"
                     >
+                        {/* Camera/Sensor */}
                         <div className="absolute top-2 h-1 w-1 rounded-full bg-zinc-800" />
-                        <Laptop className="h-6 w-6 text-primary" />
+
+                        {/* Monitor Stand */}
+                        <div className="absolute -bottom-3 h-3 w-8 rounded-b-lg bg-zinc-800" />
+                        <div className="absolute -bottom-4 h-1 w-12 rounded-full bg-zinc-800" />
                     </motion.div>
-                    <span className="absolute top-[calc(100%+1rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-white">
+                    <span className="absolute top-[calc(100%+2rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-white">
                         Sender
                     </span>
                 </div>
@@ -131,17 +135,14 @@ export function WorkflowAnimation() {
                     </motion.div>
                 </div>
 
-                {/* Device B */}
+                {/* Device B - Mobile */}
                 <div className="relative z-10 flex flex-col items-center">
                     <motion.div
                         initial={{ x: 20, opacity: 0 }}
                         whileInView={{ x: 0, opacity: 1 }}
                         viewport={{ once: true }}
-                        className="relative flex h-24 w-16 items-center justify-center rounded-2xl border-4 border-zinc-800 bg-zinc-950 shadow-2xl"
-                    >
-                        <div className="absolute top-2 h-1 w-1 rounded-full bg-zinc-800" />
-                        <Smartphone className="h-6 w-6 text-primary" />
-                    </motion.div>
+                        className="relative flex h-24 w-16 items-center justify-center rounded-[1.5rem] border-4 border-zinc-800 bg-zinc-950 shadow-2xl"
+                    ></motion.div>
                     <span className="absolute top-[calc(100%+1rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-white">
                         Receiver
                     </span>
