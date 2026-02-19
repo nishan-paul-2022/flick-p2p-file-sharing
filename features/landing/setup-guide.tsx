@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
     Activity,
     Check,
-    CheckCircle2,
     Copy,
     ExternalLink,
     Globe,
@@ -50,19 +49,21 @@ export function SetupGuide() {
     const [isConfigured, setIsConfigured] = useState(false);
     const [animatingStep, setAnimatingStep] = useState(-1);
 
+    const stepsCount = activeProvider.id === 'xirsys' ? 3 : 2;
+    const lastStepIndex = stepsCount - 1;
+    const isDemoRunning = animatingStep >= 0 && animatingStep < lastStepIndex;
+
     const simulateSetup = async () => {
         setIsConfigured(false);
         setAnimatingStep(-1);
-        const stepsCount = activeProvider.id === 'xirsys' ? 3 : 2;
         for (let i = 0; i < stepsCount; i++) {
             setAnimatingStep(i);
             await new Promise((resolve) => setTimeout(resolve, 800));
         }
-        // Keep animatingStep at the last index so fields stay populated
+        // Demo done: fields stay filled, Apply looks active, Run Live Demo becomes clickable again
     };
 
-    const isTypingComplete =
-        animatingStep === (activeProvider.id === 'xirsys' ? 2 : 1) || isConfigured;
+    const isTypingComplete = animatingStep === lastStepIndex;
 
     return (
         <section className="relative overflow-hidden px-4 py-32">
@@ -143,7 +144,6 @@ export function SetupGuide() {
                                                 key={idx}
                                                 animate={{
                                                     opacity: animatingStep === idx ? 1 : 0.4,
-                                                    x: animatingStep === idx ? 10 : 0,
                                                 }}
                                                 className="flex items-center gap-4"
                                             >
@@ -163,10 +163,10 @@ export function SetupGuide() {
 
                                     <Button
                                         onClick={simulateSetup}
-                                        disabled={animatingStep !== -1}
+                                        disabled={isDemoRunning}
                                         className="h-14 w-full rounded-2xl bg-white text-black hover:bg-white/90"
                                     >
-                                        {animatingStep !== -1 ? (
+                                        {isDemoRunning ? (
                                             <Activity className="h-5 w-5 animate-pulse" />
                                         ) : (
                                             'Run Live Demo'
@@ -347,36 +347,20 @@ export function SetupGuide() {
                                 </div>
                             </div>
 
-                            {/* Modal Footer */}
+                            {/* Modal Footer - Apply looks active when fields filled but not clickable */}
                             <div className="absolute bottom-0 left-0 flex w-full items-center justify-end gap-4 bg-[#111111]/80 px-8 py-6 backdrop-blur-md">
                                 <span className="text-sm font-medium text-white/60">Cancel</span>
-                                <motion.div
-                                    onClick={() => {
-                                        if (isTypingComplete) {
-                                            setIsConfigured(true);
-                                        }
-                                    }}
-                                    animate={isConfigured ? { scale: [1, 0.95, 1] } : {}}
-                                    className={`flex items-center gap-2 rounded-xl px-8 py-3 font-bold transition-all ${
-                                        isConfigured
-                                            ? 'bg-[#00F07C] text-black shadow-lg shadow-[#00F07C]/20'
-                                            : isTypingComplete
-                                              ? 'cursor-pointer bg-white text-black shadow-lg shadow-white/10 hover:bg-white/90'
-                                              : 'cursor-not-allowed bg-white/10 text-white/40'
+                                <div
+                                    className={`flex cursor-not-allowed items-center gap-2 rounded-xl px-8 py-3 font-bold transition-all ${
+                                        isTypingComplete
+                                            ? 'bg-white text-black shadow-lg shadow-white/10'
+                                            : 'bg-white/10 text-white/40'
                                     }`}
+                                    aria-hidden
                                 >
-                                    {isConfigured ? (
-                                        <>
-                                            <CheckCircle2 className="h-4 w-4" />
-                                            Saved
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Check className="h-4 w-4" />
-                                            Apply
-                                        </>
-                                    )}
-                                </motion.div>
+                                    <Check className="h-4 w-4" />
+                                    Apply
+                                </div>
                             </div>
                         </motion.div>
                     </div>
