@@ -20,11 +20,11 @@ export function LandingCTA({ onEnterApp }: LandingCTAProps) {
                 viewport={{ once: true }}
                 className="relative"
             >
-                <h2 className="mb-4 text-[10px] font-black uppercase tracking-[0.4em] text-primary">
+                <h2 className="mb-4 text-[10px] font-black uppercase tracking-[0.4em] text-white">
                     Ready to begin?
                 </h2>
                 <h3 className="mb-12 text-4xl font-black md:text-6xl lg:text-7xl">
-                    START <span className="text-primary">FLICKING.</span>
+                    START <span className="text-primary">FLICKING</span>
                 </h3>
                 <button
                     onClick={onEnterApp}
