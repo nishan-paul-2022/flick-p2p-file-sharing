@@ -79,17 +79,6 @@ export function SetupGuide() {
                     >
                         MASTER YOUR <span className="text-primary">CONNECTION</span>
                     </motion.h2>
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.1 }}
-                        className="mx-auto max-w-2xl text-lg font-medium text-white/60"
-                    >
-                        Instant local sharing. One-click global setup.
-                        <br className="hidden md:block" /> Perfect privacy, zero configuration
-                        overhead.
-                    </motion.p>
                 </div>
 
                 <div className="grid grid-cols-1 items-stretch gap-12 lg:grid-cols-2">
