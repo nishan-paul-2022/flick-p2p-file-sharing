@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'framer-motion';
 import { File } from 'lucide-react';
 
-import { FileListItem } from '@/features/transfer/FileListItem';
+import { FileListItem } from '@/features/transfer/file-list-item';
 import { useFileSorting } from '@/features/transfer/hooks/use-file-sorting';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { FileTransfer, SortBy, SortOrder } from '@/shared/types';

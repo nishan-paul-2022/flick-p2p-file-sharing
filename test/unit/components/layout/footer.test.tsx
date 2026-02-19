@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { Footer } from '@/shared/components/layout/Footer';
+import { Footer } from '@/shared/components/layout/footer';
 
 describe('Footer', () => {
     it('renders the footer with correct content', () => {

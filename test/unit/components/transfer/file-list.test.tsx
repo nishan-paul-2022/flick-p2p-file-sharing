@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { FileList } from '@/features/transfer/FileList';
+import { FileList } from '@/features/transfer/file-list';
 import { useFileSorting } from '@/features/transfer/hooks/use-file-sorting';
 import { FileTransfer } from '@/shared/types';
 import { usePeerStore } from '@/store';
@@ -18,7 +18,7 @@ vi.mock('@/features/transfer/hooks/use-file-sorting', () => ({
 }));
 
 // Mock FileListItem to simplify testing FileList logic
-vi.mock('@/features/transfer/FileListItem', () => ({
+vi.mock('@/features/transfer/file-list-item', () => ({
     FileListItem: ({
         transfer,
         onDownload,

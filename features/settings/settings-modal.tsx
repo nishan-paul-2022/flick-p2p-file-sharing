@@ -7,9 +7,9 @@ import { createPortal } from 'react-dom';
 
 import { useSettings } from '@/features/settings/hooks/use-settings';
 // Sub-components
-import { MeteredConfig } from '@/features/settings/MeteredConfig';
-import { ProviderCard } from '@/features/settings/ProviderCard';
-import { XirsysConfig } from '@/features/settings/XirsysConfig';
+import { MeteredConfig } from '@/features/settings/metered-config';
+import { ProviderCard } from '@/features/settings/provider-card';
+import { XirsysConfig } from '@/features/settings/xirsys-config';
 import { Button } from '@/shared/components/ui/button';
 import { useKeyDown } from '@/shared/hooks/use-key-down';
 

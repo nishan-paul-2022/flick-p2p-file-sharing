@@ -7,11 +7,11 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import Loading from '@/app/loading';
-import { ConnectionPanel } from '@/features/connection/ConnectionPanel';
-import { LogPanel } from '@/features/logs/LogPanel';
-import { FileTransferArea } from '@/features/transfer/FileTransferArea';
-import { Footer } from '@/shared/components/layout/Footer';
-import { Header } from '@/shared/components/layout/Header';
+import { ConnectionPanel } from '@/features/connection/connection-panel';
+import { LogPanel } from '@/features/logs/log-panel';
+import { FileTransferArea } from '@/features/transfer/file-transfer-area';
+import { Footer } from '@/shared/components/layout/footer';
+import { Header } from '@/shared/components/layout/header';
 import { useAppInitialize } from '@/shared/hooks/use-app-initialize';
 import { cn } from '@/shared/utils';
 import { usePeerStore } from '@/store';

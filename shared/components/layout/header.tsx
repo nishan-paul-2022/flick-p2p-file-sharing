@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 const SettingsModal = dynamic(
-    () => import('@/features/settings/SettingsModal').then((mod) => mod.SettingsModal),
+    () => import('@/features/settings/settings-modal').then((mod) => mod.SettingsModal),
     {
         ssr: false,
     }

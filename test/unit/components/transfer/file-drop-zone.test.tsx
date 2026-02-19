@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { FileDropZone } from '@/features/transfer/FileDropZone';
+import { FileDropZone } from '@/features/transfer/file-drop-zone';
 
 interface StoreState {
     isConnected: boolean;

@@ -1,11 +1,11 @@
 'use client';
 
-import { Footer } from '@/shared/components/layout/Footer';
+import { Footer } from '@/shared/components/layout/footer';
 
-import { Hero } from './Hero';
-import { LandingCTA } from './LandingCTA';
-import { SetupGuide } from './SetupGuide';
-import { WorkflowAnimation } from './WorkflowAnimation';
+import { Hero } from './hero';
+import { LandingCTA } from './landing-cta';
+import { SetupGuide } from './setup-guide';
+import { WorkflowAnimation } from './workflow-animation';
 
 interface LandingPageProps {
     onEnterApp: () => void;

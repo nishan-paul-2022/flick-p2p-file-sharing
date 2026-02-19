@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { ConnectionPanel } from '@/features/connection/ConnectionPanel';
+import { ConnectionPanel } from '@/features/connection/connection-panel';
 import { useRoomConnection } from '@/features/connection/hooks/use-room-connection';
 
 vi.mock('@/features/connection/hooks/use-room-connection', () => ({
@@ -18,10 +18,10 @@ vi.mock('@/store', () => ({
     }),
 }));
 
-vi.mock('@/features/connection/ConnectionStatus', () => ({
+vi.mock('@/features/connection/connection-status', () => ({
     ConnectionStatus: () => <div data-testid="connection-status" />,
 }));
-vi.mock('@/features/connection/StorageModeIndicator', () => ({
+vi.mock('@/features/connection/storage-mode-indicator', () => ({
     StorageModeIndicator: () => <div data-testid="storage-mode-indicator" />,
 }));
 

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { LogPanel } from '@/features/logs/LogPanel';
+import { LogPanel } from '@/features/logs/log-panel';
 import { LogEntry } from '@/shared/types';
 import { usePeerStore } from '@/store';
 import { StoreState } from '@/store/types';

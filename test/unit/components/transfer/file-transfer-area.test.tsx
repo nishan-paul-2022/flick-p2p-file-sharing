@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { FileTransferArea } from '@/features/transfer/FileTransferArea';
+import { FileTransferArea } from '@/features/transfer/file-transfer-area';
 import { usePeerStore } from '@/store';
 import { StoreState } from '@/store/types';
 
@@ -12,17 +12,17 @@ vi.mock('@/store', () => ({
 }));
 
 // Mock sub-components
-vi.mock('@/features/transfer/FileDropZone', () => ({
+vi.mock('@/features/transfer/file-drop-zone', () => ({
     FileDropZone: () => <div data-testid="drop-zone">Drop Zone</div>,
 }));
 
-vi.mock('@/features/transfer/FileList', () => ({
+vi.mock('@/features/transfer/file-list', () => ({
     FileList: ({ type }: { type: string }) => (
         <div data-testid={`file-list-${type}`}>File List {type}</div>
     ),
 }));
 
-vi.mock('@/features/transfer/TransferActionsBar', () => ({
+vi.mock('@/features/transfer/transfer-actions-bar', () => ({
     TransferActionsBar: ({ type }: { type: string }) => (
         <div data-testid={`actions-bar-${type}`}>Actions {type}</div>
     ),

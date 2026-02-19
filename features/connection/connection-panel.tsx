@@ -4,9 +4,9 @@ import { motion } from 'framer-motion';
 import { Check, Copy, RefreshCw, Zap, ZapOff } from 'lucide-react';
 import { useEffect } from 'react';
 
-import { ConnectionStatus } from '@/features/connection/ConnectionStatus';
+import { ConnectionStatus } from '@/features/connection/connection-status';
 import { useRoomConnection } from '@/features/connection/hooks/use-room-connection';
-import { StorageModeIndicator } from '@/features/connection/StorageModeIndicator';
+import { StorageModeIndicator } from '@/features/connection/storage-mode-indicator';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';

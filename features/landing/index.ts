@@ -1,7 +1,7 @@
 /**
  * Landing section public API.
- * Import from '@/components/landing' instead of drilling into individual files.
+ * Import from '@/features/landing' instead of drilling into individual files.
  */
-export { LandingCTA } from './LandingCTA';
-export { LandingPage } from './LandingPage';
-export { LandingPageClient } from './LandingPageClient';
+export { LandingCTA } from './landing-cta';
+export { LandingPage } from './landing-page';
+export { LandingPageClient } from './landing-page-client';

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { TransferActionsBar } from '@/features/transfer/TransferActionsBar';
+import { TransferActionsBar } from '@/features/transfer/transfer-actions-bar';
 import { FileTransfer } from '@/shared/types';
 import { usePeerStore } from '@/store';
 
@@ -11,7 +11,7 @@ vi.mock('@/store', () => ({
 }));
 
 // Mock sub-components
-vi.mock('@/features/transfer/SortMenu', () => ({
+vi.mock('@/features/transfer/sort-menu', () => ({
     SortMenu: () => <div data-testid="sort-menu">Sort Menu</div>,
 }));
 

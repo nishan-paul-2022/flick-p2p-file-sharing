@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 
-import { LandingPage } from '@/features/landing/LandingPage';
+import { LandingPage } from '@/features/landing/landing-page';
 
 /**
  * Thin client boundary for the landing page.
