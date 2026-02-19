@@ -13,7 +13,7 @@ export function LandingPageClient() {
     const router = useRouter();
 
     const handleEnterApp = () => {
-        router.push('/app');
+        router.push('/share');
     };
 
     return <LandingPage onEnterApp={handleEnterApp} />;

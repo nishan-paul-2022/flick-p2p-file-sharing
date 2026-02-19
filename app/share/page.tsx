@@ -16,7 +16,7 @@ import { useAppInitialize } from '@/shared/hooks/use-app-initialize';
 import { cn } from '@/shared/utils';
 import { usePeerStore } from '@/store';
 
-export default function AppPage() {
+export default function SharePage() {
     const searchParams = useSearchParams();
     const [showLoadingParam, setShowLoadingParam] = useState(false);
 
