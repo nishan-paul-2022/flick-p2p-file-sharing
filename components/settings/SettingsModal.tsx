@@ -10,9 +10,8 @@ import { MeteredConfig } from '@/components/settings/MeteredConfig';
 import { ProviderCard } from '@/components/settings/ProviderCard';
 import { XirsysConfig } from '@/components/settings/XirsysConfig';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useKeyDown } from '@/lib/hooks/use-key-down';
-import { ProviderType, useSettings } from '@/lib/hooks/use-settings';
+import { useSettings } from '@/lib/hooks/use-settings';
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -21,7 +20,6 @@ interface SettingsModalProps {
 
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const { formState, setters, status, handleSave } = useSettings(isOpen, onClose);
-    const [activeTab, setActiveTab] = useState<ProviderType>('xirsys');
     const [mounted, setMounted] = useState(false);
 
     // Handle Escape key
@@ -30,13 +28,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             onClose();
         }
     });
-
-    // Sync active tab with provider when loading completes
-    useEffect(() => {
-        if (!status.isLoading && isOpen) {
-            setActiveTab(formState.provider);
-        }
-    }, [status.isLoading, isOpen, formState.provider]);
 
     useEffect(() => {
         setMounted(true);
@@ -139,62 +130,24 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                             </div>
                                         </div>
 
-                                        <div className="h-px w-full bg-white/10" />
-
-                                        <div className="space-y-4">
-                                            <div className="flex items-center justify-between">
-                                                <label className="text-xs font-semibold uppercase tracking-wider text-white/40">
-                                                    Configuration
-                                                </label>
-                                            </div>
-
-                                            <Tabs
-                                                value={activeTab}
-                                                onValueChange={(val) =>
-                                                    setActiveTab(val as ProviderType)
-                                                }
-                                                className="w-full"
-                                            >
-                                                <TabsList className="grid w-full grid-cols-2 bg-white/5 p-1">
-                                                    <TabsTrigger
-                                                        value="xirsys"
-                                                        disabled={status.isSaving}
-                                                        className="text-white/40 hover:text-white/60 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:shadow-sm"
-                                                    >
-                                                        Xirsys
-                                                    </TabsTrigger>
-                                                    <TabsTrigger
-                                                        value="metered"
-                                                        disabled={status.isSaving}
-                                                        className="text-white/40 hover:text-white/60 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:shadow-sm"
-                                                    >
-                                                        Metered
-                                                    </TabsTrigger>
-                                                </TabsList>
-
-                                                <div className="mt-4 min-h-[180px]">
-                                                    <TabsContent value="xirsys">
-                                                        <XirsysConfig
-                                                            ident={ident}
-                                                            secret={secret}
-                                                            channel={channel}
-                                                            disabled={status.isSaving}
-                                                            onIdentChange={setters.setIdent}
-                                                            onSecretChange={setters.setSecret}
-                                                            onChannelChange={setters.setChannel}
-                                                        />
-                                                    </TabsContent>
-                                                    <TabsContent value="metered">
-                                                        <MeteredConfig
-                                                            apiKey={meteredApiKey}
-                                                            disabled={status.isSaving}
-                                                            onApiKeyChange={
-                                                                setters.setMeteredApiKey
-                                                            }
-                                                        />
-                                                    </TabsContent>
-                                                </div>
-                                            </Tabs>
+                                        <div className="min-h-[180px]">
+                                            {provider === 'xirsys' ? (
+                                                <XirsysConfig
+                                                    ident={ident}
+                                                    secret={secret}
+                                                    channel={channel}
+                                                    disabled={status.isSaving}
+                                                    onIdentChange={setters.setIdent}
+                                                    onSecretChange={setters.setSecret}
+                                                    onChannelChange={setters.setChannel}
+                                                />
+                                            ) : (
+                                                <MeteredConfig
+                                                    apiKey={meteredApiKey}
+                                                    disabled={status.isSaving}
+                                                    onApiKeyChange={setters.setMeteredApiKey}
+                                                />
+                                            )}
                                         </div>
                                     </motion.div>
                                 )}
