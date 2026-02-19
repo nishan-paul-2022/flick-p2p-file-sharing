@@ -10,13 +10,10 @@ test('has title', async ({ page }) => {
 test('footer links are present', async ({ page }) => {
     await page.goto('/');
 
-    // Check for the "PRODUCED by KAI" link
-    const kaiLink = page.getByRole('link', { name: /produced by/i });
+    // Check for the "KAI" link (author link)
+    const kaiLink = page.getByRole('link', { name: 'KAI' });
     await expect(kaiLink).toBeVisible();
     await expect(kaiLink).toHaveAttribute('href', 'https://kaiverse.vercel.app');
 
-    // Check for the "SOURCE CODE" link
-    const githubLink = page.getByRole('link', { name: /source code/i });
-    await expect(githubLink).toBeVisible();
-    await expect(githubLink).toHaveAttribute('href', /github/);
+    // GitHub link was removed in a recent UI update, so we don't check for it anymore
 });

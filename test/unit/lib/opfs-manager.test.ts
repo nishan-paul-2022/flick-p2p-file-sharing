@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { OPFSManager } from '@/lib/opfs-manager';
+import { OPFSManager } from '@/features/transfer/opfs-manager';
 
 describe('OPFSManager', () => {
     const mockFileHandle = {

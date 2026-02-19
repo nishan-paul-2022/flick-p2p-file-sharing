@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ROOM_CODE_LENGTH } from '@/lib/constants';
+import { ROOM_CODE_LENGTH } from '@/shared/constants';
 import {
     cn,
     copyToClipboard,
@@ -9,7 +9,7 @@ import {
     formatTimestamp,
     generateRoomCode,
     isValidRoomCode,
-} from '@/lib/utils';
+} from '@/shared/utils';
 
 describe('lib/utils', () => {
     describe('cn', () => {

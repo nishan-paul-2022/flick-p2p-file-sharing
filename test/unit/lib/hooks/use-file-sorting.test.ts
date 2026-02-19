@@ -1,8 +1,8 @@
 import { renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { useFileSorting } from '@/lib/hooks/use-file-sorting';
-import { FileTransfer } from '@/lib/types';
+import { useFileSorting } from '@/features/transfer/hooks/use-file-sorting';
+import { FileTransfer } from '@/shared/types';
 
 describe('useFileSorting', () => {
     const mockFiles: FileTransfer[] = [

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { create } from 'zustand';
 
-import { createUISlice } from '@/lib/store/slices/ui-slice';
-import { StoreState } from '@/lib/store/types';
+import { createUISlice } from '@/store/slices/ui-slice';
+import { StoreState } from '@/store/types';
 
 // Create a minimal mock of the full store state to satisfy Typescript
 // We only really care about the UI slice for this test

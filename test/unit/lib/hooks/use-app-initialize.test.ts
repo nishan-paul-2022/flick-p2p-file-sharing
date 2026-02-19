@@ -1,28 +1,28 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { useAppInitialize } from '@/lib/hooks/use-app-initialize';
-import { usePeerRestoration } from '@/lib/hooks/use-peer-restoration';
-import { usePeerStore } from '@/lib/store';
+import { usePeerRestoration } from '@/features/connection/hooks/use-peer-restoration';
+import { useAppInitialize } from '@/shared/hooks/use-app-initialize';
+import { usePeerStore } from '@/store';
 
 // Mock dependencies
-vi.mock('@/lib/hooks/use-peer-restoration', () => ({
+vi.mock('@/features/connection/hooks/use-peer-restoration', () => ({
     usePeerRestoration: vi.fn(),
 }));
 
-vi.mock('@/lib/logger', () => ({
+vi.mock('@/shared/utils/logger', () => ({
     logger: {
         info: vi.fn(),
         error: vi.fn(),
     },
 }));
 
-vi.mock('@/lib/store', () => ({
+vi.mock('@/store', () => ({
     usePeerStore: vi.fn(),
 }));
 
 // Mock dynamic import
-vi.mock('@/lib/test-turn', () => ({
+vi.mock('@/features/connection/test-turn', () => ({
     testTurnServers: vi.fn(),
 }));
 
