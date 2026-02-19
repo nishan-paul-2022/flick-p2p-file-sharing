@@ -94,65 +94,58 @@ export function WorkflowAnimation() {
             {/* Visual File Transfer Demo - Matching App style */}
             <div className="relative mt-24 flex h-64 w-full items-center justify-between overflow-hidden rounded-[2.5rem] border border-white/[0.08] bg-zinc-900/20 px-12 backdrop-blur-md md:px-24">
                 {/* Device A */}
-                <motion.div
-                    initial={{ x: -20, opacity: 0 }}
-                    whileInView={{ x: 0, opacity: 1 }}
-                    viewport={{ once: true }}
-                    className="z-10 flex flex-col items-center gap-4"
-                >
-                    <div className="relative flex h-24 w-16 items-center justify-center rounded-2xl border-4 border-zinc-800 bg-zinc-950 shadow-2xl">
+                <div className="relative z-10 flex flex-col items-center">
+                    <motion.div
+                        initial={{ x: -20, opacity: 0 }}
+                        whileInView={{ x: 0, opacity: 1 }}
+                        viewport={{ once: true }}
+                        className="relative flex h-24 w-16 items-center justify-center rounded-2xl border-4 border-zinc-800 bg-zinc-950 shadow-2xl"
+                    >
                         <div className="absolute top-2 h-1 w-1 rounded-full bg-zinc-800" />
                         <Laptop className="h-6 w-6 text-primary/30" />
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary/40">
+                    </motion.div>
+                    <span className="absolute top-[calc(100%+1rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-primary/40">
                         Sender
                     </span>
-                </motion.div>
+                </div>
 
                 {/* Transfer Path */}
-                <div className="relative mx-8 h-px flex-1">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0" />
+                <div className="relative mx-8 flex h-px flex-1 items-center justify-center">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0" />
 
-                    {/* Animated File Packets */}
-                    {[0, 1, 2].map((i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ x: '0%', opacity: 0 }}
-                            animate={{
-                                x: '100%',
-                                opacity: [0, 1, 1, 0],
-                                scale: [0.9, 1, 1, 0.9],
-                            }}
-                            transition={{
-                                duration: 2.5,
-                                repeat: Infinity,
-                                ease: 'linear',
-                                delay: i * 0.8,
-                            }}
-                            className="absolute top-1/2 -translate-y-1/2"
-                        >
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 transition-all">
-                                <FileUp className="h-5 w-5 text-primary/80" />
-                            </div>
-                        </motion.div>
-                    ))}
+                    {/* Animated File Packet */}
+                    <motion.div
+                        initial={{ left: '0%', x: '-50%', y: '-50%', opacity: 0 }}
+                        animate={{
+                            left: '100%',
+                            opacity: [0, 1, 1, 0],
+                        }}
+                        transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            ease: 'linear',
+                        }}
+                        className="absolute top-1/2 z-20"
+                    >
+                        <FileUp className="h-8 w-8 text-primary/80" />
+                    </motion.div>
                 </div>
 
                 {/* Device B */}
-                <motion.div
-                    initial={{ x: 20, opacity: 0 }}
-                    whileInView={{ x: 0, opacity: 1 }}
-                    viewport={{ once: true }}
-                    className="z-10 flex flex-col items-center gap-4"
-                >
-                    <div className="relative flex h-24 w-16 items-center justify-center rounded-2xl border-4 border-zinc-800 bg-zinc-950 shadow-2xl">
+                <div className="relative z-10 flex flex-col items-center">
+                    <motion.div
+                        initial={{ x: 20, opacity: 0 }}
+                        whileInView={{ x: 0, opacity: 1 }}
+                        viewport={{ once: true }}
+                        className="relative flex h-24 w-16 items-center justify-center rounded-2xl border-4 border-zinc-800 bg-zinc-950 shadow-2xl"
+                    >
                         <div className="absolute top-2 h-1 w-1 rounded-full bg-zinc-800" />
                         <Smartphone className="h-6 w-6 text-primary/30" />
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary/40">
+                    </motion.div>
+                    <span className="absolute top-[calc(100%+1rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-primary/40">
                         Receiver
                     </span>
-                </motion.div>
+                </div>
             </div>
         </div>
     );
