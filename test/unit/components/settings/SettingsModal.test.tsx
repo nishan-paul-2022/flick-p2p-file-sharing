@@ -1,5 +1,4 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { SettingsModal } from '@/components/settings/SettingsModal';
@@ -169,23 +168,36 @@ describe('SettingsModal', () => {
         }
     });
 
-    it('should handle tab selection changes', async () => {
-        const user = userEvent.setup();
-        render(<SettingsModal isOpen={true} onClose={mockOnClose} />);
+    it('should handle provider selection and content switch', async () => {
+        const setProvider = vi.fn();
+        (useSettings as Mock).mockImplementation(() => ({
+            ...defaultUseSettingsReturn,
+            formState: { ...defaultUseSettingsReturn.formState, provider: 'xirsys' },
+            setters: { ...defaultUseSettingsReturn.setters, setProvider },
+        }));
 
-        const triggers = screen.getAllByRole('tab');
-        const meteredTab = triggers.find((t) => t.textContent === 'Metered');
+        const { rerender } = render(<SettingsModal isOpen={true} onClose={mockOnClose} />);
 
-        if (meteredTab) {
-            await user.click(meteredTab);
+        // Initially in Xirsys mode, should see Ident/Secret/Channel
+        expect(screen.getByText(/Ident/i)).toBeInTheDocument();
 
-            // Check if Metered tab is now active via attribute
-            expect(meteredTab.getAttribute('data-state')).toBe('active');
+        // Find Metered card and click it
+        const meteredCard = screen.getAllByText('Metered').find((el) => el.closest('div'));
+        if (!meteredCard) throw new Error('Metered card not found');
 
-            // Verify content switch
-            expect(screen.getByText(/API Key/i)).toBeInTheDocument();
-        } else {
-            throw new Error('Metered tab trigger not found');
-        }
+        fireEvent.click(meteredCard);
+        expect(setProvider).toHaveBeenCalledWith('metered');
+
+        // Mock the state change for rerender
+        (useSettings as Mock).mockReturnValue({
+            ...defaultUseSettingsReturn,
+            formState: { ...defaultUseSettingsReturn.formState, provider: 'metered' },
+        });
+
+        rerender(<SettingsModal isOpen={true} onClose={mockOnClose} />);
+
+        // Should now see content from MeteredConfig
+        expect(screen.getByText(/API Key/i)).toBeInTheDocument();
+        expect(screen.queryByText(/Ident/i)).toBeNull();
     });
 });
