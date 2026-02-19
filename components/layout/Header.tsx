@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Fingerprint, Settings } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 
 const SettingsModal = dynamic(
@@ -70,7 +71,10 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
                 </div>
 
                 <div className="relative z-10 mx-2 flex flex-1 justify-center">
-                    <div className="flex items-center gap-2 md:gap-3">
+                    <Link
+                        href="/"
+                        className="flex items-center gap-2 transition-opacity hover:opacity-80 md:gap-3"
+                    >
                         <motion.div
                             whileHover={{ rotate: 360 }}
                             transition={{ duration: 0.6, ease: 'easeInOut' }}
@@ -87,7 +91,7 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
                         <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl lg:text-4xl">
                             <span className="text-primary">Flick</span>
                         </h1>
-                    </div>
+                    </Link>
                 </div>
 
                 <div className="relative z-10 flex flex-1 justify-end gap-3">
