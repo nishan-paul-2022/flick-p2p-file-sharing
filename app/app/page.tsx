@@ -7,14 +7,14 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import Loading from '@/app/loading';
-import { ConnectionPanel } from '@/components/connection/ConnectionPanel';
-import { Footer } from '@/components/layout/Footer';
-import { Header } from '@/components/layout/Header';
-import { LogPanel } from '@/components/logs/LogPanel';
-import { FileTransferArea } from '@/components/transfer/FileTransferArea';
-import { useAppInitialize } from '@/lib/hooks/use-app-initialize';
-import { usePeerStore } from '@/lib/store';
-import { cn } from '@/lib/utils';
+import { ConnectionPanel } from '@/features/connection/ConnectionPanel';
+import { LogPanel } from '@/features/logs/LogPanel';
+import { FileTransferArea } from '@/features/transfer/FileTransferArea';
+import { Footer } from '@/shared/components/layout/Footer';
+import { Header } from '@/shared/components/layout/Header';
+import { useAppInitialize } from '@/shared/hooks/use-app-initialize';
+import { cn } from '@/shared/utils';
+import { usePeerStore } from '@/store';
 
 export default function AppPage() {
     const searchParams = useSearchParams();

@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { FileListItem } from '@/components/transfer/FileListItem';
-import { FileTransfer } from '@/lib/types';
+import { FileListItem } from '@/features/transfer/FileListItem';
+import { FileTransfer } from '@/shared/types';
 
 describe('FileListItem', () => {
     const mockTransfer: FileTransfer = {

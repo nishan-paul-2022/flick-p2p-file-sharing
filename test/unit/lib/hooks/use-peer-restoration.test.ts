@@ -1,13 +1,13 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { usePeerRestoration } from '@/lib/hooks/use-peer-restoration';
-import { StoreState } from '@/lib/store/types';
+import { usePeerRestoration } from '@/features/connection/hooks/use-peer-restoration';
+import { StoreState } from '@/store/types';
 
 const mockInitializePeer = vi.fn();
 const mockConnectToPeer = vi.fn();
 
-vi.mock('@/lib/store', () => ({
+vi.mock('@/store', () => ({
     usePeerStore: vi.fn((selector: (state: Record<string, unknown>) => unknown) => {
         const state = {
             roomCode: 'TESTCO',
@@ -51,7 +51,7 @@ describe('usePeerRestoration', () => {
     });
 
     it('should initialize as guest if not host', async () => {
-        const mockUsePeerStore = (await import('@/lib/store')).usePeerStore;
+        const mockUsePeerStore = (await import('@/store')).usePeerStore;
         vi.mocked(mockUsePeerStore).mockImplementation(
             (selector: (state: StoreState) => unknown) => {
                 const state = {

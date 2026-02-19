@@ -3,8 +3,8 @@ import '@/app/globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 
-import { ThemeProvider } from '@/components/layout/ThemeProvider';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import { ThemeProvider } from '@/shared/components/layout/ThemeProvider';
+import { TooltipProvider } from '@/shared/components/ui/tooltip';
 
 const inter = Inter({
     subsets: ['latin'],

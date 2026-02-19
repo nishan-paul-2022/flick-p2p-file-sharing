@@ -3,9 +3,9 @@ import type { DataConnection, Peer } from 'peerjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { create } from 'zustand';
 
-import { createPeerSlice } from '@/lib/store/slices/peer-slice';
-import { StoreState } from '@/lib/store/types';
-import { P2PMessage } from '@/lib/types';
+import { P2PMessage } from '@/shared/types';
+import { createPeerSlice } from '@/store/slices/peer-slice';
+import { StoreState } from '@/store/types';
 
 interface MockPeerInstance {
     on: Mock;
@@ -43,11 +43,11 @@ vi.mock('peerjs', () => ({
     }),
 }));
 
-vi.mock('@/lib/ice-servers', () => ({
+vi.mock('@/features/connection/ice-servers', () => ({
     getIceServers: vi.fn().mockResolvedValue([{ urls: 'stun:stun.l.google.com:19302' }]),
 }));
 
-vi.mock('@/lib/opfs-manager', () => ({
+vi.mock('@/features/transfer/opfs-manager', () => ({
     OPFSManager: {
         createTransferFile: vi.fn(),
         getWritableStream: vi.fn(),
@@ -55,7 +55,7 @@ vi.mock('@/lib/opfs-manager', () => ({
     },
 }));
 
-vi.mock('@/lib/store/cache', () => ({
+vi.mock('@/store/cache', () => ({
     incomingMessageSequenceCache: new Map(),
     opfsHandleCache: new Map(),
     opfsWritableCache: new Map(),
@@ -656,7 +656,7 @@ describe('peer-slice', () => {
                 storageCapabilities: { mode: 'power', supportsOPFS: true, browserInfo: 'Chrome' },
             });
 
-            const { OPFSManager } = await import('@/lib/opfs-manager');
+            const { OPFSManager } = await import('@/features/transfer/opfs-manager');
             (OPFSManager.createTransferFile as Mock).mockRejectedValue(new Error('Drive full'));
 
             if (dataCallback) {
@@ -705,7 +705,7 @@ describe('peer-slice', () => {
                 storageCapabilities: { mode: 'power', supportsOPFS: true, browserInfo: 'Chrome' },
             });
 
-            const { OPFSManager } = await import('@/lib/opfs-manager');
+            const { OPFSManager } = await import('@/features/transfer/opfs-manager');
             const mockWritable = { close: vi.fn() };
             (OPFSManager.createTransferFile as Mock).mockResolvedValue({} as FileSystemFileHandle);
             (OPFSManager.getWritableStream as Mock).mockResolvedValue(mockWritable);
@@ -765,7 +765,7 @@ describe('peer-slice', () => {
                 storageCapabilities: { mode: 'power', supportsOPFS: true, browserInfo: 'Chrome' },
             });
 
-            const { OPFSManager } = await import('@/lib/opfs-manager');
+            const { OPFSManager } = await import('@/features/transfer/opfs-manager');
             const mockWritable = { close: vi.fn().mockResolvedValue(undefined) };
             (OPFSManager.createTransferFile as Mock).mockResolvedValue({} as FileSystemFileHandle);
             (OPFSManager.getWritableStream as Mock).mockResolvedValue(mockWritable);

@@ -1,15 +1,15 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useRoomConnection } from '@/lib/hooks/use-room-connection';
-import * as utils from '@/lib/utils';
+import { useRoomConnection } from '@/features/connection/hooks/use-room-connection';
+import * as utils from '@/shared/utils';
 
 const mockInitializePeer = vi.fn();
 const mockConnectToPeer = vi.fn();
 const mockDisconnect = vi.fn();
 const mockAddLog = vi.fn();
 
-vi.mock('@/lib/store', () => ({
+vi.mock('@/store', () => ({
     usePeerStore: vi.fn((selector) => {
         const state = {
             roomCode: 'TESTCO',
@@ -22,8 +22,8 @@ vi.mock('@/lib/store', () => ({
     }),
 }));
 
-vi.mock('@/lib/utils', async () => {
-    const actual = await vi.importActual<typeof utils>('@/lib/utils');
+vi.mock('@/shared/utils', async () => {
+    const actual = await vi.importActual<typeof utils>('@/shared/utils');
     return {
         ...actual,
         generateRoomCode: vi.fn(() => 'NEWCOD'),

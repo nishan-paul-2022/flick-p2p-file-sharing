@@ -1,4 +1,4 @@
-import { LandingPageClient } from '@/components/landing/LandingPageClient';
+import { LandingPageClient } from '@/features/landing/LandingPageClient';
 
 /**
  * Root page — Server Component.

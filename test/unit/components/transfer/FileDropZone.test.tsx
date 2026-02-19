@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { FileDropZone } from '@/components/transfer/FileDropZone';
+import { FileDropZone } from '@/features/transfer/FileDropZone';
 
 interface StoreState {
     isConnected: boolean;
@@ -12,7 +12,7 @@ interface StoreState {
 
 const mockUsePeerStore = vi.fn();
 
-vi.mock('@/lib/store', () => ({
+vi.mock('@/store', () => ({
     usePeerStore: (selector: (state: StoreState) => unknown) => mockUsePeerStore(selector),
 }));
 

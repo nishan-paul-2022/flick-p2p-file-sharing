@@ -2,34 +2,34 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { FileTransferArea } from '@/components/transfer/FileTransferArea';
-import { usePeerStore } from '@/lib/store';
-import { StoreState } from '@/lib/store/types';
+import { FileTransferArea } from '@/features/transfer/FileTransferArea';
+import { usePeerStore } from '@/store';
+import { StoreState } from '@/store/types';
 
 // Mock dependencies
-vi.mock('@/lib/store', () => ({
+vi.mock('@/store', () => ({
     usePeerStore: vi.fn(),
 }));
 
 // Mock sub-components
-vi.mock('@/components/transfer/FileDropZone', () => ({
+vi.mock('@/features/transfer/FileDropZone', () => ({
     FileDropZone: () => <div data-testid="drop-zone">Drop Zone</div>,
 }));
 
-vi.mock('@/components/transfer/FileList', () => ({
+vi.mock('@/features/transfer/FileList', () => ({
     FileList: ({ type }: { type: string }) => (
         <div data-testid={`file-list-${type}`}>File List {type}</div>
     ),
 }));
 
-vi.mock('@/components/transfer/TransferActionsBar', () => ({
+vi.mock('@/features/transfer/TransferActionsBar', () => ({
     TransferActionsBar: ({ type }: { type: string }) => (
         <div data-testid={`actions-bar-${type}`}>Actions {type}</div>
     ),
 }));
 
 // Mock Radix UI Tabs to simplify unit testing of FileTransferArea
-vi.mock('@/components/ui/tabs', () => ({
+vi.mock('@/shared/components/ui/tabs', () => ({
     Tabs: ({
         children,
         value,

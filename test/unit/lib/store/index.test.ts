@@ -1,6 +1,6 @@
 import { describe, expect, it, Mock, vi } from 'vitest';
 
-import { usePeerStore } from '@/lib/store';
+import { usePeerStore } from '@/store';
 
 vi.mock('idb-keyval', () => ({
     get: vi.fn(),
@@ -55,7 +55,7 @@ describe('PeerStore persistence', () => {
             receivedSortOrder: 'asc',
             sentSortBy: 'name',
             sentSortOrder: 'asc',
-        } as unknown as import('@/lib/store').StoreState;
+        } as unknown as import('@/store').StoreState;
 
         const partial = partialize(mockState);
 
@@ -86,7 +86,7 @@ describe('PeerStore persistence', () => {
         const onRehydrate = persistOptions.onRehydrateStorage!;
 
         const setHasHydrated = vi.fn();
-        const mockState = { setHasHydrated } as unknown as import('@/lib/store').StoreState;
+        const mockState = { setHasHydrated } as unknown as import('@/store').StoreState;
 
         const callback = onRehydrate(mockState);
         if (callback) {

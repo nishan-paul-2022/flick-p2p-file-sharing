@@ -1,0 +1,467 @@
+import Peer from 'peerjs';
+import { StateCreator } from 'zustand';
+
+import { OPFSManager } from '@/features/transfer/opfs-manager';
+import { CHUNK_SIZE, CONNECTION_TIMEOUT } from '@/shared/constants';
+import { P2PMessage } from '@/shared/types';
+import { logger } from '@/shared/utils/logger';
+import {
+    incomingMessageSequenceCache,
+    opfsHandleCache,
+    opfsWritableCache,
+    opfsWriteQueueCache,
+} from '@/store/cache';
+import { ExtendedDataConnection, PeerSlice, StoreState } from '@/store/types';
+
+/**
+ * Sets up ICE connection state and candidate handlers for an active connection.
+ * Detects TURN relay usage and updates connection quality status.
+ */
+const setupICEHandlers = (
+    conn: ExtendedDataConnection,
+    get: () => StoreState,
+    set: (state: Partial<StoreState>) => void
+) => {
+    const peerConnection = conn.peerConnection;
+    if (!peerConnection) {
+        return;
+    }
+
+    peerConnection.oniceconnectionstatechange = () => {
+        const iceState = peerConnection.iceConnectionState;
+        logger.debug('ICE Connection state:', iceState);
+
+        switch (iceState) {
+            case 'checking':
+                get().addLog('info', 'Establishing connection...', 'NAT traversal in progress');
+                break;
+            case 'connected':
+            case 'completed':
+                get().addLog('success', 'Connection established', 'Using optimal route');
+                set({ connectionQuality: 'excellent' });
+                break;
+            case 'disconnected':
+                get().addLog('warning', 'Connection unstable', 'Attempting to reconnect...');
+                set({ connectionQuality: 'poor' });
+                break;
+            case 'failed':
+                get().addLog('error', 'Connection failed', 'NAT traversal unsuccessful');
+                set({ connectionQuality: 'disconnected' });
+                break;
+        }
+    };
+
+    peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+        if (event.candidate) {
+            const type = event.candidate.type;
+            logger.debug(`ICE Candidate gathered: ${type}`, event.candidate.candidate);
+
+            // Detect if using TURN relay
+            if (type === 'relay') {
+                get().addLog('info', 'Using relay server', 'Connection via TURN for NAT traversal');
+            }
+        }
+    };
+};
+
+const closeAllOpfsWritables = async () => {
+    for (const [id, writable] of opfsWritableCache.entries()) {
+        try {
+            await writable.close();
+        } catch (e) {
+            console.warn('Failed to close writable:', e);
+        }
+        opfsWritableCache.delete(id);
+    }
+};
+
+const handleConnectionClose = async (
+    get: () => StoreState,
+    set: (state: Partial<StoreState>) => void
+) => {
+    await closeAllOpfsWritables();
+    set({
+        isConnected: false,
+        connectionQuality: 'disconnected',
+        connection: null,
+    });
+    get().addLog('info', 'Peer disconnected');
+};
+
+/**
+ * Handles incoming data from a peer connection including metadata, file chunks, and completion signals.
+ * Uses a sequential cache to ensure messages for the same transfer are processed in order.
+ */
+const handleIncomingData = async (
+    data: unknown,
+    get: () => StoreState,
+    set: (state: Partial<StoreState> | ((state: StoreState) => Partial<StoreState>)) => void
+) => {
+    const msg = data as P2PMessage;
+    const { transferId } = msg;
+
+    // Sequential processing per transferId to prevent metadata/chunk race
+    const previousTask = incomingMessageSequenceCache.get(transferId) || Promise.resolve();
+    const currentTask = previousTask
+        .catch(() => {}) // Continue even if previous message failed
+        .then(async () => {
+            // ALWAYS get fresh state inside the sequencer to avoid stale closures
+            const { receivedFiles, storageCapabilities, addLog } = get();
+
+            if (msg.type === 'metadata') {
+                const storageMode = storageCapabilities?.mode || 'compatibility';
+                let opfsHandle: FileSystemFileHandle | undefined;
+                let opfsPath: string | undefined;
+
+                if (storageMode === 'power') {
+                    try {
+                        opfsHandle = await OPFSManager.createTransferFile(msg.transferId);
+                        opfsPath = `${msg.transferId}.bin`;
+                        opfsHandleCache.set(msg.transferId, opfsHandle);
+                        const writable = await OPFSManager.getWritableStream(opfsHandle);
+                        opfsWritableCache.set(msg.transferId, writable);
+                    } catch (error) {
+                        console.error('Failed to create OPFS file, falling back to RAM:', error);
+                    }
+                }
+
+                const transfer = {
+                    id: msg.transferId,
+                    metadata: msg.metadata,
+                    progress: 0,
+                    status: 'transferring' as const,
+                    totalChunks: msg.totalChunks,
+                    storageMode: (opfsPath ? 'power' : 'compatibility') as
+                        | 'power'
+                        | 'compatibility',
+                    chunks: opfsPath ? undefined : new Array(msg.totalChunks),
+                    opfsPath,
+                };
+
+                set((state) => ({
+                    receivedFiles: [...state.receivedFiles, transfer],
+                }));
+                get().addLog('info', 'Receiving file', msg.metadata.name);
+            } else if (msg.type === 'chunk') {
+                const transfer = receivedFiles.find((t) => t.id === msg.transferId);
+                if (!transfer) {
+                    console.warn(`Received chunk for unknown transfer: ${msg.transferId}`);
+                    return;
+                }
+
+                if (transfer.storageMode === 'power' && transfer.opfsPath) {
+                    try {
+                        const writable = opfsWritableCache.get(msg.transferId);
+                        if (writable) {
+                            // Get previous write promise to serialize writes
+                            const previousWrite =
+                                opfsWriteQueueCache.get(msg.transferId) || Promise.resolve();
+
+                            const currentWrite = previousWrite
+                                .catch(() => {}) // Continue even if previous write failed
+                                .then(async () => {
+                                    const offset = msg.chunkIndex * CHUNK_SIZE;
+                                    await OPFSManager.writeChunkWithWritable(
+                                        writable,
+                                        msg.data,
+                                        offset
+                                    );
+                                });
+
+                            opfsWriteQueueCache.set(msg.transferId, currentWrite);
+                            await currentWrite;
+
+                            const progress = ((msg.chunkIndex + 1) / transfer.totalChunks) * 100;
+
+                            // Throttle progress updates to at most 1% increments or completion
+                            set((state) => {
+                                const t = state.receivedFiles.find((f) => f.id === msg.transferId);
+                                if (
+                                    !t ||
+                                    (progress - t.progress < 1 &&
+                                        msg.chunkIndex < t.totalChunks - 1)
+                                ) {
+                                    return state;
+                                }
+                                return {
+                                    receivedFiles: state.receivedFiles.map((f) =>
+                                        f.id === msg.transferId ? { ...f, progress } : f
+                                    ),
+                                };
+                            });
+                        }
+                    } catch (error) {
+                        console.error('OPFS write failed:', error);
+                        addLog('error', 'Storage error', 'Failed to write chunk to disk');
+                    }
+                } else if (transfer.chunks) {
+                    transfer.chunks[msg.chunkIndex] = msg.data;
+                    const progress =
+                        (transfer.chunks.filter((c) => c !== undefined).length /
+                            transfer.totalChunks) *
+                        100;
+
+                    // Throttle RAM progress updates
+                    set((state) => {
+                        const t = state.receivedFiles.find((f) => f.id === msg.transferId);
+                        if (
+                            !t ||
+                            (progress - t.progress < 1 &&
+                                progress < 100 &&
+                                msg.chunkIndex < t.totalChunks - 1)
+                        ) {
+                            return state;
+                        }
+                        return {
+                            receivedFiles: state.receivedFiles.map((f) =>
+                                f.id === msg.transferId ? { ...f, progress } : f
+                            ),
+                        };
+                    });
+                }
+            } else if (msg.type === 'complete') {
+                const writable = opfsWritableCache.get(msg.transferId);
+                if (writable) {
+                    // Remove from cache immediately to prevent new chunks from initiating writes
+                    opfsWritableCache.delete(msg.transferId);
+
+                    // Wait for all pending writes to complete before closing
+                    const writeQueue = opfsWriteQueueCache.get(msg.transferId);
+                    if (writeQueue) {
+                        await writeQueue.catch(() => {});
+                        opfsWriteQueueCache.delete(msg.transferId);
+                    }
+
+                    try {
+                        await writable.close();
+                    } catch (e) {
+                        console.warn('Error closing OPFS writable:', e);
+                    }
+                }
+
+                const targetFile = get().receivedFiles.find((f) => f.id === msg.transferId);
+                if (!targetFile) {
+                    console.warn(`Completed message for unknown transfer: ${msg.transferId}`);
+                    incomingMessageSequenceCache.delete(transferId);
+                    return;
+                }
+
+                set((state) => ({
+                    receivedFiles: state.receivedFiles.map((t) =>
+                        t.id === msg.transferId
+                            ? { ...t, status: 'completed' as const, progress: 100 }
+                            : t
+                    ),
+                }));
+                get().addLog('success', 'File received', targetFile.metadata.name);
+
+                incomingMessageSequenceCache.delete(transferId);
+            }
+        });
+
+    incomingMessageSequenceCache.set(transferId, currentTask);
+    await currentTask;
+};
+
+export const createPeerSlice: StateCreator<StoreState, [], [], PeerSlice> = (set, get) => ({
+    peer: null,
+    connection: null,
+    peerId: null,
+    roomCode: null,
+    isHost: false,
+    isConnected: false,
+    connectionQuality: 'disconnected',
+    error: null,
+
+    setRoomCode: (code) => set({ roomCode: code }),
+
+    /**
+     * Initializes a new PeerJS instance.
+     * @param code Optional room code if initializing as a host.
+     */
+    initializePeer: (code) => {
+        return new Promise((resolve, reject) => {
+            const init = async () => {
+                const { peer: existingPeer } = get();
+                if (existingPeer) {
+                    existingPeer.destroy();
+                }
+
+                const isHost = !!code;
+
+                const { getIceServers } = await import('@/features/connection/ice-servers');
+                const iceServers = await getIceServers();
+
+                const peerOptions = {
+                    config: {
+                        iceServers,
+                        iceCandidatePoolSize: 15,
+                        iceTransportPolicy: 'all' as RTCIceTransportPolicy,
+                        bundlePolicy: 'max-bundle' as RTCBundlePolicy,
+                        rtcpMuxPolicy: 'require' as RTCRtcpMuxPolicy,
+                    },
+                    debug: 2,
+                };
+
+                const peer = isHost ? new Peer(code, peerOptions) : new Peer(peerOptions);
+
+                peer.on('open', (id) => {
+                    set({ peerId: id, error: null });
+                    get().addLog('success', 'Peer initialized', `Your ID: ${id}`);
+                    resolve(id);
+                });
+
+                peer.on('connection', (conn) => {
+                    const { connection: activeConnection } = get();
+                    if (activeConnection) {
+                        activeConnection.close();
+                    }
+
+                    set({ connection: conn as ExtendedDataConnection });
+
+                    conn.on('open', () => {
+                        set({ isConnected: true, connectionQuality: 'excellent' });
+                        get().addLog('success', 'Connected to peer', 'You can now share files');
+
+                        setupICEHandlers(conn as ExtendedDataConnection, get, set);
+                    });
+
+                    conn.on('data', (data) => handleIncomingData(data, get, set));
+
+                    conn.on('close', () => handleConnectionClose(get, set));
+
+                    conn.on('error', (err) => {
+                        set({ error: err.message, connectionQuality: 'poor' });
+                    });
+                });
+
+                peer.on('error', (err: { type: string; message: string }) => {
+                    if (err.type === 'unavailable-id') {
+                        set({
+                            error: null,
+                            peerId: null,
+                            peer: null,
+                            isHost: false, // Revert to guest status
+                        });
+                        get().addLog('info', 'Room already active. Joining as guest...');
+                        resolve('ID_TAKEN');
+                    } else {
+                        set({ error: err.message });
+                        get().addLog('error', 'Connection error', err.message);
+                        reject(err);
+                    }
+                });
+
+                peer.on('disconnected', () => {
+                    get().addLog('warning', 'Connection lost. Reconnecting...');
+                    peer.reconnect();
+                });
+
+                peer.on('close', () => {
+                    set({
+                        peer: null,
+                        peerId: null,
+                        isConnected: false,
+                    });
+                });
+
+                set({ peer, isHost, error: null, ...(code && { roomCode: code }) });
+            };
+            init();
+        });
+    },
+
+    /**
+     * Establishes a connection to a remote peer.
+     * @param targetCode The room code of the peer to connect to.
+     */
+    connectToPeer: async (targetCode) => {
+        const { peer } = get();
+        if (!peer) {
+            get().addLog('error', 'Peer not initialized');
+            return;
+        }
+
+        set({ roomCode: targetCode });
+
+        try {
+            const conn = peer.connect(targetCode, {
+                reliable: true,
+                serialization: 'binary',
+                metadata: {
+                    timestamp: Date.now(),
+                    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
+                },
+            });
+            set({ connection: conn as ExtendedDataConnection });
+
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(
+                    () =>
+                        reject(
+                            new Error(
+                                'Connection timed out. Peer may be offline or behind a firewall.'
+                            )
+                        ),
+                    CONNECTION_TIMEOUT
+                );
+            });
+
+            const openPromise = new Promise<void>((resolve, reject) => {
+                conn.on('open', () => resolve());
+                conn.on('error', (err) => reject(err));
+            });
+
+            Promise.race([openPromise, timeoutPromise])
+                .then(() => {
+                    set({ isConnected: true, connectionQuality: 'excellent' });
+                    get().addLog('success', 'Connected to peer', 'You can now share files');
+
+                    setupICEHandlers(conn as ExtendedDataConnection, get, set);
+                })
+                .catch((err) => {
+                    const errorMessage = err instanceof Error ? err.message : 'Failed to connect';
+                    set({
+                        error: errorMessage,
+                        isConnected: false,
+                        connection: null,
+                        connectionQuality: 'disconnected',
+                    });
+                    get().addLog('error', 'Connection Failed', errorMessage);
+                    conn.close();
+                });
+
+            conn.on('data', (data) => handleIncomingData(data, get, set));
+
+            conn.on('close', () => handleConnectionClose(get, set));
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to connect';
+            set({ error: errorMessage });
+            get().addLog('error', 'Failed to connect', errorMessage);
+        }
+    },
+
+    disconnect: async () => {
+        const { connection, peer } = get();
+        await closeAllOpfsWritables();
+
+        if (connection) {
+            connection.close();
+        }
+        if (peer) {
+            peer.destroy();
+        }
+
+        set({
+            isConnected: false,
+            connectionQuality: 'disconnected',
+            connection: null,
+            peer: null,
+            peerId: null,
+            roomCode: null,
+            isHost: false,
+        });
+    },
+
+    clearError: () => set({ error: null }),
+});

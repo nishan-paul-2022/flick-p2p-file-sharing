@@ -1,15 +1,15 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { SettingsModal } from '@/components/settings/SettingsModal';
-import { useSettings } from '@/lib/hooks/use-settings';
+import { useSettings } from '@/features/settings/hooks/use-settings';
+import { SettingsModal } from '@/features/settings/SettingsModal';
 
 // Mock dependencies
-vi.mock('@/lib/hooks/use-settings', () => ({
+vi.mock('@/features/settings/hooks/use-settings', () => ({
     useSettings: vi.fn(),
 }));
 
-vi.mock('@/lib/hooks/use-key-down', () => ({
+vi.mock('@/shared/hooks/use-key-down', () => ({
     useKeyDown: vi.fn(),
 }));
 

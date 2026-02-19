@@ -2,13 +2,13 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { LogPanel } from '@/components/logs/LogPanel';
-import { usePeerStore } from '@/lib/store';
-import { StoreState } from '@/lib/store/types';
-import { LogEntry } from '@/lib/types';
+import { LogPanel } from '@/features/logs/LogPanel';
+import { LogEntry } from '@/shared/types';
+import { usePeerStore } from '@/store';
+import { StoreState } from '@/store/types';
 
 // Mock dependencies
-vi.mock('@/lib/store', () => ({
+vi.mock('@/store', () => ({
     usePeerStore: vi.fn(),
 }));
 

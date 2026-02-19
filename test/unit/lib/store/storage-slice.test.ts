@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { create } from 'zustand';
 
-import { createStorageSlice } from '@/lib/store/slices/storage-slice';
-import { StoreState } from '@/lib/store/types';
+import { createStorageSlice } from '@/store/slices/storage-slice';
+import { StoreState } from '@/store/types';
 
-vi.mock('@/lib/storage-mode', () => ({
+vi.mock('@/features/transfer/storage-mode', () => ({
     detectStorageCapabilities: vi.fn(),
 }));
 
-import { detectStorageCapabilities, StorageCapabilities } from '@/lib/storage-mode';
+import { detectStorageCapabilities, StorageCapabilities } from '@/features/transfer/storage-mode';
 
 const createTestStore = () => {
     return create<StoreState>(

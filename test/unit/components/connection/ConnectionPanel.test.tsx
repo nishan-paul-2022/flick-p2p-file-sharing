@@ -1,14 +1,14 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { ConnectionPanel } from '@/components/connection/ConnectionPanel';
-import { useRoomConnection } from '@/lib/hooks/use-room-connection';
+import { ConnectionPanel } from '@/features/connection/ConnectionPanel';
+import { useRoomConnection } from '@/features/connection/hooks/use-room-connection';
 
-vi.mock('@/lib/hooks/use-room-connection', () => ({
+vi.mock('@/features/connection/hooks/use-room-connection', () => ({
     useRoomConnection: vi.fn(),
 }));
 
-vi.mock('@/lib/store', () => ({
+vi.mock('@/store', () => ({
     usePeerStore: vi.fn((selector) => {
         const state = {
             storageCapabilities: { opfs: true, persistence: true },
@@ -18,10 +18,10 @@ vi.mock('@/lib/store', () => ({
     }),
 }));
 
-vi.mock('@/components/connection/ConnectionStatus', () => ({
+vi.mock('@/features/connection/ConnectionStatus', () => ({
     ConnectionStatus: () => <div data-testid="connection-status" />,
 }));
-vi.mock('@/components/connection/StorageModeIndicator', () => ({
+vi.mock('@/features/connection/StorageModeIndicator', () => ({
     StorageModeIndicator: () => <div data-testid="storage-mode-indicator" />,
 }));
 

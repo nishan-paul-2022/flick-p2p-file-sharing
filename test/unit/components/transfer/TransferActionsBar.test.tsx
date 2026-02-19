@@ -1,17 +1,17 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { TransferActionsBar } from '@/components/transfer/TransferActionsBar';
-import { usePeerStore } from '@/lib/store';
-import { FileTransfer } from '@/lib/types';
+import { TransferActionsBar } from '@/features/transfer/TransferActionsBar';
+import { FileTransfer } from '@/shared/types';
+import { usePeerStore } from '@/store';
 
 // Mock dependencies
-vi.mock('@/lib/store', () => ({
+vi.mock('@/store', () => ({
     usePeerStore: vi.fn(),
 }));
 
 // Mock sub-components
-vi.mock('@/components/transfer/SortMenu', () => ({
+vi.mock('@/features/transfer/SortMenu', () => ({
     SortMenu: () => <div data-testid="sort-menu">Sort Menu</div>,
 }));
 

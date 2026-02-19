@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { MeteredConfig } from '@/components/settings/MeteredConfig';
-import { XirsysConfig } from '@/components/settings/XirsysConfig';
+import { MeteredConfig } from '@/features/settings/MeteredConfig';
+import { XirsysConfig } from '@/features/settings/XirsysConfig';
 
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
