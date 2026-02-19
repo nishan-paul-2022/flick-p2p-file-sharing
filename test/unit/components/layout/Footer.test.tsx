@@ -7,20 +7,16 @@ describe('Footer', () => {
     it('renders the footer with correct content', () => {
         render(<Footer />);
 
-        // Check if "PRODUCED by" text is present
-        expect(screen.getByText(/PRODUCED BY/i)).toBeDefined();
+        // Check for copyright text
+        expect(screen.getByText(/flick/i)).toBeDefined();
+
+        // Check if "Built with" text is present
+        expect(screen.getByText(/Built with/i)).toBeDefined();
 
         // Check for author link
         const authorLink = screen.getByRole('link', { name: /KAI/i });
         expect(authorLink).toBeDefined();
         expect(authorLink.getAttribute('href')).toBe('https://kaiverse.vercel.app');
-
-        // Check for source code link
-        const githubLink = screen.getByRole('link', { name: /SOURCE CODE/i });
-        expect(githubLink).toBeDefined();
-        expect(githubLink.getAttribute('href')).toBe(
-            'https://github.com/nishan-paul-2022/flick-p2p-file-sharing'
-        );
     });
 
     it('contains an image for the author logo', () => {
@@ -29,9 +25,9 @@ describe('Footer', () => {
         expect(logo).toBeDefined();
     });
 
-    it('contains a Github icon', () => {
+    it('contains a Heart icon', () => {
         const { container } = render(<Footer />);
-        const githubIcon = container.querySelector('.lucide-github');
-        expect(githubIcon).toBeDefined();
+        const heartIcon = container.querySelector('.lucide-heart');
+        expect(heartIcon).toBeDefined();
     });
 });
