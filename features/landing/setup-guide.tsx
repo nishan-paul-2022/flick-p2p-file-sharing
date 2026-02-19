@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
     Activity,
     Check,
+    CheckCircle2,
     Copy,
     ExternalLink,
     Globe,
@@ -51,14 +52,17 @@ export function SetupGuide() {
 
     const simulateSetup = async () => {
         setIsConfigured(false);
+        setAnimatingStep(-1);
         const stepsCount = activeProvider.id === 'xirsys' ? 3 : 2;
         for (let i = 0; i < stepsCount; i++) {
             setAnimatingStep(i);
             await new Promise((resolve) => setTimeout(resolve, 800));
         }
-        setAnimatingStep(-1);
-        setIsConfigured(true);
+        // Keep animatingStep at the last index so fields stay populated
     };
+
+    const isTypingComplete =
+        animatingStep === (activeProvider.id === 'xirsys' ? 2 : 1) || isConfigured;
 
     return (
         <section className="relative overflow-hidden px-4 py-32">
@@ -207,6 +211,26 @@ export function SetupGuide() {
                             <div className="h-px w-full bg-white/[0.05]" />
 
                             <div className="p-8 pb-32">
+                                {/* Configuration Status Indicator */}
+                                <AnimatePresence>
+                                    {isConfigured && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            className="mb-8 overflow-hidden"
+                                        >
+                                            <div className="flex items-center gap-3 rounded-2xl border border-[#00F07C]/30 bg-[#00F07C]/5 px-4 py-3">
+                                                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#00F07C]/20">
+                                                    <Activity className="h-3 w-3 text-[#00F07C]" />
+                                                </div>
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#00F07C]">
+                                                    Global Tunnel Active
+                                                </span>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
                                 {/* Provider Toggle */}
                                 <div className="mb-8 space-y-4">
                                     <label className="text-[10px] font-bold uppercase tracking-widest text-white/40">
@@ -245,11 +269,11 @@ export function SetupGuide() {
                                                 </label>
                                                 <div className="relative flex h-12 items-center rounded-xl border border-white/5 bg-zinc-900/80 px-4">
                                                     <span className="text-sm text-white/90">
-                                                        {animatingStep >= 0
+                                                        {animatingStep >= 0 || isConfigured
                                                             ? activeProvider.keys.ident
                                                             : ''}
                                                     </span>
-                                                    {animatingStep === 0 && (
+                                                    {animatingStep === 0 && !isConfigured && (
                                                         <motion.div
                                                             animate={{ opacity: [1, 0] }}
                                                             transition={{
@@ -267,11 +291,11 @@ export function SetupGuide() {
                                                 </label>
                                                 <div className="flex h-12 items-center rounded-xl border border-white/5 bg-zinc-900/80 px-4">
                                                     <span className="text-sm tracking-widest text-white/90">
-                                                        {animatingStep >= 1
+                                                        {animatingStep >= 1 || isConfigured
                                                             ? activeProvider.keys.secret
                                                             : ''}
                                                     </span>
-                                                    {animatingStep === 1 && (
+                                                    {animatingStep === 1 && !isConfigured && (
                                                         <motion.div
                                                             animate={{ opacity: [1, 0] }}
                                                             transition={{
@@ -289,11 +313,11 @@ export function SetupGuide() {
                                                 </label>
                                                 <div className="relative flex h-12 items-center rounded-xl border border-white/5 bg-zinc-900/80 px-4">
                                                     <span className="text-sm text-white/90">
-                                                        {animatingStep >= 2
+                                                        {animatingStep >= 2 || isConfigured
                                                             ? activeProvider.keys.channel
                                                             : ''}
                                                     </span>
-                                                    {animatingStep === 2 && (
+                                                    {animatingStep === 2 && !isConfigured && (
                                                         <motion.div
                                                             animate={{ opacity: [1, 0] }}
                                                             transition={{
@@ -314,11 +338,11 @@ export function SetupGuide() {
                                             </label>
                                             <div className="flex h-12 items-center rounded-xl border border-white/5 bg-zinc-900/80 px-4">
                                                 <span className="text-sm tracking-widest text-white/90">
-                                                    {animatingStep >= 1
+                                                    {animatingStep >= 1 || isConfigured
                                                         ? activeProvider.keys.secret
                                                         : ''}
                                                 </span>
-                                                {animatingStep >= 0 && animatingStep < 2 && (
+                                                {animatingStep === 1 && !isConfigured && (
                                                     <motion.div
                                                         animate={{ opacity: [1, 0] }}
                                                         transition={{
@@ -338,52 +362,33 @@ export function SetupGuide() {
                             <div className="absolute bottom-0 left-0 flex w-full items-center justify-end gap-4 bg-[#111111]/80 px-8 py-6 backdrop-blur-md">
                                 <span className="text-sm font-medium text-white/60">Cancel</span>
                                 <motion.div
+                                    onClick={() => {
+                                        if (isTypingComplete) {
+                                            setIsConfigured(true);
+                                        }
+                                    }}
                                     animate={isConfigured ? { scale: [1, 0.95, 1] } : {}}
                                     className={`flex items-center gap-2 rounded-xl px-8 py-3 font-bold transition-all ${
                                         isConfigured
-                                            ? 'bg-white text-black shadow-lg shadow-white/10'
-                                            : 'cursor-not-allowed bg-white/10 text-white/40'
+                                            ? 'bg-[#00F07C] text-black shadow-lg shadow-[#00F07C]/20'
+                                            : isTypingComplete
+                                              ? 'cursor-pointer bg-white text-black shadow-lg shadow-white/10 hover:bg-white/90'
+                                              : 'cursor-not-allowed bg-white/10 text-white/40'
                                     }`}
                                 >
-                                    <Check className="h-4 w-4" />
-                                    Apply
+                                    {isConfigured ? (
+                                        <>
+                                            <CheckCircle2 className="h-4 w-4" />
+                                            Saved
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Check className="h-4 w-4" />
+                                            Apply
+                                        </>
+                                    )}
                                 </motion.div>
                             </div>
-
-                            {/* Visual Feedback on success */}
-                            <AnimatePresence>
-                                {isConfigured && (
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        className="absolute inset-0 z-20 flex items-center justify-center bg-black/60 backdrop-blur-xl"
-                                    >
-                                        <div className="flex flex-col items-center gap-4 text-center">
-                                            <div className="shadow-glow-primary flex h-20 w-20 items-center justify-center rounded-full bg-primary/20">
-                                                <Zap className="h-10 w-10 text-primary" />
-                                            </div>
-                                            <div>
-                                                <h4 className="text-xl font-black uppercase tracking-tighter text-white">
-                                                    Systems Ready
-                                                </h4>
-                                                <p className="max-w-[200px] text-sm text-white/60">
-                                                    Encryption active. Tunnel established.
-                                                </p>
-                                            </div>
-                                            <Button
-                                                variant="outline"
-                                                onClick={() => {
-                                                    setIsConfigured(false);
-                                                    setAnimatingStep(-1);
-                                                }}
-                                                className="mt-4 border-primary/40 text-primary hover:bg-primary/10"
-                                            >
-                                                Reset Demo
-                                            </Button>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
                         </motion.div>
                     </div>
                 </div>
