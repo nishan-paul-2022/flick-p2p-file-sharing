@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { detectStorageCapabilities } from '@/lib/storage-mode';
+import { detectStorageCapabilities } from '@/features/transfer/storage-mode';
 
 describe('storage-mode', () => {
     const mockRootHandle = {

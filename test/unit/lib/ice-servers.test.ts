@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { getIceServers } from '@/lib/ice-servers';
+import { getIceServers } from '@/features/connection/ice-servers';
 
 vi.mock('idb-keyval', () => ({
     get: vi.fn(),

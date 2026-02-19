@@ -1,0 +1,72 @@
+import { DataConnection } from 'peerjs';
+import Peer from 'peerjs';
+
+import { StorageCapabilities } from '@/features/transfer/storage-mode';
+import { ConnectionQuality, FileTransfer, LogEntry, SortBy, SortOrder } from '@/shared/types';
+
+export interface ExtendedDataConnection extends DataConnection {
+    dataChannel: RTCDataChannel;
+    peerConnection: RTCPeerConnection;
+}
+
+export interface PeerSlice {
+    peer: Peer | null;
+    connection: ExtendedDataConnection | null;
+    peerId: string | null;
+    roomCode: string | null;
+    isHost: boolean;
+    isConnected: boolean;
+    connectionQuality: ConnectionQuality;
+    error: string | null;
+
+    setRoomCode: (code: string | null) => void;
+    initializePeer: (code?: string) => Promise<string>;
+    connectToPeer: (targetCode: string) => Promise<void>;
+    disconnect: () => void;
+    clearError: () => void;
+}
+
+export interface TransferSlice {
+    receivedFiles: FileTransfer[];
+    outgoingFiles: FileTransfer[];
+
+    sendFile: (file: File) => Promise<void>;
+    removeFile: (id: string, type: 'received' | 'outgoing') => Promise<void>;
+    downloadFile: (transfer: FileTransfer) => Promise<void>;
+    downloadAllReceivedFiles: () => Promise<void>;
+    clearReceivedHistory: () => Promise<void>;
+    clearSentHistory: () => Promise<void>;
+}
+
+export interface LogSlice {
+    logs: LogEntry[];
+    hasUnreadLogs: boolean;
+
+    addLog: (type: LogEntry['type'], message: string, description?: string) => void;
+    clearLogs: () => void;
+}
+
+export interface UISlice {
+    isLogPanelOpen: boolean;
+    hasHydrated: boolean;
+    activeTab: string;
+    receivedSortBy: SortBy;
+    receivedSortOrder: SortOrder;
+    sentSortBy: SortBy;
+    sentSortOrder: SortOrder;
+
+    toggleLogPanel: () => void;
+    setHasHydrated: (val: boolean) => void;
+    setActiveTab: (tab: string) => void;
+    setReceivedSortBy: (sortBy: SortBy) => void;
+    setReceivedSortOrder: (sortOrder: SortOrder) => void;
+    setSentSortBy: (sortBy: SortBy) => void;
+    setSentSortOrder: (sortOrder: SortOrder) => void;
+}
+
+export interface StorageSlice {
+    storageCapabilities: StorageCapabilities | null;
+    initializeStorage: () => Promise<void>;
+}
+
+export type StoreState = PeerSlice & TransferSlice & LogSlice & UISlice & StorageSlice;

@@ -1,16 +1,16 @@
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
+import js from '@eslint/js';
+import ts from 'typescript-eslint';
+import nextPlugin from '@next/eslint-plugin-next';
+import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import prettier from 'eslint-config-prettier';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-});
-
-const eslintConfig = [
+export default ts.config(
     {
         ignores: [
             '.next/**',
@@ -23,12 +23,18 @@ const eslintConfig = [
             'eslint.config.mjs',
         ],
     },
-    ...compat.extends('next/core-web-vitals', 'next/typescript', 'prettier'),
+    js.configs.recommended,
+    ...ts.configs.recommended,
     {
         plugins: {
+            '@next/next': nextPlugin,
+            'react-hooks': reactHooks,
             'simple-import-sort': simpleImportSort,
         },
         rules: {
+            ...nextPlugin.configs.recommended.rules,
+            ...nextPlugin.configs['core-web-vitals'].rules,
+            ...reactHooks.configs.recommended.rules,
             curly: ['error', 'all'],
             'simple-import-sort/imports': 'error',
             'simple-import-sort/exports': 'error',
@@ -49,6 +55,5 @@ const eslintConfig = [
             'no-console': ['warn', { allow: ['warn', 'error'] }],
         },
     },
-];
-
-export default eslintConfig;
+    prettier
+);

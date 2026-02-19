@@ -3,9 +3,9 @@ import type { DataConnection } from 'peerjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { create } from 'zustand';
 
-import { createTransferSlice } from '@/lib/store/slices/transfer-slice';
-import { StoreState } from '@/lib/store/types';
-import { FileTransfer } from '@/lib/types';
+import { FileTransfer } from '@/shared/types';
+import { createTransferSlice } from '@/store/slices/transfer-slice';
+import { StoreState } from '@/store/types';
 
 const mockURL = {
     createObjectURL: vi.fn(),
@@ -28,7 +28,7 @@ vi.spyOn(document.body, 'removeChild').mockImplementation(
 );
 
 // Mock OPFSManager
-vi.mock('@/lib/opfs-manager', () => ({
+vi.mock('@/features/transfer/opfs-manager', () => ({
     OPFSManager: {
         getTransferFile: vi.fn(),
         getFileAsBlob: vi.fn(),
@@ -46,7 +46,7 @@ vi.mock('jszip', () => {
     };
 });
 
-vi.mock('@/lib/store/cache', () => ({
+vi.mock('@/store/cache', () => ({
     opfsHandleCache: {
         get: vi.fn(),
         set: vi.fn(),
@@ -329,7 +329,7 @@ describe('transfer-slice', () => {
         });
 
         it('should handle OPFS deletion errors gracefully', async () => {
-            const { OPFSManager } = await import('@/lib/opfs-manager');
+            const { OPFSManager } = await import('@/features/transfer/opfs-manager');
             (OPFSManager.deleteTransferFile as Mock).mockRejectedValue(new Error('FS Lock'));
 
             useStore = createTestStore({
@@ -358,7 +358,7 @@ describe('transfer-slice', () => {
                 receivedFiles: [transfer as unknown as FileTransfer],
             });
 
-            const { OPFSManager } = await import('@/lib/opfs-manager');
+            const { OPFSManager } = await import('@/features/transfer/opfs-manager');
             (OPFSManager.getTransferFile as Mock).mockResolvedValue(null);
 
             await useStore.getState().downloadFile(useStore.getState().receivedFiles[0]);
@@ -408,7 +408,7 @@ describe('transfer-slice', () => {
                 ],
             });
 
-            const { OPFSManager } = await import('@/lib/opfs-manager');
+            const { OPFSManager } = await import('@/features/transfer/opfs-manager');
             // Mock getTransferFile to return null for transfer1 (id: '1')
             (OPFSManager.getTransferFile as Mock).mockImplementation((id: string) => {
                 if (id === '1') {
@@ -463,7 +463,7 @@ describe('transfer-slice', () => {
         });
 
         it('should clear received history and handle OPFS errors', async () => {
-            const { OPFSManager } = await import('@/lib/opfs-manager');
+            const { OPFSManager } = await import('@/features/transfer/opfs-manager');
             (OPFSManager.deleteTransferFile as Mock).mockRejectedValueOnce(
                 new Error('Delete error')
             );

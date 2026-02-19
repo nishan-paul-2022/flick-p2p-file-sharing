@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useSettings } from '@/lib/hooks/use-settings';
+import { useSettings } from '@/features/settings/hooks/use-settings';
 
 vi.mock('idb-keyval', () => ({
     get: vi.fn(),
@@ -12,7 +12,7 @@ const mockInitializePeer = vi.fn().mockResolvedValue(undefined);
 const mockDestroy = vi.fn();
 const mockAddLog = vi.fn();
 
-vi.mock('@/lib/store', () => ({
+vi.mock('@/store', () => ({
     usePeerStore: Object.assign(vi.fn(), {
         getState: () => ({
             peer: { destroy: mockDestroy },

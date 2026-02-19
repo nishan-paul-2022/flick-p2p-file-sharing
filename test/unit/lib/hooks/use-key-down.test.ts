@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { useKeyDown } from '@/lib/hooks/use-key-down';
+import { useKeyDown } from '@/shared/hooks/use-key-down';
 
 describe('useKeyDown', () => {
     it('should call callback when matching key is pressed', () => {

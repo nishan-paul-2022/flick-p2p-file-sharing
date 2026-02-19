@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { create } from 'zustand';
 
-import { MAX_LOGS } from '@/lib/constants';
-import { createLogSlice } from '@/lib/store/slices/log-slice';
-import { StoreState } from '@/lib/store/types';
+import { MAX_LOGS } from '@/shared/constants';
+import { createLogSlice } from '@/store/slices/log-slice';
+import { StoreState } from '@/store/types';
 
 const createTestStore = () => {
     return create<StoreState>(
