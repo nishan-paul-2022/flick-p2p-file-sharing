@@ -1,5 +1,7 @@
 import { type BrowserContext, expect, type Page, test } from '@playwright/test';
 
+test.skip(({ browserName }) => browserName === 'webkit', 'WebRTC unreliable in WebKit');
+
 test.describe('P2P Connection', () => {
     let contextA: BrowserContext;
     let contextB: BrowserContext;

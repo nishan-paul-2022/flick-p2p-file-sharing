@@ -10,7 +10,7 @@ test.describe('Settings Integration', () => {
         await settingsBtn.click();
 
         // 2. Wait for modal content
-        await expect(page.getByText('Connection Settings')).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Connection Settings' })).toBeVisible();
 
         // 3. Switch to Metered provider
         // The provider list items have text "Metered" and are clickable
