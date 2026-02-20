@@ -31,7 +31,7 @@ export function Hero() {
                         className="relative"
                     >
                         <Image
-                            src="/icon.svg"
+                            src="/images/icon.svg"
                             alt="Flick Logo"
                             width={64}
                             height={64}

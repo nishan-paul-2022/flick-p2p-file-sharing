@@ -26,7 +26,7 @@ export function Footer() {
                         >
                             <div className="relative h-7 w-7 overflow-hidden rounded-full transition-all duration-500">
                                 <Image
-                                    src="/author-logo.svg"
+                                    src="/images/author-logo.svg"
                                     alt="KAI"
                                     fill
                                     className="object-cover transition-transform duration-700 group-hover:rotate-[360deg] group-hover:scale-110"

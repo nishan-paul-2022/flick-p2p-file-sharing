@@ -27,7 +27,7 @@ export default function Loading() {
                             className="absolute inset-0 rounded-full border border-primary/50"
                         />
                         <Image
-                            src="/icon.svg"
+                            src="/images/icon.svg"
                             alt="Flick Logo"
                             fill
                             className="object-contain"

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/icon.svg" alt="Flick Logo" width="120" height="120" />
+  <img src="public/images/icon.svg" alt="Flick Logo" width="120" height="120" />
   <h1>Flick</h1>
   <p>Instant Peer-to-Peer File Sharing</p>
 </div>
@@ -110,6 +110,6 @@ npm start
 ---
 
 <div align="center">
-  <img src="public/author-logo.svg" alt="Author Logo" width="80" height="80" />
+  <img src="public/images/author-logo.svg" alt="Author Logo" width="80" height="80" />
   <p>Built with ❤️ by <b>KAI</b></p>
 </div>
