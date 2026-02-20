@@ -188,7 +188,12 @@ export function SetupGuide() {
                                         className="h-14 w-full rounded-2xl bg-white text-black hover:bg-white/90"
                                     >
                                         {isDemoRunning ? (
-                                            <Activity className="h-5 w-5 animate-pulse" />
+                                            <div className="flex items-center gap-2 opacity-70">
+                                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-black/20 border-t-black" />
+                                                <span className="text-sm font-medium tracking-wide">
+                                                    Running Demo
+                                                </span>
+                                            </div>
                                         ) : (
                                             'Run Live Demo'
                                         )}
