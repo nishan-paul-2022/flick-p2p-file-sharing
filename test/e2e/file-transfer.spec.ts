@@ -19,8 +19,8 @@ test.describe('P2P File Transfer', () => {
         pageB = await contextB.newPage();
 
         // Establish Connection
-        await pageA.goto('/');
-        await pageB.goto('/');
+        await pageA.goto('/share');
+        await pageB.goto('/share');
 
         await pageA.getByLabel('Create a new room').click();
 
