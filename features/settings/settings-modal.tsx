@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, Loader2, Settings, X } from 'lucide-react';
+import { Check, Loader2, SlidersHorizontal, X } from 'lucide-react';
 import { useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -71,9 +71,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     >
                         <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-4 py-4 sm:px-6">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                                    <Settings className="h-5 w-5" />
-                                </div>
+                                <SlidersHorizontal className="h-5 w-5 text-primary" />
                                 <div>
                                     <h2
                                         id="settings-title"
