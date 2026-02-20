@@ -23,7 +23,17 @@ const providers = [
         name: 'Xirsys',
         desc: 'Enterprise WebRTC Infrastructure',
         steps: [
-            'Sign up at xirsys.com',
+            <span key="1">
+                Sign up at{' '}
+                <a
+                    href="https://xirsys.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-primary hover:underline"
+                >
+                    xirsys.com <ExternalLink className="h-3 w-3" />
+                </a>
+            </span>,
             'Create a Channel',
             'Copy Ident & Secret',
             'Add to Flick settings',
@@ -39,7 +49,21 @@ const providers = [
         id: 'metered',
         name: 'Metered',
         desc: 'Global TURN/STUN Network',
-        steps: ['Sign up at metered.ca', 'Get API Key', 'Add to Flick settings'],
+        steps: [
+            <span key="1">
+                Sign up at{' '}
+                <a
+                    href="https://metered.ca"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-primary hover:underline"
+                >
+                    metered.ca <ExternalLink className="h-3 w-3" />
+                </a>
+            </span>,
+            'Get API Key',
+            'Add to Flick settings',
+        ],
         icon: Zap,
         color: 'text-amber-400',
         borderColor: 'border-amber-500/30',
@@ -133,14 +157,6 @@ export function SetupGuide() {
                                 >
                                     <div className="flex items-center justify-between">
                                         <h3 className="text-2xl font-black">Quick Setup</h3>
-                                        <a
-                                            href={activeProvider.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary"
-                                        >
-                                            Portal <ExternalLink className="h-3 w-3" />
-                                        </a>
                                     </div>
 
                                     <div className="space-y-6">
