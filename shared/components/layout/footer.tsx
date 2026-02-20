@@ -11,7 +11,7 @@ export function Footer() {
                         <span className="text-white">flick</span>
                     </div>
 
-                    <span className="hidden h-1 w-1 rounded-full bg-white/20 sm:block" />
+                    <span className="hidden h-1 w-1 rounded-full bg-white sm:block" />
 
                     <div className="flex items-center gap-4">
                         <span className="flex items-center gap-2">
