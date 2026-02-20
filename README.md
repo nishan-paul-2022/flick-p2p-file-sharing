@@ -110,6 +110,6 @@ npm start
 ---
 
 <div align="center">
-  <img src="public/images/author-logo.svg" alt="Author Logo" width="80" height="80" />
+  <img src="public/images/company-logo.svg" alt="Author Logo" width="80" height="80" />
   <p>Built with ❤️ by <b>KAI</b></p>
 </div>
