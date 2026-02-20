@@ -8,20 +8,28 @@ vi.mock('idb-keyval', () => ({
     set: vi.fn().mockResolvedValue(undefined),
 }));
 
-const mockInitializePeer = vi.fn().mockResolvedValue(undefined);
-const mockDestroy = vi.fn();
-const mockAddLog = vi.fn();
-
-vi.mock('@/store', () => ({
-    usePeerStore: Object.assign(vi.fn(), {
-        getState: () => ({
-            peer: { destroy: mockDestroy },
-            initializePeer: mockInitializePeer,
-            addLog: mockAddLog,
-            roomCode: '123',
-        }),
-    }),
+const { mockInitializePeer, mockDestroy, mockAddLog } = vi.hoisted(() => ({
+    mockInitializePeer: vi.fn().mockResolvedValue(undefined),
+    mockDestroy: vi.fn(),
+    mockAddLog: vi.fn(),
 }));
+
+vi.mock('@/store', () => {
+    const state = {
+        peer: { destroy: mockDestroy },
+        initializePeer: mockInitializePeer,
+        addLog: mockAddLog,
+        roomCode: '123',
+    };
+    return {
+        usePeerStore: Object.assign(
+            vi.fn((selector) => (selector ? selector(state) : state)),
+            {
+                getState: () => state,
+            }
+        ),
+    };
+});
 
 import { get, set } from 'idb-keyval';
 
