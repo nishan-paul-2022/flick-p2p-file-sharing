@@ -350,7 +350,7 @@ export function SetupGuide() {
                 <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
-                    className="mt-20 flex flex-wrap items-center justify-center gap-12 border-t border-white/5 pt-20"
+                    className="mt-20 flex flex-wrap items-center justify-center gap-12 pt-20"
                 >
                     <div className="flex items-center gap-3">
                         <Shield className="h-5 w-5 text-primary" />
