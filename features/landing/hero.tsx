@@ -3,15 +3,12 @@
 import { motion } from 'framer-motion';
 import { Laptop, Share2, Shield, Zap } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useCallback } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
 
-interface HeroProps {
-    onEnterApp: () => void;
-}
-
-export function Hero({ onEnterApp }: HeroProps) {
+export function Hero() {
     const handleScrollToHowItWorks = useCallback(() => {
         if (typeof window !== 'undefined') {
             window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
@@ -75,10 +72,10 @@ export function Hero({ onEnterApp }: HeroProps) {
                 >
                     <Button
                         size="lg"
-                        onClick={onEnterApp}
+                        asChild
                         className="group h-16 rounded-2xl bg-primary px-10 text-lg font-bold text-white transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90 active:scale-95"
                     >
-                        Start Sharing Now
+                        <Link href="/share">Start Sharing Now</Link>
                     </Button>
                     <Button
                         size="lg"
