@@ -23,8 +23,8 @@ test.describe('P2P Connection', () => {
 
     test('should establish a connection between two peers', async () => {
         // 1. Open App in both browsers
-        await pageA.goto('/');
-        await pageB.goto('/');
+        await pageA.goto('/share');
+        await pageB.goto('/share');
 
         // 2. Peer A creates a room
         // Wait for the "Create New Room" button and click it

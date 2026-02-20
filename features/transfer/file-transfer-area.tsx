@@ -52,7 +52,7 @@ export function FileTransferArea() {
                     />
                 </TabsList>
 
-                <div className="mt-2 min-h-[40px]">
+                <div className="relative z-10 mt-2 min-h-[40px]">
                     <TransferActionsBar
                         type={activeTab as 'received' | 'sent'}
                         files={activeTab === 'received' ? receivedFiles : outgoingFiles}
