@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
     Activity,
     Check,
-    Copy,
     ExternalLink,
     Globe,
     MousePointer2,
@@ -360,19 +359,19 @@ export function SetupGuide() {
                     <div className="flex items-center gap-3">
                         <Shield className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-                            Zero-Knowledge Protocol
+                            Bypass Strict Firewalls
                         </span>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Copy className="h-5 w-5 text-primary" />
+                        <Activity className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-                            Client-Side Storage
+                            Guaranteed Connectivity
                         </span>
                     </div>
                     <div className="flex items-center gap-3">
                         <Globe className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-                            Global Coverage
+                            Global Relay Network
                         </span>
                     </div>
                 </motion.div>
