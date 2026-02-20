@@ -51,7 +51,7 @@ describe('FileDropZone Component', () => {
         setupStore({ isConnected: false, roomCode: '1234' });
         render(<FileDropZone />);
 
-        expect(screen.getByText('Waiting for connection...')).toBeInTheDocument();
+        expect(screen.getByText('Waiting for connection')).toBeInTheDocument();
     });
 
     it('renders connected state correctly', () => {
