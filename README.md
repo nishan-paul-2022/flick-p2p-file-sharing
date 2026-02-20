@@ -6,6 +6,12 @@
 
 Flick is a modern Progressive Web App (PWA) that enables **direct device-to-device file sharing** using WebRTC technology. Built with **Next.js**, **PeerJS**, and **Tailwind CSS**, it features a beautiful dark mode UI, unlimited file size support, and zero backend storage for ultimate privacy.
 
+<div align="center">
+  <br />
+  <img src="public/preview/home.gif" alt="Flick Dashboard" width="100%" style="border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);" />
+  <br />
+</div>
+
 ## ✨ Core Features
 
 - **🔗 Direct P2P Transfer**: Share files instantly between devices using WebRTC.
@@ -24,9 +30,9 @@ Flick is a modern Progressive Web App (PWA) that enables **direct device-to-devi
 
 Connect your devices by simply sharing a 6-character room code. No accounts or registration required.
 
-### Fast & Secure Transfers
+<img src="public/preview/share.gif" alt="Transfer Preview" width="100%" style="border-radius: 8px; border: 1px solid #333;" />
 
-Watch your files transfer in real time, securely encrypted end-to-end between your devices.
+<br />
 
 ---
 
