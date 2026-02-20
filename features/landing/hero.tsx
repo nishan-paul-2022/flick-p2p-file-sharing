@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Laptop, Share2, Shield, Zap } from 'lucide-react';
+import { HardDrive, MonitorSmartphone, Network, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback } from 'react';
@@ -60,8 +60,9 @@ export function Hero() {
                     transition={{ duration: 0.6, delay: 0.3 }}
                     className="mx-auto mb-12 max-w-2xl text-lg leading-relaxed text-muted-foreground/80 md:text-xl"
                 >
-                    Experience lightning-fast, private file transfers directly between your devices.
-                    No cloud, no logs, just pure connectivity.
+                    Seamlessly share files directly between your devices with uncompromising
+                    privacy. Zero cloud limits, zero data retention, zero compromise. Just
+                    blazing-fast, secure peer-to-peer transfers.
                 </motion.p>
 
                 <motion.div
@@ -95,10 +96,10 @@ export function Hero() {
                     className="mt-24 grid grid-cols-2 gap-8 md:grid-cols-4"
                 >
                     {[
-                        { icon: Shield, label: 'End-to-End' },
-                        { icon: Zap, label: 'Zero Limits' },
-                        { icon: Share2, label: 'No Backend' },
-                        { icon: Laptop, label: 'Cross Platform' },
+                        { icon: ShieldCheck, label: 'Secure & Private' },
+                        { icon: HardDrive, label: 'Unlimited Size' },
+                        { icon: Network, label: 'Direct P2P' },
+                        { icon: MonitorSmartphone, label: 'All Devices' },
                     ].map((item, i) => (
                         <div key={i} className="flex flex-col items-center gap-3 text-foreground">
                             <item.icon className="h-5 w-5" />
