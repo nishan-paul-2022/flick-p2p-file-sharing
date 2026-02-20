@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, Loader2, RefreshCw, Settings, X } from 'lucide-react';
+import { Check, Loader2, Settings, X } from 'lucide-react';
 import { useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -176,18 +176,20 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                         status.isLoading ||
                                         !status.isValid
                                     }
-                                    className="h-11 bg-white px-6 text-zinc-950 transition-all duration-300 hover:bg-white focus-visible:ring-white/20 disabled:opacity-30"
+                                    className="h-11 min-w-[140px] bg-white px-4 text-zinc-950 transition-all duration-300 hover:bg-white focus-visible:ring-white/20 disabled:opacity-30"
                                 >
                                     {status.isSaving ? (
-                                        <>
-                                            <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                                            Applying...
-                                        </>
+                                        <div className="flex items-center justify-center gap-2 opacity-70">
+                                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-black/20 border-t-black" />
+                                            <span className="text-sm font-medium tracking-wide">
+                                                Applying
+                                            </span>
+                                        </div>
                                     ) : (
-                                        <>
-                                            <Check className="mr-2 h-4 w-4" />
-                                            Apply
-                                        </>
+                                        <div className="flex items-center justify-center gap-2">
+                                            <Check className="h-4 w-4" />
+                                            <span className="text-sm font-medium">Apply</span>
+                                        </div>
                                     )}
                                 </Button>
                             </motion.div>
