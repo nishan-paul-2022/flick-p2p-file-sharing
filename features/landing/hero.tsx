@@ -1,17 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowRight, Laptop, Share2, Shield, Zap } from 'lucide-react';
+import { HardDrive, MonitorSmartphone, Network, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useCallback } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
 
-interface HeroProps {
-    onEnterApp: () => void;
-}
-
-export function Hero({ onEnterApp }: HeroProps) {
+export function Hero() {
     const handleScrollToHowItWorks = useCallback(() => {
         if (typeof window !== 'undefined') {
             window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
@@ -20,10 +17,6 @@ export function Hero({ onEnterApp }: HeroProps) {
 
     return (
         <section className="relative flex min-h-[95vh] flex-col items-center justify-center overflow-hidden px-4">
-            {/* Minimalist Ambient Glow - Matching App Header style */}
-            <div className="pointer-events-none absolute top-0 h-[500px] w-full bg-primary/5 opacity-50 blur-huge" />
-            <div className="pointer-events-none absolute bottom-0 right-0 h-[400px] w-[400px] bg-primary/5 opacity-30 blur-huge" />
-
             <div className="relative z-10 mx-auto max-w-5xl text-center">
                 {/* Official Logo Integration */}
                 <motion.div
@@ -37,9 +30,8 @@ export function Hero({ onEnterApp }: HeroProps) {
                         transition={{ duration: 0.8, ease: 'easeInOut' }}
                         className="relative"
                     >
-                        <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl" />
                         <Image
-                            src="/icon.svg"
+                            src="/images/icon.svg"
                             alt="Flick Logo"
                             width={64}
                             height={64}
@@ -51,26 +43,14 @@ export function Hero({ onEnterApp }: HeroProps) {
                     </span>
                 </motion.div>
 
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
-                    className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-zinc-900/30 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary/80 backdrop-blur-3xl"
-                >
-                    <span className="flex h-2 w-2 animate-pulse rounded-full bg-primary" />
-                    Secure P2P Protocol v2.5
-                </motion.div>
-
                 <motion.h1
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
                     className="mb-8 text-6xl font-black leading-[0.95] tracking-tighter md:text-8xl lg:text-9xl"
                 >
-                    UNLIMITED
-                    <br />
                     <span className="bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">
-                        SHARING.
+                        SHARE UNLIMITED
                     </span>
                 </motion.h1>
 
@@ -80,8 +60,9 @@ export function Hero({ onEnterApp }: HeroProps) {
                     transition={{ duration: 0.6, delay: 0.3 }}
                     className="mx-auto mb-12 max-w-2xl text-lg leading-relaxed text-muted-foreground/80 md:text-xl"
                 >
-                    Experience lightning-fast, private file transfers directly between your devices.
-                    No cloud, no logs, just pure connectivity.
+                    Seamlessly share files directly between your devices with uncompromising
+                    privacy. Zero cloud limits, zero data retention, zero compromise. Just
+                    blazing-fast, secure peer-to-peer transfers.
                 </motion.p>
 
                 <motion.div
@@ -92,11 +73,10 @@ export function Hero({ onEnterApp }: HeroProps) {
                 >
                     <Button
                         size="lg"
-                        onClick={onEnterApp}
-                        className="group h-16 rounded-2xl bg-primary px-10 text-lg font-bold text-white shadow-[0_0_40px_rgba(14,165,233,0.2)] transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90 active:scale-95"
+                        asChild
+                        className="group h-16 rounded-2xl bg-primary px-10 text-lg font-bold text-white transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90 active:scale-95"
                     >
-                        Start Sharing Now
-                        <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                        <Link href="/share">Start Sharing Now</Link>
                     </Button>
                     <Button
                         size="lg"
@@ -116,15 +96,12 @@ export function Hero({ onEnterApp }: HeroProps) {
                     className="mt-24 grid grid-cols-2 gap-8 md:grid-cols-4"
                 >
                     {[
-                        { icon: Shield, label: 'End-to-End' },
-                        { icon: Zap, label: 'Zero Limits' },
-                        { icon: Share2, label: 'No Backend' },
-                        { icon: Laptop, label: 'Cross Platform' },
+                        { icon: ShieldCheck, label: 'Secure & Private' },
+                        { icon: HardDrive, label: 'Unlimited Size' },
+                        { icon: Network, label: 'Direct P2P' },
+                        { icon: MonitorSmartphone, label: 'All Devices' },
                     ].map((item, i) => (
-                        <div
-                            key={i}
-                            className="group flex flex-col items-center gap-3 text-muted-foreground/40 transition-colors hover:text-primary/60"
-                        >
+                        <div key={i} className="flex flex-col items-center gap-3 text-foreground">
                             <item.icon className="h-5 w-5" />
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
                                 {item.label}

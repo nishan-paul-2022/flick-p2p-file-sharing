@@ -1,13 +1,13 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { FileUp, Laptop, Share2, ShieldCheck, Smartphone } from 'lucide-react';
+import { FileUp, Monitor, Share2, ShieldCheck, Smartphone } from 'lucide-react';
 
 const steps = [
     {
         title: 'Create a Room',
-        desc: 'Device A generates a secure 6-char code',
-        icon: Laptop,
+        desc: 'Device A generates a secure code',
+        icon: Monitor,
     },
     {
         title: 'Connect',
@@ -38,15 +38,6 @@ export function WorkflowAnimation() {
                 >
                     Seamless P2P Magic
                 </motion.h2>
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.1 }}
-                    className="mx-auto max-w-2xl text-lg text-muted-foreground"
-                >
-                    No clouds. No accounts. Just direct device-to-device transfers.
-                </motion.p>
             </div>
 
             <div className="relative grid grid-cols-1 gap-8 md:grid-cols-4 md:gap-4">
@@ -74,12 +65,12 @@ export function WorkflowAnimation() {
                                 }}
                                 className="flex h-20 w-20 items-center justify-center rounded-3xl border border-white/[0.08] bg-zinc-900/50 shadow-glass-lg backdrop-blur-sm transition-colors group-hover:border-primary/50"
                             >
-                                <step.icon className="h-8 w-8 text-primary/70" />
+                                <step.icon className="h-8 w-8 text-primary" />
                             </motion.div>
 
-                            {/* Animated progress indicator - Subtle */}
+                            {/* Rotating border accent */}
                             <motion.div
-                                className="absolute -inset-2 rounded-[2rem] border-2 border-primary/10 border-t-primary/40"
+                                className="absolute -inset-2 rounded-[2rem] border-2 border-primary/10"
                                 animate={{ rotate: 360 }}
                                 transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
                             />
@@ -93,69 +84,60 @@ export function WorkflowAnimation() {
 
             {/* Visual File Transfer Demo - Matching App style */}
             <div className="relative mt-24 flex h-64 w-full items-center justify-between overflow-hidden rounded-[2.5rem] border border-white/[0.08] bg-zinc-900/20 px-12 backdrop-blur-md md:px-24">
-                {/* Background Glow */}
-                <div className="pointer-events-none absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-primary/5 blur-[100px]" />
-
-                {/* Device A */}
-                <motion.div
-                    initial={{ x: -20, opacity: 0 }}
-                    whileInView={{ x: 0, opacity: 1 }}
-                    viewport={{ once: true }}
-                    className="z-10 flex flex-col items-center gap-4"
-                >
-                    <div className="relative flex h-24 w-16 items-center justify-center rounded-2xl border-4 border-zinc-800 bg-zinc-950 shadow-2xl">
+                {/* Device A - Computer */}
+                <div className="relative z-10 flex flex-col items-center">
+                    <motion.div
+                        initial={{ x: -20, opacity: 0 }}
+                        whileInView={{ x: 0, opacity: 1 }}
+                        viewport={{ once: true }}
+                        className="relative flex h-20 w-28 items-center justify-center rounded-xl border-4 border-zinc-800 bg-zinc-950 shadow-2xl"
+                    >
+                        {/* Camera/Sensor */}
                         <div className="absolute top-2 h-1 w-1 rounded-full bg-zinc-800" />
-                        <Laptop className="h-6 w-6 text-primary/30" />
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary/40">
+
+                        {/* Monitor Stand */}
+                        <div className="absolute -bottom-3 h-3 w-8 rounded-b-lg bg-zinc-800" />
+                        <div className="absolute -bottom-4 h-1 w-12 rounded-full bg-zinc-800" />
+                    </motion.div>
+                    <span className="absolute top-[calc(100%+2rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-white">
                         Sender
                     </span>
-                </motion.div>
-
-                {/* Transfer Path */}
-                <div className="relative mx-8 h-px flex-1">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0" />
-
-                    {/* Animated File Packets */}
-                    {[0, 1, 2].map((i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ x: '0%', opacity: 0 }}
-                            animate={{
-                                x: '100%',
-                                opacity: [0, 1, 1, 0],
-                                scale: [0.9, 1, 1, 0.9],
-                            }}
-                            transition={{
-                                duration: 2.5,
-                                repeat: Infinity,
-                                ease: 'linear',
-                                delay: i * 0.8,
-                            }}
-                            className="absolute top-1/2 -translate-y-1/2"
-                        >
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 shadow-[0_0_20px_rgba(14,165,233,0.1)]">
-                                <FileUp className="h-5 w-5 text-primary/80" />
-                            </div>
-                        </motion.div>
-                    ))}
                 </div>
 
-                {/* Device B */}
-                <motion.div
-                    initial={{ x: 20, opacity: 0 }}
-                    whileInView={{ x: 0, opacity: 1 }}
-                    viewport={{ once: true }}
-                    className="z-10 flex flex-col items-center gap-4"
-                >
-                    <div className="relative flex h-24 w-16 items-center justify-center rounded-2xl border-4 border-zinc-800 bg-zinc-950 shadow-2xl">
-                        <div className="absolute top-2 h-1 w-1 rounded-full bg-zinc-800" />
-                        <Smartphone className="h-6 w-6 text-primary/30" />
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary/40">
+                {/* Transfer Path */}
+                <div className="relative mx-8 flex h-px flex-1 items-center justify-center">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0" />
+
+                    {/* Animated File Packet */}
+                    <motion.div
+                        initial={{ left: '0%', x: '-50%', y: '-50%', opacity: 0 }}
+                        animate={{
+                            left: '100%',
+                            opacity: [0, 1, 1, 0],
+                        }}
+                        transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            ease: 'linear',
+                        }}
+                        className="absolute top-1/2 z-20"
+                    >
+                        <FileUp className="h-8 w-8 text-primary/80" />
+                    </motion.div>
+                </div>
+
+                {/* Device B - Mobile */}
+                <div className="relative z-10 flex flex-col items-center">
+                    <motion.div
+                        initial={{ x: 20, opacity: 0 }}
+                        whileInView={{ x: 0, opacity: 1 }}
+                        viewport={{ once: true }}
+                        className="relative flex h-24 w-16 items-center justify-center rounded-[1.5rem] border-4 border-zinc-800 bg-zinc-950 shadow-2xl"
+                    ></motion.div>
+                    <span className="absolute top-[calc(100%+1rem)] whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-white">
                         Receiver
                     </span>
-                </motion.div>
+                </div>
             </div>
         </div>
     );

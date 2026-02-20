@@ -67,7 +67,7 @@
     }
 
     .input-otp {
-        @apply ease-premium h-14 rounded-xl border-white/[0.05] bg-white/[0.02] font-mono text-base tracking-widest-3xl transition-all duration-300 focus-visible:border-brand-500/50 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-lg;
+        @apply ease-premium h-14 rounded-xl border-white/[0.05] bg-white/[0.02] font-mono text-base tracking-widest-3xl transition-all duration-300 focus-visible:border-brand-500/50 focus-visible:!ring-0 focus-visible:!ring-offset-0 focus-visible:!ring-offset-transparent md:text-lg;
     }
 
     .connection-status {

@@ -118,7 +118,7 @@ export function FileDropZone() {
                     >
                         {disabled
                             ? roomCode
-                                ? 'Waiting for connection...'
+                                ? 'Waiting for connection'
                                 : 'Connect to a peer first'
                             : 'Drop files here or click to browse'}
                     </p>

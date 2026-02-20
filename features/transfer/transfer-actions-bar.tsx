@@ -1,6 +1,5 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
 import { Download, Trash2 } from 'lucide-react';
 
 import { SortMenu } from '@/features/transfer/sort-menu';
@@ -31,16 +30,13 @@ export function TransferActionsBar({ type, files }: TransferActionsBarProps) {
     const completedCount = files.filter((f) => f.status === 'completed').length;
 
     return (
-        <AnimatePresence mode="wait">
-            <motion.div
-                key={`${type}-actions`}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="flex items-center justify-between px-0.5"
-            >
+        <div
+            className="flex min-h-9 items-center justify-between px-0.5"
+            style={{ contain: 'layout' }}
+        >
+            <div className="flex items-center gap-2">
                 {type === 'received' ? (
-                    <div className="flex items-center gap-2">
+                    <>
                         <Button
                             variant="outline"
                             size="sm"
@@ -65,7 +61,7 @@ export function TransferActionsBar({ type, files }: TransferActionsBarProps) {
                                 Download All
                             </span>
                         </Button>
-                    </div>
+                    </>
                 ) : (
                     <Button
                         variant="outline"
@@ -78,17 +74,15 @@ export function TransferActionsBar({ type, files }: TransferActionsBarProps) {
                         <span className="hidden text-xs font-medium sm:inline">Clear History</span>
                     </Button>
                 )}
+            </div>
 
-                <SortMenu
-                    sortBy={type === 'received' ? receivedSortBy : sentSortBy}
-                    onSortByChange={type === 'received' ? setReceivedSortBy : setSentSortBy}
-                    sortOrder={type === 'received' ? receivedSortOrder : sentSortOrder}
-                    onSortOrderChange={
-                        type === 'received' ? setReceivedSortOrder : setSentSortOrder
-                    }
-                    disabled={files.length === 0}
-                />
-            </motion.div>
-        </AnimatePresence>
+            <SortMenu
+                sortBy={type === 'received' ? receivedSortBy : sentSortBy}
+                onSortByChange={type === 'received' ? setReceivedSortBy : setSentSortBy}
+                sortOrder={type === 'received' ? receivedSortOrder : sentSortOrder}
+                onSortOrderChange={type === 'received' ? setReceivedSortOrder : setSentSortOrder}
+                disabled={files.length === 0}
+            />
+        </div>
     );
 }

@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test.describe('Settings Integration', () => {
     test('should persist Metered connection settings', async ({ page }) => {
-        await page.goto('/');
+        await page.goto('/share');
 
         // 1. Open Settings
         const settingsBtn = page.getByLabel('Settings');

@@ -1,17 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-
-interface LandingCTAProps {
-    onEnterApp: () => void;
-}
+import Link from 'next/link';
 
 /**
  * Full-width call-to-action section at the bottom of the landing page.
  * Extracted from LandingPage so that landing composition stays clean and
  * this section can be modified / A-B tested independently.
  */
-export function LandingCTA({ onEnterApp }: LandingCTAProps) {
+export function LandingCTA() {
     return (
         <div className="border-t border-white/[0.08] py-24 text-center">
             <motion.div
@@ -20,23 +17,20 @@ export function LandingCTA({ onEnterApp }: LandingCTAProps) {
                 viewport={{ once: true }}
                 className="relative"
             >
-                {/* Background Glow */}
-                <div className="pointer-events-none absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-primary/5 blur-[120px]" />
-
-                <h2 className="mb-4 text-[10px] font-black uppercase tracking-[0.4em] text-primary">
+                <h2 className="mb-4 text-[10px] font-black uppercase tracking-[0.4em] text-white">
                     Ready to begin?
                 </h2>
                 <h3 className="mb-12 text-4xl font-black md:text-6xl lg:text-7xl">
-                    START <span className="text-primary">FLICKING.</span>
+                    START <span className="text-primary">FLICKING</span>
                 </h3>
-                <button
-                    onClick={onEnterApp}
-                    className="h-20 transform rounded-2xl bg-primary px-16 text-xl font-bold text-white shadow-[0_0_60px_rgba(14,165,233,0.3)] transition-all duration-300 hover:scale-105 hover:bg-primary/90 active:scale-95"
+                <Link
+                    href="/share"
+                    className="inline-flex h-20 transform items-center justify-center rounded-2xl bg-primary px-16 text-xl font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-primary/90 active:scale-95"
                 >
                     Launch Application
-                </button>
+                </Link>
 
-                <p className="mt-8 text-xs font-medium uppercase tracking-widest text-muted-foreground/40">
+                <p className="mt-8 text-xs font-medium uppercase tracking-widest text-white">
                     Free. Private. Unlimited.
                 </p>
             </motion.div>

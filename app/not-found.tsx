@@ -28,7 +28,7 @@ export default function NotFound() {
                             className="absolute inset-0 rounded-full border border-primary/50"
                         />
                         <Image
-                            src="/icon.svg"
+                            src="/images/icon.svg"
                             alt="Flick Logo"
                             fill
                             className="object-contain"
@@ -39,8 +39,8 @@ export default function NotFound() {
 
                 <div className="flex items-center gap-5 text-sm font-medium tracking-tight md:text-base">
                     <span className="text-zinc-500">Page not found</span>
-                    <div className="h-3 w-px bg-zinc-800" />
-                    <Link href="/" className="text-zinc-300 transition-colors hover:text-white">
+                    <div className="h-3 w-px bg-white" />
+                    <Link href="/" className="text-zinc-300 transition-colors hover:text-primary">
                         Home
                     </Link>
                 </div>

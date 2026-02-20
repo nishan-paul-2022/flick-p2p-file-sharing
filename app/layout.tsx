@@ -44,7 +44,7 @@ export const metadata: Metadata = {
         siteName: 'Flick',
         images: [
             {
-                url: '/og-image.png',
+                url: '/images/og-image.png',
                 width: 1200,
                 height: 630,
                 alt: 'Flick - P2P File Sharing',
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: 'Flick - P2P File Sharing',
         description: 'Securely share files between devices in seconds with P2P technology.',
-        images: ['/og-image.png'],
+        images: ['/images/og-image.png'],
         creator: '@flick_p2p',
     },
     robots: {
@@ -91,8 +91,8 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <head>
-                <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-                <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+                <link rel="icon" href="/images/icon.svg" type="image/svg+xml" />
+                <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
             </head>
             <body className={`${inter.variable} font-sans antialiased`}>
                 <ThemeProvider

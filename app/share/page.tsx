@@ -16,7 +16,7 @@ import { useAppInitialize } from '@/shared/hooks/use-app-initialize';
 import { cn } from '@/shared/utils';
 import { usePeerStore } from '@/store';
 
-export default function AppPage() {
+export default function SharePage() {
     const searchParams = useSearchParams();
     const [showLoadingParam, setShowLoadingParam] = useState(false);
 
@@ -90,7 +90,6 @@ export default function AppPage() {
 
                     <LogPanel />
 
-                    {/* Return to Landing link */}
                     <Link
                         href="/"
                         className="fixed bottom-4 left-4 z-50 rounded-full border border-white/10 bg-surface-900/50 p-2 text-white/30 transition-colors hover:text-white"

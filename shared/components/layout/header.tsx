@@ -80,7 +80,7 @@ export function Header({ isLogPanelOpen, toggleLogPanel, hasUnreadLogs }: Header
                             transition={{ duration: 0.6, ease: 'easeInOut' }}
                         >
                             <Image
-                                src="/icon.svg"
+                                src="/images/icon.svg"
                                 alt="Flick Icon"
                                 width={40}
                                 height={40}
