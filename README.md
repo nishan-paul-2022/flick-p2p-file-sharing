@@ -53,59 +53,44 @@ Connect your devices by simply sharing a 6-character room code. No accounts or r
 
 ## 🚀 Installation & Setup
 
-Flick is a fully client-side application. No databases or environment variables required!
+Flick is a fully client-side application. No database setup required!
 
 ### 1. Prerequisites
 
 Ensure you have the following installed:
 
 - **Node.js 18+**
+- **Docker** and **Docker Compose**
 - **Git**
 
-### 2. Configuration & Dependencies
+### 2. Setup & Execution
 
-Clone the repository and install dependencies:
+Clone the repository:
 
 ```bash
 git clone https://github.com/your-repo/flick-p2p-file-sharing.git
 cd flick-p2p-file-sharing
-
-npm install
 ```
 
-### 3. Application Setup
+#### Option A: Local Development
 
-There is **no `.env` file necessary**. To enable robust file sharing across different networks (e.g., mobile connections vs home Wi-Fi), Flick utilizes TURN servers configurable directly through the app UI.
-
-#### 🌐 WebRTC TURN Configuration
-
-To ensure smooth connectivity over strict networks, set up a free Xirsys TURN server:
-
-- Go to [Xirsys Dashboard](https://dashboard.xirsys.com/) and create a free account.
-- Navigate to **Account** > **Credentials**.
-- Grab your **Username (Ident)**, **Secret Key**, and **Channel**.
-- Open the Flick application.
-- Navigate to the **Quick Setup** section or click the **Settings icon** (gear) in the top right corner.
-- Enter your credentials and click **Save Changes**.
-
-_(Note: These settings are stored locally on your device only)_
-
-### 4. Running the Application
-
-Run the app locally with hot-reloading enabled.
+Best for coding and active development with hot-reloading.
 
 ```bash
-npm run dev
+make install
+make dev
+```
+
+#### Option B: Docker Environment
+
+Runs the entire application in a containerized environment.
+
+```bash
+make build
+make up
 ```
 
 > **Access the app at:** [http://localhost:3000](http://localhost:3000)
-
-### 5. Build for Production
-
-```bash
-npm run build
-npm start
-```
 
 ---
 
