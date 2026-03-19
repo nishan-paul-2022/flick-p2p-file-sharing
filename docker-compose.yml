@@ -1,8 +1,19 @@
 services:
-    web:
-        build: .
-        ports:
-            - '3000:3000'
-        environment:
-            - NODE_ENV=production
-        restart: always
+  web:
+    image: ${IMAGE}:main
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flick_web
+    restart: always
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - NODE_ENV=production
+      - PORT=${PORT}
+    networks:
+      - main_network
+
+networks:
+  main_network:
+    external: true
