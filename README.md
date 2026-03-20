@@ -2,6 +2,9 @@
   <img src="public/images/icon.svg" alt="Flick Logo" width="120" height="120" />
   <h1>Flick</h1>
   <p>Instant Peer-to-Peer File Sharing</p>
+  <a href="https://flick.kaiofficial.xyz" target="_blank">
+    <img src="https://img.shields.io/badge/Live_App-flick.kaiofficial.xyz-0070f3?style=for-the-badge&logo=next.js&logoColor=white" alt="Live App" />
+  </a>
 </div>
 
 Flick is a modern Progressive Web App (PWA) that enables **direct device-to-device file sharing** using WebRTC technology. Built with **Next.js**, **PeerJS**, and **Tailwind CSS**, it features a beautiful dark mode UI, unlimited file size support, and zero backend storage for ultimate privacy.
